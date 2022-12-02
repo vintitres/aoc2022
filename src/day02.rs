@@ -36,12 +36,10 @@ impl Play {
     }
 
     fn scorevs(&self, op: &Self) -> i32 {
-        if self == op {
-            3
-        } else if self.counter() == *op {
-            0
-        } else {
-            6
+        match (*self, *op) {
+            (me, op) if me == op => 3,           // draw
+            (me, op) if me.counter() == op => 0, // lose
+            _ => 6,                              // win
         }
     }
 }
@@ -58,9 +56,9 @@ fn gamea((op, st): (char, char)) -> (Play, Play) {
 fn gameb((op, st): (char, char)) -> (Play, Play) {
     let op = Play::new(op);
     let me = match st {
-        'X' => op.counter().counter(),
-        'Y' => op,
-        'Z' => op.counter(),
+        'X' => op.counter().counter(), // lose
+        'Y' => op,                     // draw
+        'Z' => op.counter(),           // win
         _ => unimplemented!(),
     };
     (op, me)
