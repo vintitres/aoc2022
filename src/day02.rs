@@ -18,14 +18,14 @@ impl Play {
         }
     }
 
-    fn points(self: &Self) -> i32 {
+    fn points(&self) -> i32 {
         match self {
             Play::Rock => 1,
             Play::Paper => 2,
             Play::Scisors => 3,
         }
     }
-    fn counter(self: Self) -> Self {
+    fn counter(&self) -> Self {
         match self {
             Play::Rock => Play::Paper,
             Play::Paper => Play::Scisors,
@@ -33,10 +33,10 @@ impl Play {
         }
     }
 
-    fn scorevs(self: Self, op: Self) -> i32 {
+    fn scorevs(&self, op: &Self) -> i32 {
         if self == op {
             3
-        } else if self.counter() == op {
+        } else if self.counter() == *op {
             0
         } else {
             6
@@ -55,7 +55,7 @@ fn read(input: Box<dyn Iterator<Item = String>>) -> Box<dyn Iterator<Item = (cha
 }
 
 fn play(input: Box<dyn Iterator<Item = (Play, Play)>>) -> i32 {
-    input.map(|(op, me)| me.points() + me.scorevs(op)).sum()
+    input.map(|(op, me)| me.points() + me.scorevs(&op)).sum()
 }
 
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
