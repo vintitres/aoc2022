@@ -6,14 +6,16 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
         input
             .lines()
             .map(|l| l.unwrap())
-            .fold(vec![0], |mut acc, line| {
+            .fold((vec![], 0), |(mut elves, mut last_elf), line| {
                 if line.is_empty() {
-                    acc.push(0);
+                    elves.push(last_elf);
+                    last_elf = 0;
                 } else {
-                    *acc.last_mut().unwrap() += line.parse::<i32>().unwrap();
+                    last_elf += line.parse::<i32>().unwrap();
                 }
-                acc
+                (elves, last_elf)
             })
+            .0
             .into_iter(),
     )
 }
