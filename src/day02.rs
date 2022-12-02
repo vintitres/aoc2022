@@ -54,25 +54,29 @@ fn read(input: Box<dyn Iterator<Item = String>>) -> Box<dyn Iterator<Item = (cha
     }))
 }
 
-fn play(input: Box<dyn Iterator<Item = (Play, Play)>>) -> i32 {
-    input.map(|(op, me)| me.points() + me.scorevs(&op)).sum()
+fn gamea((op, st): (char, char)) -> (Play, Play) {
+    (Play::new(op), Play::new(st))
+}
+
+fn gameb((op, st): (char, char)) -> (Play, Play) {
+    let op = Play::new(op);
+    let me = match st {
+        'X' => op.counter().counter(),
+        'Y' => op,
+        'Z' => op.counter(),
+        _ => unimplemented!(),
+    };
+    (op, me)
+}
+
+fn score((op, me): (Play, Play)) -> i32 {
+    me.points() + me.scorevs(&op)
 }
 
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    play(Box::new(
-        read(input).map(|(op, st)| (Play::new(op), Play::new(st))),
-    ))
+    read(input).map(gamea).map(score).sum()
 }
 
 pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    play(Box::new(read(input).map(|(op, st)| {
-        let op = Play::new(op);
-        let me = match st {
-            'X' => op.counter().counter(),
-            'Y' => op,
-            'Z' => op.counter(),
-            _ => unimplemented!(),
-        };
-        (op, me)
-    })))
+    read(input).map(gameb).map(score).sum()
 }
