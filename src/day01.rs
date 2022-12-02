@@ -1,4 +1,7 @@
 use std::io::BufRead;
+use std::iter;
+
+type MyIt = Box<dyn Iterator<Item = i32>>;
 
 // TODO do I have to Box?
 fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
@@ -6,15 +9,17 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
         input
             .lines()
             .map(|l| l.unwrap())
-            .fold((vec![], 0), |(mut elves, mut last_elf), line| {
-                if line.is_empty() {
-                    elves.push(last_elf);
-                    last_elf = 0;
-                } else {
-                    last_elf += line.parse::<i32>().unwrap();
-                }
-                (elves, last_elf)
-            })
+            .fold(
+                (Box::new(iter::empty()) as MyIt, 0),
+                |(elves, mut last_elf), line| {
+                    if line.is_empty() {
+                        (Box::new(iter::once(last_elf).chain(elves)), 0)
+                    } else {
+                        last_elf += line.parse::<i32>().unwrap();
+                        (elves, last_elf)
+                    }
+                },
+            )
             .0
             .into_iter(),
     )
