@@ -44,14 +44,12 @@ impl Play {
     }
 }
 
-fn read(input: Box<dyn Iterator<Item = String>>) -> Box<dyn Iterator<Item = (char, char)>> {
-    Box::new(input.map(|l| {
-        let mut g = l.chars();
-        let op = g.next();
-        g.next();
-        let st = g.next();
-        (op.unwrap(), st.unwrap())
-    }))
+fn read(line: String) -> (char, char) {
+    let mut g = line.chars();
+    let op = g.next().unwrap();
+    g.next();
+    let st = g.next().unwrap();
+    (op, st)
 }
 
 fn gamea((op, st): (char, char)) -> (Play, Play) {
@@ -74,9 +72,9 @@ fn score((op, me): (Play, Play)) -> i32 {
 }
 
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    read(input).map(gamea).map(score).sum()
+    input.map(read).map(gamea).map(score).sum()
 }
 
 pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    read(input).map(gameb).map(score).sum()
+    input.map(read).map(gameb).map(score).sum()
 }
