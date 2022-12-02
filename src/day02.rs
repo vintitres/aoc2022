@@ -1,39 +1,59 @@
+#[derive(PartialEq, Copy, Clone)]
+enum Play {
+    Rock,
+    Paper,
+    Scisors,
+}
+
+impl Play {
+    pub fn new(p: char) -> Play {
+        match p {
+            'A' => Play::Rock,
+            'X' => Play::Rock,
+            'B' => Play::Paper,
+            'Y' => Play::Paper,
+            'C' => Play::Scisors,
+            'Z' => Play::Scisors,
+            _ => unimplemented!(),
+        }
+    }
+
+    fn points(self: &Self) -> i32 {
+        match self {
+            Play::Rock => 1,
+            Play::Paper => 2,
+            Play::Scisors => 3,
+        }
+    }
+    fn counter(self: Self) -> Self {
+        match self {
+            Play::Rock => Play::Paper,
+            Play::Paper => Play::Scisors,
+            Play::Scisors => Play::Rock,
+        }
+    }
+
+    fn scorevs(self: Self, op: Self) -> i32 {
+        if self == op {
+            3
+        } else if self.counter() == op {
+            0
+        } else {
+            6
+        }
+    }
+}
+
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
     input
         .map(|l| {
             let mut g = l.chars();
             let op = g.next();
-            let op = op.unwrap();
+            let op = Play::new(op.unwrap());
             g.next();
             let me = g.next();
-            let me = me.unwrap();
-            match me {
-                'X' => {
-                    1 + match op {
-                        'A' => 3,
-                        'B' => 0,
-                        'C' => 6,
-                        c => panic!("{}", c),
-                    }
-                }
-                'Y' => {
-                    2 + match op {
-                        'A' => 6,
-                        'B' => 3,
-                        'C' => 0,
-                        c => panic!("{}", c),
-                    }
-                }
-                'Z' => {
-                    3 + match op {
-                        'A' => 0,
-                        'B' => 6,
-                        'C' => 3,
-                        c => panic!("{}", c),
-                    }
-                }
-                c => panic!("{}", c),
-            }
+            let me = Play::new(me.unwrap());
+            me.points() + me.scorevs(op)
         })
         .sum()
 }
@@ -43,37 +63,17 @@ pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
         .map(|l| {
             let mut g = l.chars();
             let op = g.next();
-            let op = op.unwrap();
+            let op = Play::new(op.unwrap());
             g.next();
-            let me = g.next();
-            let me = me.unwrap();
-            match me {
-                'X' => {
-                    0 + match op {
-                        'A' => 3,
-                        'B' => 1,
-                        'C' => 2,
-                        c => panic!("{}", c),
-                    }
-                }
-                'Y' => {
-                    3 + match op {
-                        'A' => 1,
-                        'B' => 2,
-                        'C' => 3,
-                        c => panic!("{}", c),
-                    }
-                }
-                'Z' => {
-                    6 + match op {
-                        'A' => 2,
-                        'B' => 3,
-                        'C' => 1,
-                        c => panic!("{}", c),
-                    }
-                }
-                c => panic!("{}", c),
-            }
+            let r = g.next();
+            let r = r.unwrap();
+            let me = match r {
+                'X' => op.counter().counter(),
+                'Y' => op,
+                'Z' => op.counter(),
+                _ => unimplemented!(),
+            };
+            me.points() + me.scorevs(op)
         })
         .sum()
 }
