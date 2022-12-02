@@ -13,7 +13,7 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
                 (Box::new(iter::empty()) as MyIt, 0),
                 |(elves, mut last_elf), line| {
                     if line.is_empty() {
-                        (Box::new(iter::once(last_elf).chain(elves)), 0)
+                        (Box::new(elves.chain(iter::once(last_elf))), 0)
                     } else {
                         last_elf += line.parse::<i32>().unwrap();
                         (elves, last_elf)
