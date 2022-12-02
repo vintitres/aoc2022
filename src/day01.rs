@@ -13,15 +13,15 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
                 if line.is_empty() {
                     acc.push(Vec::new());
                 } else {
-                    acc.last_mut().unwrap().push(line.parse::<i32>().unwrap());
+                    acc.last_mut().unwrap().push(line);
                 }
                 acc
             })
             // TODO
             // .split(|l: String| l.is_empty());
-            // .map(|e| e.map(|f| f.parse::<i32>().unwrap()));
             .into_iter()
-            .map(|x| x.into_iter().sum::<i32>()),
+            .map(|e| e.into_iter().map(|f| f.parse::<i32>().unwrap()))
+            .map(|x| x.sum::<i32>())
     )
 }
 
