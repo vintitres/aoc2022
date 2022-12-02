@@ -54,27 +54,25 @@ fn read(input: Box<dyn Iterator<Item = String>>) -> Box<dyn Iterator<Item = (cha
     }))
 }
 
+fn play(input: Box<dyn Iterator<Item = (Play, Play)>>) -> i32 {
+    input.map(|(op, me)| me.points() + me.scorevs(op)).sum()
+}
+
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    read(input)
-        .map(|(op, st)| {
-            let op = Play::new(op);
-            let me = Play::new(st);
-            me.points() + me.scorevs(op)
-        })
-        .sum()
+    play(Box::new(
+        read(input).map(|(op, st)| (Play::new(op), Play::new(st))),
+    ))
 }
 
 pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    read(input)
-        .map(|(op, st)| {
-            let op = Play::new(op);
-            let me = match st {
-                'X' => op.counter().counter(),
-                'Y' => op,
-                'Z' => op.counter(),
-                _ => unimplemented!(),
-            };
-            me.points() + me.scorevs(op)
-        })
-        .sum()
+    play(Box::new(read(input).map(|(op, st)| {
+        let op = Play::new(op);
+        let me = match st {
+            'X' => op.counter().counter(),
+            'Y' => op,
+            'Z' => op.counter(),
+            _ => unimplemented!(),
+        };
+        (op, me)
+    })))
 }
