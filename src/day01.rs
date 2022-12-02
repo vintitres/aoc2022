@@ -21,7 +21,6 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
                 },
             )
             .0
-            .into_iter(),
     )
 }
 
