@@ -44,30 +44,31 @@ impl Play {
     }
 }
 
+fn read(input: Box<dyn Iterator<Item = String>>) -> Box<dyn Iterator<Item = (char, char)>> {
+    Box::new(input.map(|l| {
+        let mut g = l.chars();
+        let op = g.next();
+        g.next();
+        let st = g.next();
+        (op.unwrap(), st.unwrap())
+    }))
+}
+
 pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    input
-        .map(|l| {
-            let mut g = l.chars();
-            let op = g.next();
-            let op = Play::new(op.unwrap());
-            g.next();
-            let me = g.next();
-            let me = Play::new(me.unwrap());
+    read(input)
+        .map(|(op, st)| {
+            let op = Play::new(op);
+            let me = Play::new(st);
             me.points() + me.scorevs(op)
         })
         .sum()
 }
 
 pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
-    input
-        .map(|l| {
-            let mut g = l.chars();
-            let op = g.next();
-            let op = Play::new(op.unwrap());
-            g.next();
-            let r = g.next();
-            let r = r.unwrap();
-            let me = match r {
+    read(input)
+        .map(|(op, st)| {
+            let op = Play::new(op);
+            let me = match st {
                 'X' => op.counter().counter(),
                 'Y' => op,
                 'Z' => op.counter(),
