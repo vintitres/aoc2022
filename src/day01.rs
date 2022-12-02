@@ -2,15 +2,11 @@ use std::io::BufRead;
 
 // TODO do I have to Box?
 fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
-    // TODO shorter init?
-    let mut v = Vec::new();
-    v.push(Vec::new());
-
     Box::new(
         input
             .lines()
             .map(|l| l.unwrap())
-            .fold(v, |mut acc, line| {
+            .fold(vec![vec![]], |mut acc, line| {
                 if line.is_empty() {
                     acc.push(Vec::new());
                 } else {
@@ -31,14 +27,8 @@ pub fn a(input: Box<dyn BufRead>) -> i32 {
 }
 
 pub fn b(input: Box<dyn BufRead>) -> i32 {
-    // TODO shorter init?
-    let mut v = Vec::new();
-    v.push(0);
-    v.push(0);
-    v.push(0);
-
     elves(input)
-        .fold(v, |mut top3, x| {
+        .fold(vec![0,0,0], |mut top3, x| {
             let mut x = x;
             for i in 0..3 {
                 if x > top3[i] {
