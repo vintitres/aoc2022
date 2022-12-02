@@ -1,8 +1,12 @@
 use std::fs::File;
-use std::io;
+use std::io::{self, BufRead};
 
-fn input() -> Box<dyn io::BufRead> {
-    Box::new(io::BufReader::new(File::open("input/02").unwrap()))
+fn input() -> Box<dyn Iterator<Item = String>> {
+    Box::new(
+        io::BufReader::new(File::open("input/02").unwrap())
+            .lines()
+            .map(|l| l.unwrap()),
+    )
 }
 
 #[test]
@@ -14,4 +18,3 @@ fn test_a() {
 fn test_b() {
     assert_eq!(aoc2022::day02::b(input()), 13889);
 }
-

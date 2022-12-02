@@ -1,11 +1,7 @@
-use std::io::BufRead;
-
-pub fn a(input: Box<dyn BufRead>) -> i32 {
+pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
     input
-        .lines()
         .map(|l| {
-            let g = l.unwrap();
-            let mut g = g.chars();
+            let mut g = l.chars();
             let op = g.next();
             let op = op.unwrap();
             g.next();
@@ -42,12 +38,10 @@ pub fn a(input: Box<dyn BufRead>) -> i32 {
         .sum()
 }
 
-pub fn b(input: Box<dyn BufRead>) -> i32 {
+pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
     input
-        .lines()
         .map(|l| {
-            let g = l.unwrap();
-            let mut g = g.chars();
+            let mut g = l.chars();
             let op = g.next();
             let op = op.unwrap();
             g.next();
