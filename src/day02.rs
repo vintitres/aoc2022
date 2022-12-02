@@ -1,3 +1,5 @@
+use text_io::read;
+
 #[derive(PartialEq, Copy, Clone)]
 enum Play {
     Rock,
@@ -45,10 +47,9 @@ impl Play {
 }
 
 fn read(line: String) -> (char, char) {
-    let mut g = line.chars();
-    let op = g.next().unwrap();
-    g.next();
-    let st = g.next().unwrap();
+    let mut line = line.bytes();
+    let op: char = read!("{}", line);
+    let st: char = read!("{}", line);
     (op, st)
 }
 
