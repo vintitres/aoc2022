@@ -48,9 +48,7 @@ impl Play {
 
 fn read(line: String) -> (char, char) {
     let mut line = line.bytes();
-    let op: char = read!("{}", line);
-    let st: char = read!("{}", line);
-    (op, st)
+    (read!("{}", line), read!("{}", line))
 }
 
 fn gamea((op, st): (char, char)) -> (Play, Play) {
