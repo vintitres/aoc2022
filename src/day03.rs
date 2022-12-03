@@ -1,5 +1,4 @@
 use aoc_runner_derive::{aoc, aoc_generator};
-use itertools::Chunk;
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
@@ -23,8 +22,7 @@ fn score(item: char) -> i32 {
     }) as i32
 }
 
-// TODO siplier signature for the chunk
-fn all3(group: Chunk<'_, std::slice::Iter<'_, String>>) -> char {
+fn all3<'a>(group: impl Iterator<Item = &'a String>) -> char {
     let (e1, e2, e3) = group
         .map(|e| BTreeSet::from_iter(e.chars()))
         .collect_tuple()
