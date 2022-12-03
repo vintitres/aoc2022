@@ -3,11 +3,9 @@ use std::io::BufRead;
 fn elves(input: impl BufRead) -> impl Iterator<Item = i32> {
     input
         .lines()
-        .map(|l| {
-            // println!("{:?}", l);
-            l.unwrap()
-        })
         .scan(0, |last_elf, line| {
+            let line = line.unwrap();
+            // println!("{:?}", l);
             if line.is_empty() {
                 let full_elf = *last_elf;
                 *last_elf = 0;
