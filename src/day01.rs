@@ -1,8 +1,7 @@
 use std::io::BufRead;
 
-// TODO do I have to Box?
-fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
-    let e = input
+fn elves(input: impl BufRead) -> impl Iterator<Item = i32> {
+    input
         .lines()
         .map(|l| {
             // println!("{:?}", l);
@@ -19,16 +18,15 @@ fn elves(input: Box<dyn BufRead>) -> Box<dyn Iterator<Item = i32>> {
             }
         })
         .filter(|e| e.is_some())
-        .map(|l| l.unwrap());
-    Box::new(e)
+        .map(|l| l.unwrap())
 }
 
-pub fn a(input: Box<dyn BufRead>) -> i32 {
+pub fn a(input: impl BufRead) -> i32 {
     // elves(input).take(2).max().unwrap()
     elves(input).max().unwrap()
 }
 
-pub fn b(input: Box<dyn BufRead>) -> i32 {
+pub fn b(input: impl BufRead) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
             let mut x = x;

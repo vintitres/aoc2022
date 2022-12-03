@@ -68,10 +68,10 @@ fn score((op, me): (Play, Play)) -> i32 {
     me.points() + me.scorevs(&op)
 }
 
-pub fn a(input: Box<dyn Iterator<Item = String>>) -> i32 {
+pub fn a(input: impl Iterator<Item = String>) -> i32 {
     input.map(read).map(gamea).map(score).sum()
 }
 
-pub fn b(input: Box<dyn Iterator<Item = String>>) -> i32 {
+pub fn b(input: impl Iterator<Item = String>) -> i32 {
     input.map(read).map(gameb).map(score).sum()
 }
