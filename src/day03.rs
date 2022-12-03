@@ -3,8 +3,13 @@ use std::collections::BTreeSet;
 
 fn bothsides(line: String) -> char {
     let len = line.len();
-    let l = BTreeSet::from_iter(line[..(len / 2)].chars());
-    let r = BTreeSet::from_iter(line[(len / 2)..].chars());
+    let (l, r) = line
+        .chars()
+        .chunks(len / 2)
+        .into_iter()
+        .map(BTreeSet::from_iter)
+        .collect_tuple()
+        .unwrap();
     *l.intersection(&r).next().unwrap()
 }
 
@@ -16,10 +21,11 @@ fn score(item: char) -> u32 {
     }
 }
 
-fn all3(mut group: impl Iterator<Item = String>) -> char {
-    let e1 = BTreeSet::from_iter(group.next().unwrap().chars());
-    let e2 = BTreeSet::from_iter(group.next().unwrap().chars());
-    let e3 = BTreeSet::from_iter(group.next().unwrap().chars());
+fn all3(group: impl Iterator<Item = String>) -> char {
+    let (e1, e2, e3) = group
+        .map(|e| BTreeSet::from_iter(e.chars()))
+        .collect_tuple()
+        .unwrap();
     let inter: BTreeSet<_> = e1.intersection(&e2).cloned().collect();
     *inter.intersection(&e3).next().unwrap()
 }
