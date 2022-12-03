@@ -1,4 +1,5 @@
 use itertools::Itertools;
+use std::collections::BTreeSet;
 
 fn read(line: String) -> (String, String) {
     let len = line.chars().count();
@@ -26,15 +27,11 @@ fn score(item: char) -> u32 {
 }
 
 fn readb(mut group: impl Iterator<Item = String>) -> char {
-    let e1 = group.next().unwrap();
-    let e2 = group.next().unwrap();
-    let e3 = group.next().unwrap();
-    for c in e1.chars() {
-        if e2.contains(c) && e3.contains(c) {
-            return c;
-        }
-    }
-    unimplemented!();
+    let e1 = BTreeSet::from_iter(group.next().unwrap().chars());
+    let e2 = BTreeSet::from_iter(group.next().unwrap().chars());
+    let e3 = BTreeSet::from_iter(group.next().unwrap().chars());
+    let inter: BTreeSet<_> = e1.intersection(&e2).cloned().collect();
+    *inter.intersection(&e3).next().unwrap()
 }
 
 pub fn a(input: impl Iterator<Item = String>) -> u32 {
