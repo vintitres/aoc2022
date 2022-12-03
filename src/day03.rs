@@ -19,8 +19,8 @@ fn item((l, r): (String, String)) -> char {
 
 fn score(item: char) -> u32 {
     match item {
-        i if i >= 'a' && i <= 'z' => (i as u32) - ('a' as u32) + 1,
-        i if i >= 'A' && i <= 'Z' => (i as u32) - ('A' as u32) + 27,
+        i if i.is_ascii_lowercase() => (i as u32) - ('a' as u32) + 1,
+        i if i.is_ascii_uppercase() => (i as u32) - ('A' as u32) + 27,
         _ => unimplemented!(),
     }
 }
