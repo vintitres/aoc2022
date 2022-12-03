@@ -13,12 +13,12 @@ fn bothsides(line: String) -> char {
     *l.intersection(&r).next().unwrap()
 }
 
-fn score(item: char) -> u32 {
-    match item {
-        i if i.is_ascii_lowercase() => (i as u32) - ('a' as u32) + 1,
-        i if i.is_ascii_uppercase() => (i as u32) - ('A' as u32) + 27,
+fn score(item: char) -> i32 {
+    (match item as u8 {
+        i if i.is_ascii_lowercase() => i - ('a' as u8) + 1,
+        i if i.is_ascii_uppercase() => i - ('A' as u8) + 27,
         _ => unimplemented!(),
-    }
+    }) as i32
 }
 
 fn all3(group: impl Iterator<Item = String>) -> char {
@@ -30,10 +30,10 @@ fn all3(group: impl Iterator<Item = String>) -> char {
     *inter.intersection(&e3).next().unwrap()
 }
 
-pub fn a(input: impl Iterator<Item = String>) -> u32 {
-    input.map(bothsides).map(score).sum()
+pub fn a(input_lines: impl Iterator<Item = String>) -> i32 {
+    input_lines.map(bothsides).map(score).sum()
 }
 
-pub fn b(input: impl Iterator<Item = String>) -> u32 {
-    input.chunks(3).into_iter().map(all3).map(score).sum()
+pub fn b(input_lines: impl Iterator<Item = String>) -> i32 {
+    input_lines.chunks(3).into_iter().map(all3).map(score).sum()
 }
