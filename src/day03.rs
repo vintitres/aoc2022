@@ -2,10 +2,10 @@ use aoc_runner_derive::{aoc, aoc_generator};
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
-fn bothsides(line: &String) -> char {
+fn bothsides(line: &String) -> &u8 {
     let len = line.len();
     let (l, r) = line
-        .chars()
+        .as_bytes()
         .chunks(len / 2)
         .into_iter()
         .map(BTreeSet::from_iter)
@@ -14,23 +14,34 @@ fn bothsides(line: &String) -> char {
     *l.intersection(&r).next().unwrap()
 }
 
-fn score(item: char) -> i32 {
-    (match item as u8 {
+fn score(item: &u8) -> i32 {
+    (match item {
         i if i.is_ascii_lowercase() => i - ('a' as u8) + 1,
         i if i.is_ascii_uppercase() => i - ('A' as u8) + 27,
         _ => unimplemented!(),
     }) as i32
 }
 
-fn all3<'a>(group: impl Iterator<Item = &'a String>) -> char {
-    let (e1, e2, e3) = group
-        .map(|e| BTreeSet::from_iter(e.chars()))
-        .collect_tuple()
-        .unwrap();
-    *e1.intersection(&e2)
-        .cloned()
-        .collect::<BTreeSet<_>>()
-        .intersection(&e3)
+fn intersect<'a>(s1: BTreeSet<&'a u8>, s2: BTreeSet<&u8>) -> BTreeSet<&'a u8> {
+    s1.into_iter()
+        .scan(0, |_, s1e| {
+            if s2.contains(s1e) {
+                Some(Some(s1e))
+            } else {
+                Some(None)
+            }
+        })
+        .filter(|e| e.is_some())
+        .map(|e| e.unwrap())
+        .collect()
+}
+
+fn all3<'a>(group: impl Iterator<Item = &'a String>) -> &'a u8 {
+    group
+        .map(|e| BTreeSet::from_iter(e.as_bytes()))
+        .reduce(|inter, rucksack| intersect(inter, rucksack))
+        .unwrap()
+        .into_iter()
         .next()
         .unwrap()
 }
