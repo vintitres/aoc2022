@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use std::collections::BTreeSet;
+use aoc_runner_derive::{aoc_generator,aoc};
 
 fn bothsides(line: String) -> char {
     let len = line.len();
@@ -26,8 +27,7 @@ fn all3(group: impl Iterator<Item = String>) -> char {
         .map(|e| BTreeSet::from_iter(e.chars()))
         .collect_tuple()
         .unwrap();
-    let inter: BTreeSet<_> = e1.intersection(&e2).cloned().collect();
-    *inter.intersection(&e3).next().unwrap()
+    *e1.intersection(&e2).cloned().collect::<BTreeSet<_>>().intersection(&e3).next().unwrap()
 }
 
 pub fn a(input_lines: impl Iterator<Item = String>) -> i32 {
@@ -36,4 +36,19 @@ pub fn a(input_lines: impl Iterator<Item = String>) -> i32 {
 
 pub fn b(input_lines: impl Iterator<Item = String>) -> i32 {
     input_lines.chunks(3).into_iter().map(all3).map(score).sum()
+}
+
+#[aoc_generator(day3)]
+pub fn g(input: &str) -> Vec<String> {
+    input.lines().map(String::from).collect()
+}
+
+#[aoc(day3, part1)]
+pub fn part1(input_lines: &[String]) -> i32 {
+    a(input_lines.iter().map(String::from))
+}
+
+#[aoc(day3, part2)]
+pub fn part2(input_lines: &[String]) -> i32 {
+    b(input_lines.iter().map(String::from))
 }
