@@ -1,6 +1,11 @@
+use itertools::Itertools;
+
 fn read(line: String) -> (String, String) {
     let len = line.chars().count();
-    (String::from(&line[0..(len/2)]), String::from(&line[(len/2)..]))
+    (
+        String::from(&line[0..(len / 2)]),
+        String::from(&line[(len / 2)..]),
+    )
 }
 
 fn item((l, r): (String, String)) -> char {
@@ -32,21 +37,10 @@ fn readb(mut group: impl Iterator<Item = String>) -> char {
     unimplemented!();
 }
 
-
 pub fn a(input: impl Iterator<Item = String>) -> u32 {
     input.map(read).map(item).map(score).sum()
 }
 
 pub fn b(input: impl Iterator<Item = String>) -> u32 {
-    input.scan(vec![], |last3, line| {
-        last3.push(line);
-        if last3.len() == 3 {
-            let l3 = last3.clone();
-            last3.clear();
-            Some(Some(readb(l3.into_iter())))
-        } else {
-            Some(None)
-        }
-    }).filter(|l3| l3.is_some()).map(|l3| l3.unwrap()).map(score).sum()
+    input.chunks(3).into_iter().map(readb).map(score).sum()
 }
-
