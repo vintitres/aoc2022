@@ -1,21 +1,11 @@
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
-fn read(line: String) -> (String, String) {
-    let len = line.chars().count();
-    (
-        String::from(&line[0..(len / 2)]),
-        String::from(&line[(len / 2)..]),
-    )
-}
-
-fn item((l, r): (String, String)) -> char {
-    for c in l.chars() {
-        if r.contains(c) {
-            return c;
-        }
-    }
-    unimplemented!();
+fn bothsides(line: String) -> char {
+    let len = line.len();
+    let l = BTreeSet::from_iter(line[..(len / 2)].chars());
+    let r = BTreeSet::from_iter(line[(len / 2)..].chars());
+    *l.intersection(&r).next().unwrap()
 }
 
 fn score(item: char) -> u32 {
@@ -26,7 +16,7 @@ fn score(item: char) -> u32 {
     }
 }
 
-fn readb(mut group: impl Iterator<Item = String>) -> char {
+fn all3(mut group: impl Iterator<Item = String>) -> char {
     let e1 = BTreeSet::from_iter(group.next().unwrap().chars());
     let e2 = BTreeSet::from_iter(group.next().unwrap().chars());
     let e3 = BTreeSet::from_iter(group.next().unwrap().chars());
@@ -35,9 +25,9 @@ fn readb(mut group: impl Iterator<Item = String>) -> char {
 }
 
 pub fn a(input: impl Iterator<Item = String>) -> u32 {
-    input.map(read).map(item).map(score).sum()
+    input.map(bothsides).map(score).sum()
 }
 
 pub fn b(input: impl Iterator<Item = String>) -> u32 {
-    input.chunks(3).into_iter().map(readb).map(score).sum()
+    input.chunks(3).into_iter().map(all3).map(score).sum()
 }
