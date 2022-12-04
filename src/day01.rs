@@ -29,9 +29,9 @@ fn b(input: &str) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
             let mut x = x;
-            for i in 0..3 {
-                if x > top3[i] {
-                    std::mem::swap(&mut top3[i], &mut x);
+            for top3item in top3.iter_mut() {
+                if x > *top3item {
+                    std::mem::swap(top3item, &mut x);
                 }
             }
             top3

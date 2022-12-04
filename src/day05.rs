@@ -1,6 +1,5 @@
 fn read(input: &str) -> impl Iterator<Item = &str> + '_ {
-    input
-        .lines()
+    input.lines()
 }
 
 pub fn part1(input: &str) -> usize {

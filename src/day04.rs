@@ -8,7 +8,11 @@ struct Range {
 
 impl Range {
     fn from_str(s: &str) -> Range {
-        let (begin, end) = s.split('-').map(|s| s.parse().unwrap()).collect_tuple().unwrap();
+        let (begin, end) = s
+            .split('-')
+            .map(|s| s.parse().unwrap())
+            .collect_tuple()
+            .unwrap();
         Range { begin, end }
     }
 
