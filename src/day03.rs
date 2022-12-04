@@ -68,12 +68,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_03a() {
+    fn test_part1() {
         assert_eq!(part1(&g(include_str!("../input/2022/day3.txt"))), 8394);
     }
 
     #[test]
-    fn test_03b() {
+    fn test_part2() {
         assert_eq!(part2(&g(include_str!("../input/2022/day3.txt"))), 2413);
     }
 }

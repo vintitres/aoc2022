@@ -78,10 +78,10 @@ pub fn b(input: impl Iterator<Item = String>) -> i32 {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use std::fs::File;
     use std::io::{self, BufRead};
+
     fn input(t: &str) -> Box<dyn Iterator<Item = String>> {
         Box::new(
             io::BufReader::new(File::open(format!("input/{}", t)).unwrap())
@@ -91,12 +91,12 @@ mod tests {
     }
 
     #[test]
-    fn test_02a() {
+    fn test_part1() {
         assert_eq!(a(input("2022/day2.txt")), 14827);
     }
 
     #[test]
-    fn test_02b() {
+    fn test_part2() {
         assert_eq!(b(input("2022/day2.txt")), 13889);
     }
 }

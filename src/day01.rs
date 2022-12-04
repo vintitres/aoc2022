@@ -54,12 +54,12 @@ mod tests {
     }
 
     #[test]
-    fn test_01a() {
+    fn test_part1() {
         assert_eq!(a(input01()), 67658);
     }
 
     #[test]
-    fn test_01b() {
+    fn test_part2() {
         assert_eq!(b(input01()), 200158);
     }
 }
