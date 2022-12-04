@@ -47,17 +47,17 @@ fn all3<'a>(group: impl Iterator<Item = &'a String>) -> &'a u8 {
 }
 
 #[aoc_generator(day3)]
-pub fn g(input: &str) -> Vec<String> {
+fn g(input: &str) -> Vec<String> {
     input.lines().map(String::from).collect()
 }
 
 #[aoc(day3, part1)]
-pub fn part1(input_lines: &[String]) -> i32 {
+fn part1(input_lines: &[String]) -> i32 {
     input_lines.iter().map(bothsides).map(score).sum()
 }
 
 #[aoc(day3, part2)]
-pub fn part2(input_lines: &[String]) -> i32 {
+fn part2(input_lines: &[String]) -> i32 {
     input_lines
         .iter()
         .chunks(3)
