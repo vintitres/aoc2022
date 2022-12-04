@@ -1,35 +1,48 @@
 use aoc_runner_derive::{aoc, aoc_generator};
+use itertools::Itertools;
 use text_io::scan;
 
+struct Range {
+    begin: i32,
+    end: i32,
+}
+
+impl Range {
+    fn from_str(s: &str) -> Range {
+        let begin: i32;
+        let end: i32;
+        scan!(s.bytes() => "{}-{}",begin,end);
+        Range { begin, end }
+    }
+
+    fn contains(&self, other: &Self) -> bool {
+        self.begin <= other.begin && self.end >= other.end
+    }
+
+    fn touches(&self, other: &Self) -> bool {
+        self.begin <= other.end && other.begin <= self.end
+    }
+}
+
 #[aoc_generator(day4)]
-pub fn g(input: &str) -> Vec<((i32, i32), (i32, i32))> {
+fn g(input: &str) -> Vec<(Range, Range)> {
     input
         .lines()
-        .map(|l| {
-            let b1: i32;
-            let b2: i32;
-            let e1: i32;
-            let e2: i32;
-            scan!(l.bytes() => "{}-{},{}-{}",b1,e1,b2,e2);
-            ((b1, e1), (b2, e2))
-        })
+        .map(|l| l.split(",").map(Range::from_str).collect_tuple().unwrap())
         .collect()
 }
 
 #[aoc(day4, part1)]
-pub fn part1(ranges: &[((i32, i32), (i32, i32))]) -> usize {
+fn part1(ranges: &[(Range, Range)]) -> usize {
     ranges
         .iter()
-        .filter(|((b1, e1), (b2, e2))| (b1 <= b2 && e1 >= e2) || (b1 >= b2 && e1 <= e2))
+        .filter(|(l, r)| l.contains(r) || r.contains(l))
         .count()
 }
 
 #[aoc(day4, part2)]
-pub fn part2(ranges: &[((i32, i32), (i32, i32))]) -> usize {
-    ranges
-        .iter()
-        .filter(|((b1, e1), (b2, e2))| b1 <= e2 && b2 <= e1)
-        .count()
+fn part2(ranges: &[(Range, Range)]) -> usize {
+    ranges.iter().filter(|(l, r)| l.touches(r)).count()
 }
 
 #[cfg(test)]
