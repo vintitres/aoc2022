@@ -4,14 +4,15 @@ use std::collections::BTreeSet;
 
 fn bothsides(line: &String) -> &u8 {
     let len = line.len();
-    let (l, r) = line
-        .as_bytes()
+    line.as_bytes()
         .chunks(len / 2)
         .into_iter()
         .map(BTreeSet::from_iter)
-        .collect_tuple()
-        .unwrap();
-    *l.intersection(&r).next().unwrap()
+        .reduce(|inter, rucksack| intersect(inter, rucksack))
+        .unwrap()
+        .into_iter()
+        .next()
+        .unwrap()
 }
 
 fn score(item: &u8) -> i32 {
@@ -31,8 +32,7 @@ fn intersect<'a>(s1: BTreeSet<&'a u8>, s2: BTreeSet<&u8>) -> BTreeSet<&'a u8> {
                 Some(None)
             }
         })
-        .filter(|e| e.is_some())
-        .map(|e| e.unwrap())
+        .filter_map(|e| e)
         .collect()
 }
 
