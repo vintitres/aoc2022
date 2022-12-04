@@ -75,3 +75,28 @@ pub fn a(input: impl Iterator<Item = String>) -> i32 {
 pub fn b(input: impl Iterator<Item = String>) -> i32 {
     input.map(read).map(gameb).map(score).sum()
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use std::fs::File;
+    use std::io::{self, BufRead};
+    fn input(t: &str) -> Box<dyn Iterator<Item = String>> {
+        Box::new(
+            io::BufReader::new(File::open(format!("input/{}", t)).unwrap())
+                .lines()
+                .map(|l| l.unwrap()),
+        )
+    }
+
+    #[test]
+    fn test_02a() {
+        assert_eq!(a(input("02")), 14827);
+    }
+
+    #[test]
+    fn test_02b() {
+        assert_eq!(b(input("02")), 13889);
+    }
+}

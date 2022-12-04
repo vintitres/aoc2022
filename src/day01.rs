@@ -40,3 +40,24 @@ pub fn b(input: impl BufRead) -> i32 {
         .into_iter()
         .sum()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io;
+
+    fn input01() -> Box<dyn io::BufRead> {
+        Box::new(io::BufReader::new(File::open("input/01").unwrap()))
+    }
+
+    #[test]
+    fn test_01a() {
+        assert_eq!(a(input01()), 67658);
+    }
+
+    #[test]
+    fn test_01b() {
+        assert_eq!(b(input01()), 200158);
+    }
+}
