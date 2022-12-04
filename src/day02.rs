@@ -1,4 +1,4 @@
-use aoc_runner_derive::{aoc,aoc_generator};
+use aoc_runner_derive::{aoc, aoc_generator};
 use text_io::read;
 
 #[derive(PartialEq, Copy, Clone)]
