@@ -15,8 +15,7 @@ fn elves(input: &str) -> impl Iterator<Item = i32> + '_ {
                 Some(None)
             }
         })
-        .filter(|e| e.is_some())
-        .map(|l| l.unwrap())
+        .flatten()
 }
 
 #[aoc(day1, part1)]
@@ -32,9 +31,7 @@ fn b(input: &str) -> i32 {
             let mut x = x;
             for i in 0..3 {
                 if x > top3[i] {
-                    let xx = top3[i];
-                    top3[i] = x;
-                    x = xx;
+                    std::mem::swap(&mut top3[i], &mut x);
                 }
             }
             top3

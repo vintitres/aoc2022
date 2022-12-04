@@ -8,7 +8,7 @@ struct Range {
 
 impl Range {
     fn from_str(s: &str) -> Range {
-        let (begin, end) = s.split("-").map(|s| s.parse().unwrap()).collect_tuple().unwrap();
+        let (begin, end) = s.split('-').map(|s| s.parse().unwrap()).collect_tuple().unwrap();
         Range { begin, end }
     }
 
@@ -24,7 +24,7 @@ impl Range {
 fn read(input: &str) -> impl Iterator<Item = (Range, Range)> + '_ {
     input
         .lines()
-        .map(|l| l.split(",").map(Range::from_str).collect_tuple().unwrap())
+        .map(|l| l.split(',').map(Range::from_str).collect_tuple().unwrap())
 }
 
 // #[aoc(day4, part1)]

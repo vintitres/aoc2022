@@ -8,7 +8,7 @@ fn bothsides(line: &str) -> &u8 {
         .chunks(len / 2)
         .into_iter()
         .map(BTreeSet::from_iter)
-        .reduce(|inter, rucksack| intersect(inter, rucksack))
+        .reduce(intersect)
         .unwrap()
         .into_iter()
         .next()
@@ -17,8 +17,8 @@ fn bothsides(line: &str) -> &u8 {
 
 fn score(item: &u8) -> i32 {
     (match item {
-        i if i.is_ascii_lowercase() => i - ('a' as u8) + 1,
-        i if i.is_ascii_uppercase() => i - ('A' as u8) + 27,
+        i if i.is_ascii_lowercase() => i - b'a' + 1,
+        i if i.is_ascii_uppercase() => i - b'A' + 27,
         _ => unimplemented!(),
     }) as i32
 }
@@ -28,14 +28,14 @@ fn intersect<'a>(s1: BTreeSet<&'a u8>, s2: BTreeSet<&u8>) -> BTreeSet<&'a u8> {
         .scan(0, |_, s1e| {
             Some(if s2.contains(s1e) { Some(s1e) } else { None })
         })
-        .filter_map(|e| e)
+        .flatten()
         .collect()
 }
 
 fn all3<'a>(group: impl Iterator<Item = &'a str>) -> &'a u8 {
     group
         .map(|e| BTreeSet::from_iter(e.as_bytes()))
-        .reduce(|inter, rucksack| intersect(inter, rucksack))
+        .reduce(intersect)
         .unwrap()
         .into_iter()
         .next()
