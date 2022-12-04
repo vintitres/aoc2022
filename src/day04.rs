@@ -1,4 +1,4 @@
-use aoc_runner_derive::{aoc, aoc_generator};
+use aoc_runner_derive::aoc;
 use itertools::Itertools;
 use text_io::scan;
 
@@ -24,25 +24,22 @@ impl Range {
     }
 }
 
-#[aoc_generator(day4)]
-fn g(input: &str) -> Vec<(Range, Range)> {
+fn read(input: &str) -> impl Iterator<Item = (Range, Range)> + '_ {
     input
         .lines()
         .map(|l| l.split(",").map(Range::from_str).collect_tuple().unwrap())
-        .collect()
 }
 
 #[aoc(day4, part1)]
-fn part1(ranges: &[(Range, Range)]) -> usize {
-    ranges
-        .iter()
+fn part1(input: &str) -> usize {
+    read(input)
         .filter(|(l, r)| l.contains(r) || r.contains(l))
         .count()
 }
 
 #[aoc(day4, part2)]
-fn part2(ranges: &[(Range, Range)]) -> usize {
-    ranges.iter().filter(|(l, r)| l.touches(r)).count()
+fn part2(input: &str) -> usize {
+    read(input).filter(|(l, r)| l.touches(r)).count()
 }
 
 #[cfg(test)]
@@ -55,11 +52,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&g(input())), 466);
+        assert_eq!(part1(input()), 466);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&g(input())), 865);
+        assert_eq!(part2(input()), 865);
     }
 }

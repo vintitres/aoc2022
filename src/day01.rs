@@ -20,13 +20,13 @@ fn elves(input: &str) -> impl Iterator<Item = i32> + '_ {
 }
 
 #[aoc(day1, part1)]
-pub fn a(input: &str) -> i32 {
+fn a(input: &str) -> i32 {
     // elves(input).take(2).max().unwrap()
     elves(input).max().unwrap()
 }
 
 #[aoc(day1, part2)]
-pub fn b(input: &str) -> i32 {
+fn b(input: &str) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
             let mut x = x;
