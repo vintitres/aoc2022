@@ -14,6 +14,7 @@ fn test_01a() {
 fn test_01b() {
     assert_eq!(aoc2022::day01::b(input01()), 200158);
 }
+
 fn input(t: &str) -> Box<dyn Iterator<Item = String>> {
     Box::new(
         io::BufReader::new(File::open(format!("input/{}", t)).unwrap())
