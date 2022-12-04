@@ -1,8 +1,8 @@
-use aoc_runner_derive::{aoc, aoc_generator};
+use aoc_runner_derive::aoc;
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
-fn bothsides(line: &String) -> &u8 {
+fn bothsides(line: &str) -> &u8 {
     let len = line.len();
     line.as_bytes()
         .chunks(len / 2)
@@ -32,7 +32,7 @@ fn intersect<'a>(s1: BTreeSet<&'a u8>, s2: BTreeSet<&u8>) -> BTreeSet<&'a u8> {
         .collect()
 }
 
-fn all3<'a>(group: impl Iterator<Item = &'a String>) -> &'a u8 {
+fn all3<'a>(group: impl Iterator<Item = &'a str>) -> &'a u8 {
     group
         .map(|e| BTreeSet::from_iter(e.as_bytes()))
         .reduce(|inter, rucksack| intersect(inter, rucksack))
@@ -42,20 +42,15 @@ fn all3<'a>(group: impl Iterator<Item = &'a String>) -> &'a u8 {
         .unwrap()
 }
 
-#[aoc_generator(day3)]
-fn g(input: &str) -> Vec<String> {
-    input.lines().map(String::from).collect()
-}
-
 #[aoc(day3, part1)]
-fn part1(input_lines: &[String]) -> i32 {
-    input_lines.iter().map(bothsides).map(score).sum()
+fn part1(input: &str) -> i32 {
+    input.lines().map(bothsides).map(score).sum()
 }
 
 #[aoc(day3, part2)]
-fn part2(input_lines: &[String]) -> i32 {
-    input_lines
-        .iter()
+fn part2(input: &str) -> i32 {
+    input
+        .lines()
         .chunks(3)
         .into_iter()
         .map(all3)
@@ -73,11 +68,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&g(input())), 8394);
+        assert_eq!(part1(input()), 8394);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&g(input())), 2413);
+        assert_eq!(part2(input()), 2413);
     }
 }

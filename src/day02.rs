@@ -1,4 +1,4 @@
-use aoc_runner_derive::{aoc, aoc_generator};
+use aoc_runner_derive::aoc;
 use text_io::read;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -69,18 +69,13 @@ fn score((op, me): (Play, Play)) -> i32 {
     me.points() + me.scorevs(&op)
 }
 
-#[aoc_generator(day2)]
-fn g(input: &str) -> String {
-    String::from(input)
-}
-
 #[aoc(day2, part1)]
-fn a(input: &String) -> i32 {
+fn a(input: &str) -> i32 {
     input.lines().map(read).map(gamea).map(score).sum()
 }
 
 #[aoc(day2, part2)]
-fn b(input: &String) -> i32 {
+fn b(input: &str) -> i32 {
     input.lines().map(read).map(gameb).map(score).sum()
 }
 
@@ -94,11 +89,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(a(&g(input())), 14827);
+        assert_eq!(a(input()), 14827);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(b(&g(input())), 13889);
+        assert_eq!(b(input()), 13889);
     }
 }

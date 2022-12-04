@@ -1,6 +1,6 @@
-use aoc_runner_derive::{aoc, aoc_generator};
+use aoc_runner_derive::aoc;
 
-fn elves(input: &String) -> impl Iterator<Item = i32> + '_ {
+fn elves(input: &str) -> impl Iterator<Item = i32> + '_ {
     input
         .lines()
         .scan(0, |last_elf, line| {
@@ -19,19 +19,14 @@ fn elves(input: &String) -> impl Iterator<Item = i32> + '_ {
         .map(|l| l.unwrap())
 }
 
-#[aoc_generator(day1)]
-fn g(input: &str) -> String {
-    String::from(input)
-}
-
 #[aoc(day1, part1)]
-pub fn a(input: &String) -> i32 {
+pub fn a(input: &str) -> i32 {
     // elves(input).take(2).max().unwrap()
     elves(input).max().unwrap()
 }
 
 #[aoc(day1, part2)]
-pub fn b(input: &String) -> i32 {
+pub fn b(input: &str) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
             let mut x = x;
@@ -58,11 +53,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(a(&g(input())), 67658);
+        assert_eq!(a(input()), 67658);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(b(&g(input())), 200158);
+        assert_eq!(b(input()), 200158);
     }
 }
