@@ -1,4 +1,4 @@
-use aoc_runner_derive::aoc;
+// use aoc_runner_derive::aoc;
 use itertools::Itertools;
 use text_io::scan;
 
@@ -30,15 +30,15 @@ fn read(input: &str) -> impl Iterator<Item = (Range, Range)> + '_ {
         .map(|l| l.split(",").map(Range::from_str).collect_tuple().unwrap())
 }
 
-#[aoc(day4, part1)]
-fn part1(input: &str) -> usize {
+// #[aoc(day4, part1)]
+pub fn part1(input: &str) -> usize {
     read(input)
         .filter(|(l, r)| l.contains(r) || r.contains(l))
         .count()
 }
 
-#[aoc(day4, part2)]
-fn part2(input: &str) -> usize {
+// #[aoc(day4, part2)]
+pub fn part2(input: &str) -> usize {
     read(input).filter(|(l, r)| l.touches(r)).count()
 }
 
