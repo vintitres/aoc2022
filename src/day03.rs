@@ -26,11 +26,7 @@ fn score(item: &u8) -> i32 {
 fn intersect<'a>(s1: BTreeSet<&'a u8>, s2: BTreeSet<&u8>) -> BTreeSet<&'a u8> {
     s1.into_iter()
         .scan(0, |_, s1e| {
-            if s2.contains(s1e) {
-                Some(Some(s1e))
-            } else {
-                Some(None)
-            }
+            Some(if s2.contains(s1e) { Some(s1e) } else { None })
         })
         .filter_map(|e| e)
         .collect()
