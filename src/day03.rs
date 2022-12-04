@@ -67,13 +67,17 @@ fn part2(input_lines: &[String]) -> i32 {
 mod tests {
     use super::*;
 
+    fn input() -> &'static str {
+        include_str!("../input/2022/day3.txt")
+    }
+
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&g(include_str!("../input/2022/day3.txt"))), 8394);
+        assert_eq!(part1(&g(input())), 8394);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&g(include_str!("../input/2022/day3.txt"))), 2413);
+        assert_eq!(part2(&g(input())), 2413);
     }
 }

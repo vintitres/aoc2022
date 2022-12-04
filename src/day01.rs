@@ -1,10 +1,10 @@
-use std::io::BufRead;
+use aoc_runner_derive::{aoc,aoc_generator};
 
-fn elves(input: impl BufRead) -> impl Iterator<Item = i32> {
+fn elves(input: &String) -> impl Iterator<Item = i32> + '_ {
     input
         .lines()
         .scan(0, |last_elf, line| {
-            let line = line.unwrap();
+            let line = line;
             // println!("{:?}", l);
             if line.is_empty() {
                 let full_elf = *last_elf;
@@ -19,12 +19,19 @@ fn elves(input: impl BufRead) -> impl Iterator<Item = i32> {
         .map(|l| l.unwrap())
 }
 
-pub fn a(input: impl BufRead) -> i32 {
+#[aoc_generator(day1)]
+fn g(input: &str) -> String {
+    String::from(input)
+}
+
+#[aoc(day1, part1)]
+pub fn a(input: &String) -> i32 {
     // elves(input).take(2).max().unwrap()
     elves(input).max().unwrap()
 }
 
-pub fn b(input: impl BufRead) -> i32 {
+#[aoc(day1, part2)]
+pub fn b(input: &String) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
             let mut x = x;
@@ -44,22 +51,18 @@ pub fn b(input: impl BufRead) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io;
 
-    fn input01() -> Box<dyn io::BufRead> {
-        Box::new(io::BufReader::new(
-            File::open("input/2022/day1.txt").unwrap(),
-        ))
+    fn input() -> &'static str {
+        include_str!("../input/2022/day1.txt")
     }
 
     #[test]
     fn test_part1() {
-        assert_eq!(a(input01()), 67658);
+        assert_eq!(a(&g(input())), 67658);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(b(input01()), 200158);
+        assert_eq!(b(&g(input())), 200158);
     }
 }

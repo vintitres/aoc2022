@@ -49,13 +49,17 @@ fn part2(ranges: &[(Range, Range)]) -> usize {
 mod tests {
     use super::*;
 
+    fn input() -> &'static str {
+        include_str!("../input/2022/day4.txt")
+    }
+
     #[test]
     fn test_part1() {
-        assert_eq!(part1(&g(include_str!("../input/2022/day4.txt"))), 466);
+        assert_eq!(part1(&g(input())), 466);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(&g(include_str!("../input/2022/day4.txt"))), 865);
+        assert_eq!(part2(&g(input())), 865);
     }
 }

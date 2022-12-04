@@ -1,3 +1,4 @@
+use aoc_runner_derive::{aoc,aoc_generator};
 use text_io::read;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -44,7 +45,7 @@ impl Play {
     }
 }
 
-fn read(line: String) -> (char, char) {
+fn read(line: &str) -> (char, char) {
     let mut line = line.bytes();
     (read!("{}", line), read!("{}", line))
 }
@@ -68,35 +69,36 @@ fn score((op, me): (Play, Play)) -> i32 {
     me.points() + me.scorevs(&op)
 }
 
-pub fn a(input: impl Iterator<Item = String>) -> i32 {
-    input.map(read).map(gamea).map(score).sum()
+#[aoc_generator(day2)]
+fn g(input: &str) -> String {
+    String::from(input)
 }
 
-pub fn b(input: impl Iterator<Item = String>) -> i32 {
-    input.map(read).map(gameb).map(score).sum()
+#[aoc(day2, part1)]
+fn a(input: &String) -> i32 {
+    input.lines().map(read).map(gamea).map(score).sum()
+}
+
+#[aoc(day2, part2)]
+fn b(input: &String) -> i32 {
+    input.lines().map(read).map(gameb).map(score).sum()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::{self, BufRead};
 
-    fn input(t: &str) -> Box<dyn Iterator<Item = String>> {
-        Box::new(
-            io::BufReader::new(File::open(format!("input/{}", t)).unwrap())
-                .lines()
-                .map(|l| l.unwrap()),
-        )
+    fn input() -> &'static str {
+        include_str!("../input/2022/day2.txt")
     }
 
     #[test]
     fn test_part1() {
-        assert_eq!(a(input("2022/day2.txt")), 14827);
+        assert_eq!(a(&g(input())), 14827);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(b(input("2022/day2.txt")), 13889);
+        assert_eq!(b(&g(input())), 13889);
     }
 }
