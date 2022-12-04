@@ -92,11 +92,11 @@ mod tests {
 
     #[test]
     fn test_02a() {
-        assert_eq!(a(input("02")), 14827);
+        assert_eq!(a(input("2022/day2.txt")), 14827);
     }
 
     #[test]
     fn test_02b() {
-        assert_eq!(b(input("02")), 13889);
+        assert_eq!(b(input("2022/day2.txt")), 13889);
     }
 }

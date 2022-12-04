@@ -48,7 +48,7 @@ mod tests {
     use std::io;
 
     fn input01() -> Box<dyn io::BufRead> {
-        Box::new(io::BufReader::new(File::open("input/01").unwrap()))
+        Box::new(io::BufReader::new(File::open("input/2022/day1.txt").unwrap()))
     }
 
     #[test]
