@@ -46,16 +46,6 @@ fn all3<'a>(group: impl Iterator<Item = &'a String>) -> &'a u8 {
         .unwrap()
 }
 
-pub fn a(input_lines: impl Iterator<Item = String>) -> i32 {
-    let v: Vec<String> = input_lines.collect();
-    part1(&v)
-}
-
-pub fn b(input_lines: impl Iterator<Item = String>) -> i32 {
-    let v: Vec<String> = input_lines.collect();
-    part2(&v)
-}
-
 #[aoc_generator(day3)]
 pub fn g(input: &str) -> Vec<String> {
     input.lines().map(String::from).collect()
