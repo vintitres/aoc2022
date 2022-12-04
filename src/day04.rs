@@ -1,6 +1,5 @@
 // use aoc_runner_derive::aoc;
 use itertools::Itertools;
-use text_io::scan;
 
 struct Range {
     begin: i32,
@@ -9,9 +8,7 @@ struct Range {
 
 impl Range {
     fn from_str(s: &str) -> Range {
-        let begin: i32;
-        let end: i32;
-        scan!(s.bytes() => "{}-{}",begin,end);
+        let (begin, end) = s.split("-").map(|s| s.parse().unwrap()).collect_tuple().unwrap();
         Range { begin, end }
     }
 

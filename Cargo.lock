@@ -7,7 +7,6 @@ name = "aoc2022"
 version = "0.1.0"
 dependencies = [
  "itertools",
- "text_io",
 ]
 
 [[package]]
@@ -24,9 +23,3 @@ checksum = "b0fd2260e829bddf4cb6ea802289de2f86d6a7a690192fbe91b3f46e0f2c8473"
 dependencies = [
  "either",
 ]
-
-[[package]]
-name = "text_io"
-version = "0.1.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5f0c8eb2ad70c12a6a69508f499b3051c924f4b1cfeae85bfad96e6bc5bba46"
