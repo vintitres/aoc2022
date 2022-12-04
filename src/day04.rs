@@ -28,7 +28,7 @@ pub fn part1(ranges: &[((i32, i32), (i32, i32))]) -> usize {
 pub fn part2(ranges: &[((i32, i32), (i32, i32))]) -> usize {
     ranges
         .iter()
-        .filter(|((b1, e1), (b2, e2))| (b1 <= b2 && e1 >= b2) || (b1 >= b2 && b1 <= e2))
+        .filter(|((b1, e1), (b2, e2))| b1 <= e2 && b2 <= e1)
         .count()
 }
 
