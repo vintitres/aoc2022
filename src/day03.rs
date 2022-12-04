@@ -76,3 +76,18 @@ pub fn part2(input_lines: &[String]) -> i32 {
         .map(score)
         .sum()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_03a() {
+        assert_eq!(part1(&g(include_str!("../input/2022/day3.txt"))), 8394);
+    }
+
+    #[test]
+    fn test_03b() {
+        assert_eq!(part2(&g(include_str!("../input/2022/day3.txt"))), 2413);
+    }
+}

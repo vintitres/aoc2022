@@ -32,13 +32,3 @@ fn test_02a() {
 fn test_02b() {
     assert_eq!(aoc2022::day02::b(input("02")), 13889);
 }
-
-#[test]
-fn test_03a() {
-    assert_eq!(aoc2022::day03::a(input("03")), 8394);
-}
-
-#[test]
-fn test_03b() {
-    assert_eq!(aoc2022::day03::b(input("03")), 2413);
-}
