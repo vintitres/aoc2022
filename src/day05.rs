@@ -35,10 +35,11 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
 
 fn _domove(count: usize, from: &mut Stack, to: &mut Stack, onegrab: bool) {
     let new_len = from.len() - count;
+    let moved = from.iter().skip(new_len);
     if onegrab {
-        to.extend(from.iter().skip(new_len));
+        to.extend(moved);
     } else {
-        to.extend(from.iter().skip(new_len).rev());
+        to.extend(moved.rev());
     }
     from.resize(new_len, '!');
 }
