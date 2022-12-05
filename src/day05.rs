@@ -4,11 +4,11 @@ type Stack = Vec<char>;
 type Move = (usize, usize, usize);
 
 fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
-    const STACK_COUNT: usize = 3;
+    const STACK_COUNT: usize = 9;
     let mut lines = input.lines();
     let mut stacks = vec![Vec::new(); STACK_COUNT];
     for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")) {
-        println!("{}", line);
+        println!("s {}", line);
         for (i, stack) in stacks.iter_mut().enumerate() {
             match line.chars().nth(4 * i + 1) {
                 None => break,
@@ -19,8 +19,9 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     }
     stacks.iter_mut().for_each(|s| s.reverse());
     let moves = lines
-        .skip(2)
+        .skip(1)
         .map(|l| {
+            println!("m {}", l);
             l.split(' ')
                 .flat_map(|w| w.parse())
                 .collect_tuple()
@@ -63,7 +64,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day5e.txt")
+        include_str!("../input/2022/day5.txt")
     }
 
     #[test]
