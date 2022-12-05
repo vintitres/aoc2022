@@ -4,22 +4,25 @@ type Stack = Vec<char>;
 type Move = (usize, usize, usize);
 
 fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
-    const STACK_COUNT: usize = 9;
     let mut lines = input.lines();
-    let mut stacks = vec![Vec::new(); STACK_COUNT];
+    let mut stacks = Vec::new();
     for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")) {
         line.chars()
             .skip(1)
             .step_by(4)
             .enumerate()
             .filter(|(_, c)| *c != ' ')
-            .for_each(|(i, c)| stacks[i].push(c));
+            .for_each(|(i, c)| {
+                if stacks.len() < i + 1 {
+                    stacks.resize(i + 1, Vec::new())
+                }
+                stacks[i].push(c)
+            });
     }
     stacks.iter_mut().for_each(|s| s.reverse());
     let moves = lines
         .skip(1)
         .map(|l| {
-            println!("m {}", l);
             l.split(' ')
                 .flat_map(|w| w.parse())
                 .collect_tuple()
