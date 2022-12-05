@@ -1,4 +1,4 @@
-use aoc_runner_derive::aoc;
+// use aoc_runner_derive::aoc;
 use itertools::Itertools;
 use std::collections::BTreeSet;
 
@@ -42,12 +42,12 @@ fn all3<'a>(group: impl Iterator<Item = &'a str>) -> &'a u8 {
         .unwrap()
 }
 
-#[aoc(day3, part1)]
+// #[aoc(day3, part1)]
 fn part1(input: &str) -> i32 {
     input.lines().map(bothsides).map(score).sum()
 }
 
-#[aoc(day3, part2)]
+// #[aoc(day3, part2)]
 fn part2(input: &str) -> i32 {
     input
         .lines()
