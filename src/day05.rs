@@ -36,12 +36,13 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
 fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
     let new_len = stacks[from].len() - count;
     let moved = &stacks[from][new_len..];
+    // TODO no cloned
     let moved = if onegrab {
         moved.iter().cloned().collect_vec()
     } else {
         moved.iter().rev().cloned().collect_vec()
     };
-    stacks.get_mut(to).unwrap().extend(moved);
+    stacks[to].extend(moved);
     stacks[from].resize(new_len, '!');
 }
 
