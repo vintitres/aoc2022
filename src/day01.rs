@@ -1,4 +1,4 @@
-use aoc_runner_derive::aoc;
+// use aoc_runner_derive::aoc;
 
 fn elves(input: &str) -> impl Iterator<Item = i32> + '_ {
     input
@@ -18,13 +18,13 @@ fn elves(input: &str) -> impl Iterator<Item = i32> + '_ {
         .flatten()
 }
 
-#[aoc(day1, part1)]
+// #[aoc(day1, part1)]
 fn a(input: &str) -> i32 {
     // elves(input).take(2).max().unwrap()
     elves(input).max().unwrap()
 }
 
-#[aoc(day1, part2)]
+// #[aoc(day1, part2)]
 fn b(input: &str) -> i32 {
     elves(input)
         .fold(vec![0, 0, 0], |mut top3, x| {
