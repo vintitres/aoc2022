@@ -25,16 +25,23 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     for mut stack in &mut stacks {
         stack.reverse()
     }
-    let moves = lines.skip(2).map(|l| {
-        l.split(' ').map(|w| w.parse()).flatten().collect_tuple().unwrap()
-    }).collect();
+    let moves = lines
+        .skip(2)
+        .map(|l| {
+            l.split(' ')
+                .map(|w| w.parse())
+                .flatten()
+                .collect_tuple()
+                .unwrap()
+        })
+        .collect();
     (stacks, moves)
 }
 
 pub fn part1(input: &str) -> String {
     let (mut stacks, moves) = read(input);
     moves.iter().for_each(|(count, from, to)| {
-        let to = to -1;
+        let to = to - 1;
         let from = from - 1;
         let new_len = stacks[from].len() - count;
         let moved = stacks[from][new_len..].iter().rev().cloned().collect_vec();
@@ -48,7 +55,7 @@ pub fn part1(input: &str) -> String {
 pub fn part2(input: &str) -> String {
     let (mut stacks, moves) = read(input);
     moves.iter().for_each(|(count, from, to)| {
-        let to = to -1;
+        let to = to - 1;
         let from = from - 1;
         let new_len = stacks[from].len() - count;
         let moved = stacks[from][new_len..].iter().cloned().collect_vec();
