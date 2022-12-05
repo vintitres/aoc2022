@@ -22,9 +22,7 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
             }
         }
     }
-    for stack in &mut stacks {
-        stack.reverse()
-    }
+    stacks.iter_mut().for_each(|s| s.reverse());
     let moves = lines
         .skip(2)
         .map(|l| {
