@@ -22,15 +22,14 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
             }
         }
     }
-    for mut stack in &mut stacks {
+    for stack in &mut stacks {
         stack.reverse()
     }
     let moves = lines
         .skip(2)
         .map(|l| {
             l.split(' ')
-                .map(|w| w.parse())
-                .flatten()
+                .flat_map(|w| w.parse())
                 .collect_tuple()
                 .unwrap()
         })
