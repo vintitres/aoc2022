@@ -33,7 +33,13 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     (stacks, moves)
 }
 
-fn _domove(count: usize, from: &mut Stack, to: &mut Stack, onegrab: bool) {
+fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
+    let (lstack, rstack) = stacks.split_at_mut(if from > to { from } else { to });
+    let (from, to) = if from > to {
+        (&mut rstack[0], &mut lstack[to])
+    } else {
+        (&mut lstack[from], &mut rstack[0])
+    };
     let new_len = from.len() - count;
     let moved = from.iter().skip(new_len);
     if onegrab {
@@ -42,17 +48,6 @@ fn _domove(count: usize, from: &mut Stack, to: &mut Stack, onegrab: bool) {
         to.extend(moved.rev());
     }
     from.resize(new_len, '!');
-}
-
-fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
-    let (lstack, rstack) = stacks.split_at_mut(if from > to { from } else { to });
-    if from > to {
-        _domove(count, &mut rstack[0], &mut lstack[to], onegrab);
-        //                  from            to
-    } else {
-        _domove(count, &mut lstack[from], &mut rstack[0], onegrab);
-        //                  from               to
-    };
 }
 
 fn tops(stacks: &[Stack]) -> String {
