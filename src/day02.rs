@@ -1,5 +1,5 @@
-use aoc_runner_derive::aoc;
-use text_io::read;
+// use aoc_runner_derive::aoc;
+// use text_io::read;
 
 #[derive(PartialEq, Copy, Clone)]
 enum Play {
@@ -46,8 +46,7 @@ impl Play {
 }
 
 fn read(line: &str) -> (char, char) {
-    let mut line = line.bytes();
-    (read!("{}", line), read!("{}", line))
+    let mut line = line.bytes().split(' ').collect_tuple().unwrap()
 }
 
 fn gamea((op, st): (char, char)) -> (Play, Play) {
@@ -69,12 +68,12 @@ fn score((op, me): (Play, Play)) -> i32 {
     me.points() + me.scorevs(&op)
 }
 
-#[aoc(day2, part1)]
+// #[aoc(day2, part1)]
 fn a(input: &str) -> i32 {
     input.lines().map(read).map(gamea).map(score).sum()
 }
 
-#[aoc(day2, part2)]
+// #[aoc(day2, part2)]
 fn b(input: &str) -> i32 {
     input.lines().map(read).map(gameb).map(score).sum()
 }
