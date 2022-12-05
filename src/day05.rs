@@ -33,17 +33,25 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     (stacks, moves)
 }
 
-fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
-    let new_len = stacks[from].len() - count;
-    let moved = &stacks[from][new_len..];
-    // TODO no cloned
-    let moved = if onegrab {
-        moved.iter().cloned().collect_vec()
+fn _domove(count: usize, from: &mut Stack, to: &mut Stack, onegrab: bool) {
+    let new_len = from.len() - count;
+    if onegrab {
+        to.extend(from.iter().skip(new_len));
     } else {
-        moved.iter().rev().cloned().collect_vec()
+        to.extend(from.iter().skip(new_len).rev());
+    }
+    from.resize(new_len, '!');
+}
+
+fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
+    let (lstack, rstack) = stacks.split_at_mut(if from > to { from } else { to });
+    if from > to {
+        _domove(count, &mut rstack[0], &mut lstack[to], onegrab);
+        //                  from            to
+    } else {
+        _domove(count, &mut lstack[from], &mut rstack[0], onegrab);
+        //                  from               to
     };
-    stacks[to].extend(moved);
-    stacks[from].resize(new_len, '!');
 }
 
 fn tops(stacks: &[Stack]) -> String {
