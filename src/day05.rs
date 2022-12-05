@@ -1,10 +1,11 @@
 use itertools::Itertools;
 
-const MAX_STACK: usize = 8;
-const STACK_COUNT: usize = 9;
-// const MAX_STACK: usize = 3;
-// const STACK_COUNT: usize = 3;
-fn read(input: &str) -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
+type Stack = Vec<char>;
+type Move = (usize, usize, usize);
+
+fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
+    const MAX_STACK: usize = 8;
+    const STACK_COUNT: usize = 9;
     let mut lines = input.lines();
     let mut stacks = Vec::new();
     for _ in 0..STACK_COUNT {
@@ -12,11 +13,11 @@ fn read(input: &str) -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
     }
     for line in lines.by_ref().take(MAX_STACK) {
         let len = line.len();
-        for i in 0..STACK_COUNT {
+        for (i, stack) in stacks.iter_mut().enumerate() {
             if 4 * i + 1 < len {
                 let c = line.chars().nth(4 * i + 1).unwrap();
                 if c != ' ' {
-                    stacks[i].push(c);
+                    stack.push(c);
                 }
             }
         }
@@ -32,7 +33,7 @@ fn read(input: &str) -> (Vec<Vec<char>>, Vec<(usize, usize, usize)>) {
 
 pub fn part1(input: &str) -> String {
     let (mut stacks, moves) = read(input);
-    for (count, from, to) in moves {
+    moves.iter().for_each(|(count, from, to)| {
         let to = to -1;
         let from = from - 1;
         let new_len = stacks[from].len() - count;
@@ -40,14 +41,22 @@ pub fn part1(input: &str) -> String {
         stacks.get_mut(to).unwrap().extend(moved);
         stacks[from].resize(new_len, '!');
         println!("{:?}", stacks);
-    }
-    // format!("{:?}", stacks)
+    });
     stacks.iter().map(|stack| stack.last().unwrap()).collect()
 }
 
-pub fn part2(input: &str) -> usize {
-    // read(input).count()
-    0
+pub fn part2(input: &str) -> String {
+    let (mut stacks, moves) = read(input);
+    moves.iter().for_each(|(count, from, to)| {
+        let to = to -1;
+        let from = from - 1;
+        let new_len = stacks[from].len() - count;
+        let moved = stacks[from][new_len..].iter().cloned().collect_vec();
+        stacks.get_mut(to).unwrap().extend(moved);
+        stacks[from].resize(new_len, '!');
+        println!("{:?}", stacks);
+    });
+    stacks.iter().map(|stack| stack.last().unwrap()).collect()
 }
 
 #[cfg(test)]
@@ -60,11 +69,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), "");
+        assert_eq!(part1(input()), "MQSHJMWNH");
     }
 
-    // #[test]
-    // fn test_part2() {
-    //     assert_eq!(part2(input()), 865);
-    // }
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2(input()), "LLWJRBHVZ");
+    }
 }
