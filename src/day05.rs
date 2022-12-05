@@ -28,20 +28,19 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
                 .collect_tuple()
                 .unwrap()
         })
+        .map(|(count, from, to)| (count, from - 1, to - 1))
         .collect();
     (stacks, moves)
 }
 
-fn domove(stacks: &mut [Stack], (count, from, to): &Move, onegrab: bool) {
-    let to = to - 1;
-    let from = from - 1;
+fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
+    // stacks[from]
     let new_len = stacks[from].len() - count;
-    let moved;
-    if onegrab {
-        moved = stacks[from][new_len..].iter().cloned().collect_vec();
+    let moved = if onegrab {
+        stacks[from][new_len..].iter().cloned().collect_vec()
     } else {
-        moved = stacks[from][new_len..].iter().rev().cloned().collect_vec();
-    }
+        stacks[from][new_len..].iter().rev().cloned().collect_vec()
+    };
     stacks.get_mut(to).unwrap().extend(moved);
     stacks[from].resize(new_len, '!');
 }
@@ -52,13 +51,13 @@ fn tops(stacks: &[Stack]) -> String {
 
 pub fn part1(input: &str) -> String {
     let (mut stacks, moves) = read(input);
-    moves.iter().for_each(|m| domove(&mut stacks, m, false));
+    moves.iter().for_each(|m| domove(&mut stacks, *m, false));
     tops(&stacks)
 }
 
 pub fn part2(input: &str) -> String {
     let (mut stacks, moves) = read(input);
-    moves.iter().for_each(|m| domove(&mut stacks, m, true));
+    moves.iter().for_each(|m| domove(&mut stacks, *m, true));
     tops(&stacks)
 }
 
