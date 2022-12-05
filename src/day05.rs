@@ -9,10 +9,8 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     let mut lines = input.lines();
     let mut stacks = vec![Vec::new(); STACK_COUNT];
     for line in lines.by_ref().take(MAX_STACK) {
-        let len = line.len();
         for (i, stack) in stacks.iter_mut().enumerate() {
-            if 4 * i + 1 < len {
-                let c = line.chars().nth(4 * i + 1).unwrap();
+            if let c = line.chars().nth(4 * i + 1).unwrap() {
                 if c != ' ' {
                     stack.push(c);
                 }
