@@ -8,14 +8,12 @@ fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     let mut lines = input.lines();
     let mut stacks = vec![Vec::new(); STACK_COUNT];
     for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")) {
-        println!("s {}", line);
-        for (i, stack) in stacks.iter_mut().enumerate() {
-            match line.chars().nth(4 * i + 1) {
-                None => break,
-                Some(' ') => {}
-                Some(c) => stack.push(c),
-            }
-        }
+        line.chars()
+            .skip(1)
+            .step_by(4)
+            .enumerate()
+            .filter(|(_, c)| *c != ' ')
+            .for_each(|(i, c)| stacks[i].push(c));
     }
     stacks.iter_mut().for_each(|s| s.reverse());
     let moves = lines
