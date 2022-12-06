@@ -72,12 +72,12 @@ fn score((op, me): (Play, Play)) -> i32 {
 }
 
 // #[aoc(day2, part1)]
-fn a(input: &str) -> i32 {
+pub fn a(input: &str) -> i32 {
     input.lines().map(read).map(gamea).map(score).sum()
 }
 
 // #[aoc(day2, part2)]
-fn b(input: &str) -> i32 {
+pub fn b(input: &str) -> i32 {
     input.lines().map(read).map(gameb).map(score).sum()
 }
 

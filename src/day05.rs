@@ -6,7 +6,13 @@ type Move = (usize, usize, usize);
 fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     let mut lines = input.lines();
     let mut stacks = Vec::new();
-    for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")).collect_vec().iter().rev() {
+    for line in lines
+        .by_ref()
+        .take_while(|l| !l.starts_with(" 1"))
+        .collect_vec()
+        .iter()
+        .rev()
+    {
         line.chars()
             .skip(1)
             .step_by(4)
@@ -39,14 +45,12 @@ fn domove(stacks: &mut [Stack], (count, from, to): Move, onegrab: bool) {
     } else {
         (&mut lstack[from], &mut rstack[0])
     };
-    let new_len = from.len() - count;
-    let moved = from.iter().skip(new_len);
+    let moved = from.drain((from.len() - count)..);
     if onegrab {
         to.extend(moved);
     } else {
         to.extend(moved.rev());
     }
-    from.resize(new_len, '!');
 }
 
 fn tops(stacks: &[Stack]) -> String {
