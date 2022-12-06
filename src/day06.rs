@@ -1,17 +1,22 @@
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::{BTreeMap, VecDeque};
 
-fn doit(input: &str, cnt: usize) -> usize {
-    let mut last = VecDeque::new();
+fn doit(input: &str, prelen: usize) -> usize {
+    let mut lastord = VecDeque::new();
+    let mut lastcnt = BTreeMap::new();
     for (i, c) in input.chars().enumerate() {
-        last.push_back(c);
-        if i >= cnt {
-            last.pop_front().unwrap();
+        lastord.push_back(c);
+        lastcnt.entry(c).and_modify(|cnt| *cnt += 1).or_insert(1);
+        if i >= prelen {
+            let cc = lastord.pop_front().unwrap();
+            if *lastcnt.entry(cc).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
+                lastcnt.remove(&cc);
+            }
         }
-        if BTreeSet::from_iter(last.iter()).len() == cnt {
+        if lastcnt.len() == prelen {
             return i + 1;
         }
     }
-    unimplemented!();
+    panic!();
 }
 
 pub fn part1(input: &str) -> usize {
