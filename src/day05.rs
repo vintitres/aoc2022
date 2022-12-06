@@ -6,7 +6,7 @@ type Move = (usize, usize, usize);
 fn read(input: &str) -> (Vec<Stack>, Vec<Move>) {
     let mut lines = input.lines();
     let mut stacks = Vec::new();
-    for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")).rev() {
+    for line in lines.by_ref().take_while(|l| !l.starts_with(" 1")).collect_vec().iter().rev() {
         line.chars()
             .skip(1)
             .step_by(4)
