@@ -22,11 +22,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), "MQSHJMWNH");
+        assert_eq!(part1(input()), "d6i");
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), "LLWJRBHVZ");
+        assert_eq!(part2(input()), "d6i");
     }
 }
