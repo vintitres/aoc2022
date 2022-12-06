@@ -46,7 +46,7 @@ impl Play {
 }
 
 fn read(line: &str) -> (char, char) {
-    line.split(' ').iter().collect_tuple().unwrap()
+    line.split(' ').map(|s| s.chars().next().unwrap()).collect_tuple().unwrap()
 }
 
 fn gamea((op, st): (char, char)) -> (Play, Play) {
