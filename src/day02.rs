@@ -46,7 +46,7 @@ impl Play {
 }
 
 fn read(line: &str) -> (char, char) {
-    let mut line = line.bytes().split(' ').collect_tuple().unwrap()
+    line.bytes().split(' ').collect_tuple().unwrap()
 }
 
 fn gamea((op, st): (char, char)) -> (Play, Play) {
