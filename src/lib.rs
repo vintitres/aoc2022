@@ -1,15 +1,16 @@
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day01")]
 pub mod day01;
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day02")]
 pub mod day02;
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day03")]
 pub mod day03;
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day04")]
 pub mod day04;
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day05")]
 pub mod day05;
-#[cfg(aoc_alldays)]
+#[cfg(feature = "day06")]
 pub mod day06;
+#[cfg(feature = "day07")]
 pub mod day07;
 
 // use aoc_runner_derive::aoc_lib;

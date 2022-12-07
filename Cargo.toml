@@ -7,6 +7,20 @@ edition = "2021"
 
 [dependencies]
 itertools = "0.10.5"
+# aoc-runner = "0.3.0"
+# aoc-runner-derive = "0.3.0"
+
+[features]
+day01 = []
+day02 = []
+day03 = []
+day04 = []
+day05 = []
+day06 = []
+day07 = []
+day08 = []
+default = ["day07"]
+# aoc_runner = ["dep:aoc-runner", "dep:aoc-runner]
 
 [lib]
 doctest = false
