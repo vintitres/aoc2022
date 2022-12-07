@@ -100,6 +100,32 @@ impl Node {
             ),
         }
     }
+    fn read(&mut self, lines: &mut std::str::Lines) {
+        loop {
+            match lines.next() {
+                Some("$ ls") => (),
+                Some("$ cd ..") => return,
+                Some("$ cd /") => (),  // assuming not called after first line
+                Some(cmd) if cmd.starts_with("$ cd ") => {
+                    let name = &cmd[5..];
+                    match self {
+                        Node::Dir(nodes) => nodes.get_mut(name).unwrap(),
+                        Node::File(_) => panic!()
+                    }.read(lines)
+                }
+                Some(node) if node.starts_with("dir ") => {
+                    let name = &node[4..];
+                    self.makedir(name)
+                }
+                Some(node) if node.as_bytes()[0].is_ascii_digit() => {
+                    let (size, name) = node.split(' ').collect_tuple().unwrap();
+                    self.touch(name, size.parse().unwrap());
+                }
+                Some(_) => unimplemented!(),
+                None => return
+            }
+        }
+    }
 }
 
 fn read(input: &str) -> Node {
@@ -133,7 +159,9 @@ fn read(input: &str) -> Node {
 }
 
 pub fn part1(input: &str) -> u32 {
-    read(input).sum_sizes_under(100000)
+    let mut root = Node::Dir(HashMap::new());
+    root.read(&mut input.lines());
+    root.sum_sizes_under(100000)
 }
 
 pub fn part2(input: &str) -> u32 {
