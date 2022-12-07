@@ -65,12 +65,13 @@ impl Node {
         match self {
             Node::File(_) => 0,
             Node::Dir(nodes) => {
-                let size = self.size();
-                nodes
+                (match self.size() {
+                    size if size <= size_limit => size,
+                    _ => 0,
+                }) + nodes
                     .iter()
                     .map(|(_, n)| n.sum_sizes_under(size_limit))
                     .sum::<u32>()
-                    + if size <= size_limit { size } else { 0 }
             }
         }
     }
