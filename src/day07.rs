@@ -30,16 +30,7 @@ impl Node {
             _ => panic!("only create in directory"),
         }
     }
-    pub fn at(&mut self, path: &[&str]) -> &mut Node {
-        let (next, path) = match path.split_first() {
-            None => return self,
-            Some(np) => np,
-        };
-        match self {
-            Node::Dir(nodes) => nodes.get_mut(&next.to_string()).unwrap().at(path),
-            Node::File(_) => panic!("only enter dirs"),
-        }
-    }
+
     pub fn size(&self) -> u32 {
         match self {
             Node::File(size) => *size,
@@ -105,13 +96,14 @@ impl Node {
             match lines.next() {
                 Some("$ ls") => (),
                 Some("$ cd ..") => return,
-                Some("$ cd /") => (),  // assuming not called after first line
+                Some("$ cd /") => (), // assuming not called after first line
                 Some(cmd) if cmd.starts_with("$ cd ") => {
                     let name = &cmd[5..];
                     match self {
                         Node::Dir(nodes) => nodes.get_mut(name).unwrap(),
-                        Node::File(_) => panic!()
-                    }.read(lines)
+                        Node::File(_) => panic!(),
+                    }
+                    .read(lines)
                 }
                 Some(node) if node.starts_with("dir ") => {
                     let name = &node[4..];
@@ -122,40 +114,10 @@ impl Node {
                     self.touch(name, size.parse().unwrap());
                 }
                 Some(_) => unimplemented!(),
-                None => return
+                None => return,
             }
         }
     }
-}
-
-fn read(input: &str) -> Node {
-    let mut root = Node::Dir(HashMap::new());
-    // TODO how to keep pwd as stack of mutable references inside the node tree?
-    // so i dont have to traverse pwd from root on each change to the file tree
-    let mut pwd: Vec<&str> = Vec::new();
-    for line in input.lines() {
-        match line {
-            "$ ls" => (),
-            "$ cd /" => pwd.clear(),
-            "$ cd .." => {
-                pwd.pop();
-            }
-            cmd if cmd.starts_with("$ cd ") => {
-                let name = &cmd[5..];
-                pwd.push(name);
-            }
-            node if node.starts_with("dir ") => {
-                let name = &node[4..];
-                root.at(&pwd).makedir(name)
-            }
-            node if node.as_bytes()[0].is_ascii_digit() => {
-                let (size, name) = node.split(' ').collect_tuple().unwrap();
-                root.at(&pwd).touch(name, size.parse().unwrap());
-            }
-            _ => unimplemented!(),
-        }
-    }
-    root
 }
 
 pub fn part1(input: &str) -> u32 {
@@ -165,7 +127,8 @@ pub fn part1(input: &str) -> u32 {
 }
 
 pub fn part2(input: &str) -> u32 {
-    let root = read(input);
+    let mut root = Node::Dir(HashMap::new());
+    root.read(&mut input.lines());
     root.find_smallest_over(30000000 - (70000000 - root.size()))
 }
 
