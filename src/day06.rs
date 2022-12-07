@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, VecDeque};
 
 fn doit(input: &str, prelen: usize) -> usize {
     let mut lastcnt = BTreeMap::from_iter(input.chars().take(prelen).map(|c| (c,1)));
-    for (b, e) in input.chars().zip(input.chars().skip(prelen)) {
+    for (i, (b, e)) in input.chars().zip(input.chars().skip(prelen)).enumerate() {
         lastcnt.entry(e).and_modify(|cnt| *cnt += 1).or_insert(1);
         if i >= prelen {
             if *lastcnt.entry(b).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
