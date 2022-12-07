@@ -47,7 +47,7 @@ impl Node {
         }
     }
 
-    // TODO learn how to create iterator for this
+    // TODO learn how to create iterator over the file tree
     /*
     pub fn empty() -> impl Iterator<Item = Node> {
         std::iter::empty()
@@ -104,6 +104,8 @@ impl Node {
 
 fn read(input: &str) -> Node {
     let mut root = Node::Dir(HashMap::new());
+    // TODO how to keep pwd as stack of mutable references inside the node tree?
+    // so i dont have to traverse pwd from root on each change to the file tree
     let mut pwd: Vec<&str> = Vec::new();
     for line in input.lines() {
         match line {
