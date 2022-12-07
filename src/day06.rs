@@ -1,13 +1,17 @@
-use std::collections::{BTreeMap, VecDeque};
+use std::{collections::BTreeMap, iter};
 
 fn doit(input: &str, prelen: usize) -> usize {
-    let mut lastcnt = BTreeMap::from_iter(input.chars().take(prelen).map(|c| (c,1)));
-    for (i, (b, e)) in input.chars().zip(input.chars().skip(prelen)).enumerate() {
+    const PLACEHOLDER: char = '!';
+    let mut lastcnt = BTreeMap::new();
+    for (i, (b, e)) in iter::repeat(PLACEHOLDER)
+        .take(prelen)
+        .chain(input.chars())
+        .zip(input.chars())
+        .enumerate()
+    {
         lastcnt.entry(e).and_modify(|cnt| *cnt += 1).or_insert(1);
-        if i >= prelen {
-            if *lastcnt.entry(b).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
-                lastcnt.remove(&b);
-            }
+        if b != PLACEHOLDER && *lastcnt.entry(b).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
+            lastcnt.remove(&b);
         }
         if lastcnt.len() == prelen {
             return i + 1;
