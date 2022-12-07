@@ -59,3 +59,13 @@ pub fn d6p1(input: &str) -> usize {
 pub fn d6p2(input: &str) -> usize {
     super::day06::part2(input)
 }
+
+#[aoc(day7, part1)]
+pub fn d7p1(input: &str) -> u32 {
+    super::day07::part1(input)
+}
+
+#[aoc(day7, part2)]
+pub fn d7p2(input: &str) -> u32 {
+    super::day07::part2(input)
+}
