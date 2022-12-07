@@ -1,15 +1,12 @@
 use std::collections::{BTreeMap, VecDeque};
 
 fn doit(input: &str, prelen: usize) -> usize {
-    let mut lastord = VecDeque::new();
-    let mut lastcnt = BTreeMap::new();
-    for (i, c) in input.chars().enumerate() {
-        lastord.push_back(c);
-        lastcnt.entry(c).and_modify(|cnt| *cnt += 1).or_insert(1);
+    let mut lastcnt = BTreeMap::from_iter(input.chars().take(prelen).map(|c| (c,1)));
+    for (b, e) in input.chars().zip(input.chars().skip(prelen)) {
+        lastcnt.entry(e).and_modify(|cnt| *cnt += 1).or_insert(1);
         if i >= prelen {
-            let cc = lastord.pop_front().unwrap();
-            if *lastcnt.entry(cc).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
-                lastcnt.remove(&cc);
+            if *lastcnt.entry(b).and_modify(|cnt| *cnt -= 1).or_default() == 0 {
+                lastcnt.remove(&b);
             }
         }
         if lastcnt.len() == prelen {
