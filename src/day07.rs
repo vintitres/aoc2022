@@ -91,6 +91,7 @@ impl Node {
             ),
         }
     }
+
     fn read(&mut self, lines: &mut std::str::Lines) {
         loop {
             match lines.next() {
@@ -99,16 +100,14 @@ impl Node {
                 Some("$ cd /") => (), // assuming not called after first line
                 Some(cmd) if cmd.starts_with("$ cd ") => {
                     let name = &cmd[5..];
+                    self.makedir(name);
                     match self {
                         Node::Dir(nodes) => nodes.get_mut(name).unwrap(),
                         Node::File(_) => panic!(),
                     }
                     .read(lines)
                 }
-                Some(node) if node.starts_with("dir ") => {
-                    let name = &node[4..];
-                    self.makedir(name)
-                }
+                Some(node) if node.starts_with("dir ") => (), // dirs only matter if we enter (and ls inside)
                 Some(node) if node.as_bytes()[0].is_ascii_digit() => {
                     let (size, name) = node.split(' ').collect_tuple().unwrap();
                     self.touch(name, size.parse().unwrap());
