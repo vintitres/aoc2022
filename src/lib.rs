@@ -13,5 +13,9 @@ pub mod day06;
 #[cfg(feature = "day07")]
 pub mod day07;
 
-// use aoc_runner_derive::aoc_lib;
-// aoc_lib! { year = 2022 }
+#[cfg(feature = "my_aoc_runner")]
+mod my_aoc_runner;
+#[cfg(feature = "my_aoc_runner")]
+use aoc_runner_derive::aoc_lib;
+#[cfg(feature = "my_aoc_runner")]
+aoc_lib! { year = 2022 }
