@@ -29,22 +29,12 @@ pub fn part1(input: &str) -> usize {
     }
     for j in 0..forest[0].len() {
         let mut max = -1;
-        for i in 0..forest.len() {
-            f(&mut forest[i][j], &mut max)
+        for treerow in forest.iter_mut() {
+            f(&mut treerow[j], &mut max);
         }
         max = -1;
-        for i in (0..forest.len()).rev() {
-            f(&mut forest[i][j], &mut max)
-        }
-    }
-    for treecol in forest.iter_mut() {
-        let mut max = -1;
-        for tree in treecol.iter_mut() {
-            f(tree, &mut max);
-        }
-        let mut max = -1;
-        for tree in treecol.iter_mut().rev() {
-            f(tree, &mut max);
+        for treerow in forest.iter_mut().rev() {
+            f(&mut treerow[j], &mut max);
         }
     }
     let mut visible = 0;
