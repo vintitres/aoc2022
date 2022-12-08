@@ -1,14 +1,18 @@
 use itertools::Itertools;
 
-pub fn part1(input: &str) -> usize {
-    let mut forest = input
+pub fn read(input: &str) -> Vec<Vec<i32>> {
+    input
         .lines()
         .map(|l| {
             l.chars()
                 .map(|c| c.to_digit(10).unwrap() as i32)
                 .collect_vec()
         })
-        .collect_vec();
+        .collect_vec()
+}
+
+pub fn part1(input: &str) -> usize {
+    let mut forest = read(input);
     let f = |tree: &mut i32, max: &mut i32| {
         if tree.abs() > *max {
             *max = tree.abs();
@@ -52,39 +56,26 @@ pub fn part1(input: &str) -> usize {
 }
 
 pub fn part2(input: &str) -> u32 {
-    let forest = input
-        .lines()
-        .map(|l| {
-            l.chars()
-                .map(|c| c.to_digit(10).unwrap() as i32)
-                .collect_vec()
-        })
-        .collect_vec();
+    let forest = read(input);
     let mut max = 0;
     for i in 0..forest.len() {
         for j in 0..forest[0].len() {
             let mut seen = (0, 0, 0, 0);
             for ii in i + 1..forest.len() {
-                if forest[ii][j] < forest[i][j] {
-                    seen.0 += 1;
-                } else {
-                    seen.0 += 1;
+                seen.0 += 1;
+                if forest[ii][j] >= forest[i][j] {
                     break;
                 }
             }
             for ii in (0..i.checked_div(1).unwrap_or(0)).rev() {
-                if forest[ii][j] < forest[i][j] {
-                    seen.1 += 1;
-                } else {
-                    seen.1 += 1;
+                seen.1 += 1;
+                if forest[ii][j] >= forest[i][j] {
                     break;
                 }
             }
             for jj in j + 1..forest[0].len() {
-                if forest[i][jj] < forest[i][j] {
-                    seen.2 += 1;
-                } else {
-                    seen.2 += 1;
+                seen.2 += 1;
+                if forest[i][jj] >= forest[i][j] {
                     break;
                 }
             }
