@@ -9,7 +9,7 @@ pub fn part1(input: &str) -> usize {
                 .collect_vec()
         })
         .collect_vec();
-    let f = |mut tree: &mut i32, mut max: &mut i32| {
+    let f = |tree: &mut i32, max: &mut i32| {
         if tree.abs() > *max {
             *max = tree.abs();
             if *tree >= 0 {
@@ -17,13 +17,13 @@ pub fn part1(input: &str) -> usize {
             }
         }
     };
-    for mut treerow in forest.iter_mut() {
+    for treerow in forest.iter_mut() {
         let mut max = -1;
-        for mut tree in treerow.iter_mut() {
+        for tree in treerow.iter_mut() {
             f(tree, &mut max);
         }
         max = -1;
-        for mut tree in treerow.iter_mut().rev() {
+        for tree in treerow.iter_mut().rev() {
             f(tree, &mut max);
         }
     }
