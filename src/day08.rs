@@ -85,7 +85,6 @@ pub fn part2(input: &str) -> u32 {
                     break;
                 }
             }
-            println!("{} {}: {:?}", i, j, seen);
             max = core::cmp::max(max, seen.0 * seen.1 * seen.2 * seen.3);
         }
     }
