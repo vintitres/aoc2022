@@ -43,6 +43,10 @@ fn follow(back: &mut Pos, front: &Pos) {
             back.0 += d0.signum();
             back.1 += d1.signum();
         }
+        (2, 2) => {
+            back.0 += d0.signum();
+            back.1 += d1.signum();
+        }
         _ => unimplemented!(),
     }
 }
@@ -70,8 +74,8 @@ pub fn part1(input: &str) -> usize {
     tail_path(input, 2)
 }
 
-pub fn part2(input: &str) -> i32 {
-    3
+pub fn part2(input: &str) -> usize {
+    tail_path(input, 10)
 }
 
 #[cfg(test)]
