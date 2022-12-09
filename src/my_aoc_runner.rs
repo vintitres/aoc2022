@@ -69,3 +69,23 @@ pub fn d7p1(input: &str) -> u32 {
 pub fn d7p2(input: &str) -> u32 {
     super::day07::part2(input)
 }
+
+#[aoc(day8, part1)]
+pub fn d8p1(input: &str) -> usize {
+    super::day08::part1(input)
+}
+
+#[aoc(day8, part2)]
+pub fn d8p2(input: &str) -> u32 {
+    super::day08::part2(input)
+}
+
+#[aoc(day9, part1)]
+pub fn d9p1(input: &str) -> i32 {
+    super::day09::part1(input)
+}
+
+#[aoc(day9, part2)]
+pub fn d9p2(input: &str) -> i32 {
+    super::day09::part2(input)
+}
