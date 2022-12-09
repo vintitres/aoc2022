@@ -47,21 +47,27 @@ fn follow(back: &mut Pos, front: &Pos) {
     }
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn tail_path(input: &str, len: usize) -> usize {
     let moves = read(input);
-    let mut head = (0, 0);
-    let mut tail = (0, 0);
+    let mut rope = vec![(0, 0); len];
     let mut visited = BTreeSet::new();
-    visited.insert(tail);
+    visited.insert(rope[len-1]);
     for (mv, cnt) in moves {
         for _ in 0..cnt {
-            head.0 += mv.0;
-            head.1 += mv.1;
-            follow(&mut tail, &head);
-            visited.insert(tail);
+            rope[0].0 += mv.0;
+            rope[0].1 += mv.1;
+            for i in 1..len {
+                let (ropefront, ropeback) = rope.split_at_mut(i);
+                follow(&mut ropeback[0], &ropefront[i - 1]);
+            }
+            visited.insert(rope[len-1]);
         }
     }
     visited.len()
+}
+
+pub fn part1(input: &str) -> usize {
+    tail_path(input, 2)
 }
 
 pub fn part2(input: &str) -> i32 {
