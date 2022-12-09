@@ -35,19 +35,10 @@ fn follow(back: &mut Pos, front: &Pos) {
         (1, 1) => {}
         (2, 0) => back.0 += d0.signum(),
         (0, 2) => back.1 += d1.signum(),
-        (1, 2) => {
+        _ => {
             back.0 += d0.signum();
             back.1 += d1.signum();
         }
-        (2, 1) => {
-            back.0 += d0.signum();
-            back.1 += d1.signum();
-        }
-        (2, 2) => {
-            back.0 += d0.signum();
-            back.1 += d1.signum();
-        }
-        _ => unimplemented!(),
     }
 }
 
