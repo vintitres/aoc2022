@@ -1,13 +1,61 @@
-pub fn read(_input: &str) -> i32 {
-    1
+use std::collections::BTreeSet;
+
+use itertools::Itertools;
+
+type Mov = (i32, i32);
+
+pub fn read(input: &str) -> Vec<(Mov, usize)> {
+    input.lines().map(|line| {
+        println!("{}", line);
+        let (dir, cnt) = line.split(' ').collect_tuple().unwrap();
+        (match dir.chars().next().unwrap() {
+            'D' => (0, -1),
+            'U' => (0, 1),
+            'R' => (1, 0),
+            'L' => (-1, 0),
+            _ => unimplemented!(),
+        }, cnt.parse::<usize>().unwrap())
+    }).collect_vec()
 }
 
-pub fn part1(input: &str) -> i32 {
-    read(input)
+
+pub fn part1(input: &str) -> usize {
+    let moves = read(input);
+    let mut head = (0, 0);
+    let mut tail = (0, 0);
+    let mut visited = BTreeSet::new();
+    visited.insert(tail);
+    for (mv, cnt) in moves {
+        for _ in 0..cnt {
+            head.0 += mv.0;
+            head.1 += mv.1;
+            let d0 = head.0 - tail.0;
+            let d1 = head.1 - tail.1;
+            match (d0.abs(), d1.abs()) {
+                (0, 0) => {},
+                (0, 1) => {},
+                (1, 0) => {},
+                (1, 1) => {},
+                (2, 0) => tail.0 += d0.signum(),
+                (0, 2) => tail.1 += d1.signum(),
+                (1, 2) => {
+                    tail.0 += d0.signum();
+                    tail.1 += d1.signum();
+                }
+                (2, 1) => {
+    tail.0 += d0.signum();
+                    tail.1 += d1.signum();
+                }
+                _ => unimplemented!(),
+            }
+            visited.insert(tail);
+        }
+    }
+    visited.len()
 }
 
 pub fn part2(input: &str) -> i32 {
-    read(input) + 2
+    3
 }
 
 #[cfg(test)]
@@ -20,7 +68,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 1);
+        assert_eq!(part1(input()), 5907);
     }
 
     #[test]

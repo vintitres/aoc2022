@@ -81,7 +81,7 @@ pub fn d8p2(input: &str) -> u32 {
 }
 
 #[aoc(day9, part1)]
-pub fn d9p1(input: &str) -> i32 {
+pub fn d9p1(input: &str) -> usize {
     super::day09::part1(input)
 }
 
