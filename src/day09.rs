@@ -55,7 +55,7 @@ pub fn tail_path(input: &str, len: usize) -> usize {
     let moves = read(input);
     let mut rope = vec![(0, 0); len];
     let mut visited = BTreeSet::new();
-    visited.insert(rope[len-1]);
+    visited.insert(rope[len - 1]);
     for (mv, cnt) in moves {
         for _ in 0..cnt {
             rope[0].0 += mv.0;
@@ -64,7 +64,7 @@ pub fn tail_path(input: &str, len: usize) -> usize {
                 let (ropefront, ropeback) = rope.split_at_mut(i);
                 follow(&mut ropeback[0], &ropefront[i - 1]);
             }
-            visited.insert(rope[len-1]);
+            visited.insert(rope[len - 1]);
         }
     }
     visited.len()
@@ -93,6 +93,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 3);
+        assert_eq!(part2(input()), 2303);
     }
 }
