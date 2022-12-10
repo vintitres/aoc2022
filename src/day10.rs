@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 #[derive(Debug)]
 enum Op {
     Noop,
@@ -38,8 +40,43 @@ pub fn part1(input: &str) -> i32 {
         .sum()
 }
 
-pub fn part2(_input: &str) -> usize {
-    1
+pub fn part2(input: &str) -> String {
+    let crt = input
+        .lines()
+        .map(readline)
+        .scan((1, 0), |(x, cycle), op| {
+            let mut ret = "".to_string();
+            if (*cycle % 40 - *x as i32).abs() <= 1 {
+                ret += "#";
+            } else {
+                ret += ".";
+            }
+            if *cycle % 40 == 39 {
+                ret += "\n";
+            }
+            match op {
+                Op::Noop => {
+                    *cycle += 1;
+                }
+                Op::Addx(v) => {
+                    if ((*cycle + 1) % 40 - *x as i32).abs() <= 1 {
+                        ret += "#";
+                    } else {
+                        ret += ".";
+                    }
+                    if (*cycle + 1) % 40 == 39 {
+                        ret += "\n";
+                    }
+                    *cycle += 2;
+                    *x += v;
+                }
+            }
+            Some(ret)
+        })
+        .collect_vec()
+        .join("");
+    print!("{}", crt);
+    crt
 }
 
 #[cfg(test)]
@@ -57,6 +94,9 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1);
+        assert_eq!(
+            part2(input()),
+            include_str!("../input/2022/day10part2out.txt")
+        );
     }
 }
