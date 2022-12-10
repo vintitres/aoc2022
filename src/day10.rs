@@ -17,7 +17,6 @@ pub fn part1(input: &str) -> i32 {
         .map(readline)
         .scan((1, 0), |(x, cycle), op| {
             let mut ret = None;
-            println!("{} {} {:?}", x, cycle, op);
             match op {
                 Op::Noop => {
                     *cycle += 1;
@@ -33,7 +32,6 @@ pub fn part1(input: &str) -> i32 {
             if *cycle % 40 == 20 {
                 ret = Some(*x * *cycle)
             }
-            println!("{} {} {:?}", x, cycle, ret);
             Some(ret)
         })
         .flatten()
@@ -54,7 +52,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 1);
+        assert_eq!(part1(input()), 15120);
     }
 
     #[test]
