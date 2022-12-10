@@ -18,6 +18,18 @@ pub mod day08;
 pub mod day09;
 #[cfg(feature = "day10")]
 pub mod day10;
+#[cfg(feature = "day11")]
+pub mod day11;
+#[cfg(feature = "day12")]
+pub mod day12;
+#[cfg(feature = "day13")]
+pub mod day13;
+#[cfg(feature = "day14")]
+pub mod day14;
+#[cfg(feature = "day15")]
+pub mod day15;
+#[cfg(feature = "day16")]
+pub mod day16;
 
 #[cfg(feature = "my_aoc_runner")]
 mod my_aoc_runner;
