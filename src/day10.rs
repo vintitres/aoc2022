@@ -1,13 +1,47 @@
-pub fn read(_input: &str) -> usize {
+#[derive(Debug)]
+enum Op {
+    Noop,
+    Addx(i32),
+}
+
+fn readline(line: &str) -> Op {
+    match line {
+        "noop" => Op::Noop,
+        line => Op::Addx(line.split(' ').nth(1).unwrap().parse().unwrap()),
+    }
+}
+
+pub fn part1(input: &str) -> i32 {
+    input
+        .lines()
+        .map(readline)
+        .scan((1, 0), |(x, cycle), op| {
+            let mut ret = None;
+            println!("{} {} {:?}", x, cycle, op);
+            match op {
+                Op::Noop => {
+                    *cycle += 1;
+                }
+                Op::Addx(v) => {
+                    if (*cycle + 1) % 40 == 20 {
+                        ret = Some(*x * (*cycle + 1))
+                    }
+                    *cycle += 2;
+                    *x += v;
+                }
+            }
+            if *cycle % 40 == 20 {
+                ret = Some(*x * *cycle)
+            }
+            println!("{} {} {:?}", x, cycle, ret);
+            Some(ret)
+        })
+        .flatten()
+        .sum()
+}
+
+pub fn part2(_input: &str) -> usize {
     1
-}
-
-pub fn part1(input: &str) -> usize {
-    read(input)
-}
-
-pub fn part2(input: &str) -> usize {
-    read(input)
 }
 
 #[cfg(test)]
