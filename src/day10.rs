@@ -40,33 +40,31 @@ pub fn part1(input: &str) -> i32 {
         .sum()
 }
 
+fn draw(cycle: i32, x: i32) -> String {
+    let mut ret = "".to_string();
+    if (cycle % 40 - x as i32).abs() <= 1 {
+        ret += "#";
+    } else {
+        ret += ".";
+    }
+    if cycle % 40 == 39 {
+        ret += "\n";
+    }
+    ret
+}
+
 pub fn part2(input: &str) -> String {
     let crt = input
         .lines()
         .map(readline)
         .scan((1, 0), |(x, cycle), op| {
-            let mut ret = "".to_string();
-            if (*cycle % 40 - *x as i32).abs() <= 1 {
-                ret += "#";
-            } else {
-                ret += ".";
-            }
-            if *cycle % 40 == 39 {
-                ret += "\n";
-            }
+            let mut ret = draw(*cycle, *x);
             match op {
                 Op::Noop => {
                     *cycle += 1;
                 }
                 Op::Addx(v) => {
-                    if ((*cycle + 1) % 40 - *x as i32).abs() <= 1 {
-                        ret += "#";
-                    } else {
-                        ret += ".";
-                    }
-                    if (*cycle + 1) % 40 == 39 {
-                        ret += "\n";
-                    }
+                    ret.push_str(&draw(*cycle + 1, *x));
                     *cycle += 2;
                     *x += v;
                 }
