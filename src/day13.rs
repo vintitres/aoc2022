@@ -9,7 +9,7 @@ enum Packet {
 }
 impl Packet {
     fn read(chars: &str) -> Self {
-        println!("{:?}", chars);
+        // println!("{:?}", chars);
         Self::_read(&mut chars[1..].chars())
     }
     fn _read(chars: &mut std::str::Chars) -> Self {
@@ -100,22 +100,36 @@ pub fn part1(input: &str) -> usize {
         .into_iter()
         // .skip(2).take(1)
         .map(|c| {
-            let (l, r) = c
-                .take(2)
+            c.take(2)
                 .map(Packet::read)
                 .collect_tuple::<(Packet, Packet)>()
-                .unwrap();
-            l.cmp(&r)
+                .unwrap()
         })
+        .map(|(l, r)| l.cmp(&r))
         .enumerate()
-        .inspect(|v| println!("{:?}", v))
+        // .inspect(|v| println!("{:?}", v))
         .filter(|(_, o)| *o != std::cmp::Ordering::Greater)
         .map(|(i, _)| i + 1)
         .sum()
 }
 
 pub fn part2(input: &str) -> usize {
-    read(input)
+    let p2 = Packet::read("[[2]]");
+    let p6 = Packet::read("[[6]]");
+    let pp2 = Packet::read("[[2]]");
+    let pp6 = Packet::read("[[6]]");
+
+    input
+        .lines()
+        .filter(|l| !l.is_empty())
+        .map(Packet::read)
+        .chain(std::iter::once(p2))
+        .chain(std::iter::once(p6))
+        .sorted()
+        .enumerate()
+        .filter(|(_, p)| *p == pp2 || *p == pp6)
+        .map(|(i, _)| i + 1)
+        .product::<usize>()
 }
 
 #[cfg(test)]
@@ -133,6 +147,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1);
+        assert_eq!(part2(input()), 21922);
     }
 }
