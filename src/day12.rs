@@ -36,21 +36,12 @@ pub fn part1(input: &str) -> usize {
     let mut map = read(input);
     let start = findstart(&map);
     let mut q = VecDeque::new();
-    let mut vis = BTreeSet::new();
     q.push_back((start, 0));
     let v = Vec::new();
     let moves:Vec<(isize,isize)>= vec![(0,1), (1,0), (0-1, 0), (0, 0-1)];
     loop {
         println!("{:?}", q.front());
-        let (c, s): ((usize, usize), usize) = q.pop_front().unwrap();
-        if vis.contains(&c) {
-            continue;
-        }
-        if s >= 464 {
-            printm(&map);
-        }
-        vis.insert(c);
-        let (x, y) = c;
+        let ((x, y), s): ((usize, usize), usize) = q.pop_front().unwrap();
         let h = map[x][y];
         for (mx, my) in &moves {
             println!("m {:?} {:?}", mx, my);
@@ -64,11 +55,11 @@ pub fn part1(input: &str) -> usize {
             match map.get(nx).unwrap_or(&v).get(ny) {
                 Some('E') => if h == 'z' || h == 'y' { return s + 1},
                 Some(hn) if h == 'S' && (*hn == 'a' || *hn == 'b')  => q.push_back(((nx, ny), s + 1)),
-                Some(hn) if *hn as u32 <= h as u32 + 1 => q.push_back(((nx, ny), s + 1)),
+                Some(hn) if hn.is_alphabetic() && h.is_alphabetic() && *hn as u32 <= h as u32 + 1 => q.push_back(((nx, ny), s + 1)),
                 _ => {}
             }
         }
-        map[x][y] = 'Z';
+        map[x][y] = '~';
     }
 }
 
@@ -87,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 1);
+        assert_eq!(part1(input()), 456);
     }
 
     #[test]
