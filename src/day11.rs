@@ -1,13 +1,131 @@
-pub fn read(_input: &str) -> usize {
-    1
+use std::collections::VecDeque;
+
+use itertools::Itertools;
+
+struct Monkey {
+    items: VecDeque<usize>,
+    op: Op,
+    testdiv: usize,
+    iftrue: usize,
+    iffalse: usize,
+    inspections: usize,
+}
+
+impl Monkey {
+    fn inspect(&mut self) -> Vec<(usize, usize)> {
+        let mut throws = Vec::new();
+        loop {
+            let item = match self.items.pop_front() {
+                None => break,
+                Some(item) => item,
+            };
+            self.inspections += 1;
+            let item = self.op.calc(item) / 3;
+            let to_monkey = if item % self.testdiv == 0 {
+                self.iftrue
+            } else {
+                self.iffalse
+            };
+            throws.push((to_monkey, item));
+        }
+        throws
+    }
+}
+
+enum NumOp {
+    Add,
+    Mul,
+}
+
+enum Val {
+    Old,
+    Num(usize),
+}
+
+struct Op {
+    op: NumOp,
+    val: Val,
+}
+
+impl Op {
+    fn read(input: &str) -> Self {
+        let (_l, op, val) = input.split(' ').collect_tuple().unwrap();
+        let op = match op {
+            "+" => NumOp::Add,
+            "*" => NumOp::Mul,
+            _ => unimplemented!(),
+        };
+        let val = match val {
+            "old" => Val::Old,
+            val => Val::Num(val.parse().unwrap()),
+        };
+        Op { op, val }
+    }
+    fn calc(&self, x: usize) -> usize {
+        let val = match self.val {
+            Val::Num(val) => val,
+            Val::Old => x,
+        };
+        match self.op {
+            NumOp::Add => x + val,
+            NumOp::Mul => x * val,
+        }
+    }
+}
+
+fn read_monkey<'a>(lines: impl Iterator<Item = &'a str>) -> Monkey {
+    let (_, items, op, test, iftrue, iffalse) = lines.take(6).collect_tuple().unwrap();
+    let items = items["  Starting items: ".len()..]
+        .split(", ")
+        .map(|i| i.parse::<usize>().unwrap());
+    let op = Op::read(&op["  Operation: new = ".len()..]);
+    let testdiv = test["  Test: divisible by ".len()..]
+        .parse::<usize>()
+        .unwrap();
+    let iftrue = iftrue["    If true: throw to monkey ".len()..]
+        .parse::<usize>()
+        .unwrap();
+    let iffalse = iffalse["    If false: throw to monkey ".len()..]
+        .parse::<usize>()
+        .unwrap();
+    Monkey {
+        items: VecDeque::from_iter(items),
+        op,
+        testdiv,
+        iftrue,
+        iffalse,
+        inspections: 0,
+    }
 }
 
 pub fn part1(input: &str) -> usize {
-    read(input)
+    let mut monkeys = input
+        .lines()
+        .chunks(7)
+        .into_iter()
+        .map(read_monkey)
+        .collect_vec();
+    for _ in 0..20 {
+        for i in 0..monkeys.len() {
+            let throws = monkeys.get_mut(i).unwrap().inspect();
+            for (tomonkey, item) in throws {
+                monkeys[tomonkey].items.push_back(item);
+            }
+        }
+    }
+    let (m1, m2) = monkeys
+        .iter()
+        .map(|m| m.inspections)
+        .sorted()
+        .rev()
+        .take(2)
+        .collect_tuple()
+        .unwrap();
+    m1 * m2
 }
 
-pub fn part2(input: &str) -> usize {
-    read(input)
+pub fn part2(_input: &str) -> usize {
+    1
 }
 
 #[cfg(test)]
@@ -20,7 +138,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 1);
+        assert_eq!(part1(input()), 117624);
     }
 
     #[test]
