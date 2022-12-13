@@ -19,18 +19,15 @@ impl Packet {
             match chars.next().unwrap() {
                 '[' => contents.push(Packet::_read(chars)),
                 ']' => {
-                    match num {
-                        Some(num) => contents.push(Packet::Num(num)),
-                        None => {}
+                    if let Some(num) = num {
+                        contents.push(Packet::Num(num));
                     };
                     return Packet::List(contents);
                 }
                 ',' => {
-                    match num {
-                        Some(num) => contents.push(Packet::Num(num)),
-                        None => {}
+                    if let Some(num) = num {
+                        contents.push(Packet::Num(num));
                     };
-
                     num = None;
                 }
                 ' ' => {}
