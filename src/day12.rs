@@ -1,15 +1,9 @@
-use std::collections::{VecDeque, BTreeSet};
+use std::collections::{BTreeSet, VecDeque};
 
 use itertools::Itertools;
 
 pub fn read(input: &str) -> Vec<Vec<char>> {
-    input
-        .lines()
-        .map(|l| {
-            l.chars()
-                .collect_vec()
-        })
-        .collect_vec()
+    input.lines().map(|l| l.chars().collect_vec()).collect_vec()
 }
 
 fn findstarts1(map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
@@ -24,11 +18,11 @@ fn findstarts1(map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
 }
 
 fn findstarts2(map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
-let mut ret = Vec::new();
+    let mut ret = Vec::new();
     for i in 0..map.len() {
         for j in 0..map[0].len() {
             if map[i][j] == 'S' || map[i][j] == 'a' {
-                ret.push((i,j));
+                ret.push((i, j));
             }
         }
     }
@@ -49,10 +43,10 @@ pub fn dfs(input: &str, findstarts: fn(&Vec<Vec<char>>) -> Vec<(usize, usize)>) 
     let starts = findstarts(&map);
     let mut q = VecDeque::new();
     for start in starts {
-    q.push_back((start, 0));
+        q.push_back((start, 0));
     }
     let v = Vec::new();
-    let moves:Vec<(isize,isize)>= vec![(0,1), (1,0), (0-1, 0), (0, 0-1)];
+    let moves: Vec<(isize, isize)> = vec![(0, 1), (1, 0), (0 - 1, 0), (0, 0 - 1)];
     loop {
         println!("{:?}", q.front());
         let ((x, y), s): ((usize, usize), usize) = q.pop_front().unwrap();
@@ -60,16 +54,30 @@ pub fn dfs(input: &str, findstarts: fn(&Vec<Vec<char>>) -> Vec<(usize, usize)>) 
         for (mx, my) in &moves {
             println!("m {:?} {:?}", mx, my);
             let nx = x as isize + *mx;
-            if nx < 0 { continue; }
+            if nx < 0 {
+                continue;
+            }
             let nx = nx as usize;
             let ny = y as isize + *my;
-            if ny < 0 { continue; }
+            if ny < 0 {
+                continue;
+            }
             let ny = ny as usize;
             println!("t {:?} {:?}", nx, ny);
             match map.get(nx).unwrap_or(&v).get(ny) {
-                Some('E') => if h == 'z' || h == 'y' { return s + 1},
-                Some(hn) if h == 'S' && (*hn == 'a' || *hn == 'b')  => q.push_back(((nx, ny), s + 1)),
-                Some(hn) if hn.is_alphabetic() && h.is_alphabetic() && *hn as u32 <= h as u32 + 1 => q.push_back(((nx, ny), s + 1)),
+                Some('E') => {
+                    if h == 'z' || h == 'y' {
+                        return s + 1;
+                    }
+                }
+                Some(hn) if h == 'S' && (*hn == 'a' || *hn == 'b') => {
+                    q.push_back(((nx, ny), s + 1))
+                }
+                Some(hn)
+                    if hn.is_alphabetic() && h.is_alphabetic() && *hn as u32 <= h as u32 + 1 =>
+                {
+                    q.push_back(((nx, ny), s + 1))
+                }
                 _ => {}
             }
         }
