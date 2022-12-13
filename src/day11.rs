@@ -12,7 +12,7 @@ struct Monkey {
 }
 
 impl Monkey {
-    fn inspect(&mut self) -> Vec<(usize, usize)> {
+    fn inspect(&mut self, worrydiv: usize) -> Vec<(usize, usize)> {
         let mut throws = Vec::new();
         loop {
             let item = match self.items.pop_front() {
@@ -20,7 +20,7 @@ impl Monkey {
                 Some(item) => item,
             };
             self.inspections += 1;
-            let item = self.op.calc(item) / 3;
+            let item = self.op.calc(item) / worrydiv;
             let to_monkey = if item % self.testdiv == 0 {
                 self.iftrue
             } else {
@@ -98,16 +98,16 @@ fn read_monkey<'a>(lines: impl Iterator<Item = &'a str>) -> Monkey {
     }
 }
 
-pub fn part1(input: &str) -> usize {
+fn simulate(input: &str, rounds: usize, worrydiv: usize) -> usize {
     let mut monkeys = input
         .lines()
         .chunks(7)
         .into_iter()
         .map(read_monkey)
         .collect_vec();
-    for _ in 0..20 {
+    for _ in 0..rounds {
         for i in 0..monkeys.len() {
-            let throws = monkeys.get_mut(i).unwrap().inspect();
+            let throws = monkeys.get_mut(i).unwrap().inspect(worrydiv);
             for (tomonkey, item) in throws {
                 monkeys[tomonkey].items.push_back(item);
             }
@@ -122,6 +122,10 @@ pub fn part1(input: &str) -> usize {
         .collect_tuple()
         .unwrap();
     m1 * m2
+}
+
+pub fn part1(input: &str) -> usize {
+    simulate(input, 20, 3)
 }
 
 pub fn part2(_input: &str) -> usize {
