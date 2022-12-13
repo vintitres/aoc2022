@@ -105,7 +105,7 @@ fn simulate(input: &str, rounds: usize, worrydiv: usize) -> usize {
         .into_iter()
         .map(read_monkey)
         .collect_vec();
-    let worrymod = monkeys.iter().map(|m| m.testdiv).fold(1, |a, b| a * b);
+    let worrymod = monkeys.iter().map(|m| m.testdiv).product();
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
             let throws = monkeys.get_mut(i).unwrap().inspect(worrydiv, worrymod);
