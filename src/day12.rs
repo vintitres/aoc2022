@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{VecDeque, BTreeSet};
 
 use itertools::Itertools;
 
@@ -23,25 +23,53 @@ fn findstart(map: &Vec<Vec<char>>) -> (usize, usize) {
     unimplemented!();
 }
 
+fn printm(map: &Vec<Vec<char>>) {
+    for i in 1..map.len() {
+        for j in 1..map[0].len() {
+            print!("{}", map[i][j]);
+        }
+        println!("");
+    }
+}
+
 pub fn part1(input: &str) -> usize {
-    let map = read(input);
+    let mut map = read(input);
     let start = findstart(&map);
     let mut q = VecDeque::new();
+    let mut vis = BTreeSet::new();
     q.push_back((start, 0));
     let v = Vec::new();
-    let moves:Vec<(i8,i8)>= vec![(0,1), (1,0), (0-1, 0), (0, 0-1)];
+    let moves:Vec<(isize,isize)>= vec![(0,1), (1,0), (0-1, 0), (0, 0-1)];
     loop {
-        let ((x, y), s): ((usize, usize), i32) = q.pop_front().unwrap();
+        println!("{:?}", q.front());
+        let (c, s): ((usize, usize), usize) = q.pop_front().unwrap();
+        if vis.contains(&c) {
+            continue;
+        }
+        if s >= 464 {
+            printm(&map);
+        }
+        vis.insert(c);
+        let (x, y) = c;
         let h = map[x][y];
         for (mx, my) in &moves {
-            match map.get(x.checked_add(mx).unwrap_or_default()).unwrap_or(&v).get(y + my) {
-                Some(hn) if (*hn == 'E' && (h == 'z' || h == 'y')) || *hn == h || *hn as u32 == h as u32 + 1 => q.push_back(((x + mx, y + my), s + 1)),
+            println!("m {:?} {:?}", mx, my);
+            let nx = x as isize + *mx;
+            if nx < 0 { continue; }
+            let nx = nx as usize;
+            let ny = y as isize + *my;
+            if ny < 0 { continue; }
+            let ny = ny as usize;
+            println!("t {:?} {:?}", nx, ny);
+            match map.get(nx).unwrap_or(&v).get(ny) {
+                Some('E') => if h == 'z' || h == 'y' { return s + 1},
+                Some(hn) if h == 'S' && (*hn == 'a' || *hn == 'b')  => q.push_back(((nx, ny), s + 1)),
+                Some(hn) if *hn as u32 <= h as u32 + 1 => q.push_back(((nx, ny), s + 1)),
                 _ => {}
             }
         }
-    
+        map[x][y] = 'Z';
     }
-    1
 }
 
 pub fn part2(input: &str) -> usize {

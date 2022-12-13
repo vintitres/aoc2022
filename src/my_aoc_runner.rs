@@ -89,3 +89,13 @@ pub fn d9p1(input: &str) -> usize {
 pub fn d9p2(input: &str) -> usize {
     super::day09::part2(input)
 }
+
+#[aoc(day12, part1)]
+pub fn d12p1(input: &str) -> usize {
+    super::day12::part1(input)
+}
+
+#[aoc(day12, part2)]
+pub fn d12p2(input: &str) -> usize {
+    super::day12::part2(input)
+}
