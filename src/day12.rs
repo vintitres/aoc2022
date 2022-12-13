@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::VecDeque;
 
 use itertools::Itertools;
 
@@ -29,16 +29,8 @@ fn findstarts2(map: &Vec<Vec<char>>) -> Vec<(usize, usize)> {
     ret
 }
 
-fn printm(map: &Vec<Vec<char>>) {
-    for i in 1..map.len() {
-        for j in 1..map[0].len() {
-            print!("{}", map[i][j]);
-        }
-        println!("");
-    }
-}
-
-pub fn dfs(input: &str, findstarts: fn(&Vec<Vec<char>>) -> Vec<(usize, usize)>) -> usize {
+type Mountain = Vec<Vec<char>>;
+pub fn dfs(input: &str, findstarts: fn(&Mountain) -> Vec<(usize, usize)>) -> usize {
     let mut map = read(input);
     let starts = findstarts(&map);
     let mut q = VecDeque::new();
