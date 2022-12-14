@@ -1,13 +1,9 @@
-pub fn read(_input: &str) -> usize {
-    1
-}
-
 pub fn part1(input: &str) -> usize {
-    read(input)
+    input.len()
 }
 
 pub fn part2(input: &str) -> usize {
-    read(input)
+    input.len()
 }
 
 #[cfg(test)]
@@ -20,11 +16,11 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 1);
+        assert_eq!(part1(input()), 4);
     }
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1);
+        assert_eq!(part2(input()), 4);
     }
 }
