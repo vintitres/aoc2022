@@ -90,6 +90,26 @@ pub fn d9p2(input: &str) -> usize {
     super::day09::part2(input)
 }
 
+#[aoc(day10, part1)]
+pub fn d10p1(input: &str) -> i32 {
+    super::day10::part1(input)
+}
+
+#[aoc(day10, part2)]
+pub fn d10p2(input: &str) -> String {
+    super::day10::part2(input)
+}
+
+#[aoc(day11, part1)]
+pub fn d11p1(input: &str) -> usize {
+    super::day11::part1(input)
+}
+
+#[aoc(day11, part2)]
+pub fn d11p2(input: &str) -> usize {
+    super::day11::part2(input)
+}
+
 #[aoc(day12, part1)]
 pub fn d12p1(input: &str) -> usize {
     super::day12::part1(input)
@@ -98,4 +118,24 @@ pub fn d12p1(input: &str) -> usize {
 #[aoc(day12, part2)]
 pub fn d12p2(input: &str) -> usize {
     super::day12::part2(input)
+}
+
+#[aoc(day13, part1)]
+pub fn d13p1(input: &str) -> usize {
+    super::day13::part1(input)
+}
+
+#[aoc(day13, part2)]
+pub fn d13p2(input: &str) -> usize {
+    super::day13::part2(input)
+}
+
+#[aoc(day14, part1)]
+pub fn d14p1(input: &str) -> usize {
+    super::day14::part1(input)
+}
+
+#[aoc(day14, part2)]
+pub fn d14p2(input: &str) -> usize {
+    super::day14::part2(input)
 }
