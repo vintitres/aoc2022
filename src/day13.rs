@@ -2,14 +2,13 @@ use std::cmp::Ordering;
 
 use itertools::Itertools;
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 enum Packet {
     List(Vec<Packet>),
     Num(u32),
 }
 impl Packet {
     fn read(chars: &str) -> Self {
-        // println!("{:?}", chars);
         Self::_read(&mut chars[1..].chars())
     }
     fn _read(chars: &mut std::str::Chars) -> Self {
@@ -38,11 +37,16 @@ impl Packet {
             };
         }
     }
+    fn expand(&self) -> Self {
+        match self {
+            Packet::Num(num) => Packet::List(vec![Packet::Num(*num)]),
+            _ => unimplemented!(),
+        }
+    }
 }
 
 impl Ord for Packet {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        println!("{:?} {:?}", self, other);
         match (self, other) {
             (Packet::Num(l), Packet::Num(r)) => l.cmp(r),
             (Packet::List(l), Packet::List(r)) => l
@@ -55,8 +59,8 @@ impl Ord for Packet {
                 })
                 .find(|c| *c != Ordering::Equal)
                 .unwrap_or(Ordering::Equal),
-            (l, Packet::Num(r)) => l.cmp(&Packet::List(vec![Packet::Num(*r)])),
-            (Packet::Num(l), r) => Packet::List(vec![Packet::Num(*l)]).cmp(r),
+            (l @ Packet::List(_), r @ Packet::Num(_)) => l.cmp(&r.expand()),
+            (l @ Packet::Num(_), r @ Packet::List(_)) => l.expand().cmp(r),
         }
     }
 }
@@ -67,38 +71,11 @@ impl PartialOrd for Packet {
     }
 }
 
-impl PartialEq for Packet {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Packet::Num(l), Packet::Num(r)) => l.eq(r),
-            (Packet::List(l), Packet::List(r)) => l
-                .iter()
-                .zip_longest(r.iter())
-                .map(|p| match p {
-                    itertools::EitherOrBoth::Both(l, r) => l.eq(r),
-                    itertools::EitherOrBoth::Left(_) => false,
-                    itertools::EitherOrBoth::Right(_) => false,
-                })
-                .find(|c| !(*c))
-                .unwrap_or(true),
-            (l, Packet::Num(r)) => l.eq(&Packet::List(vec![Packet::Num(*r)])),
-            (Packet::Num(l), r) => Packet::List(vec![Packet::Num(*l)]).eq(r),
-        }
-    }
-}
-
-impl Eq for Packet {}
-
-pub fn read(_input: &str) -> usize {
-    1
-}
-
 pub fn part1(input: &str) -> usize {
     input
         .lines()
         .chunks(3)
         .into_iter()
-        // .skip(2).take(1)
         .map(|c| {
             c.take(2)
                 .map(Packet::read)
@@ -107,7 +84,6 @@ pub fn part1(input: &str) -> usize {
         })
         .map(|(l, r)| l.cmp(&r))
         .enumerate()
-        // .inspect(|v| println!("{:?}", v))
         .filter(|(_, o)| *o != std::cmp::Ordering::Greater)
         .map(|(i, _)| i + 1)
         .sum()
