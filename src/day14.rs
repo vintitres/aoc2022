@@ -12,12 +12,22 @@ fn between(a: usize, b: usize) -> impl Iterator<Item = usize> {
     } else {
         b..=a
     }
-
 }
 
 impl RockPath {
     fn read(input: &str) -> Self {
-        RockPath {points: input.split(" -> ").map(|point| point.split(',').map(|c| c.parse::<usize>().unwrap()).collect_tuple::<(usize, usize)>().unwrap()).collect_vec()}
+        RockPath {
+            points: input
+                .split(" -> ")
+                .map(|point| {
+                    point
+                        .split(',')
+                        .map(|c| c.parse::<usize>().unwrap())
+                        .collect_tuple::<(usize, usize)>()
+                        .unwrap()
+                })
+                .collect_vec(),
+        }
     }
     fn allpoints(&self) -> BTreeSet<(usize, usize)> {
         let mut allpoints = BTreeSet::new();
@@ -42,12 +52,15 @@ pub fn part1(input: &str) -> usize {
     dropsand(input, false)
 }
 fn dropsand(input: &str, floor: bool) -> usize {
-    let mut rockandsand = BTreeSet::from_iter(input.lines().map(RockPath::read).flat_map(|p| {
-        p.allpoints()
-    }));
+    let mut rockandsand = BTreeSet::from_iter(
+        input
+            .lines()
+            .map(RockPath::read)
+            .flat_map(|p| p.allpoints()),
+    );
     let maxy = rockandsand.clone();
     let maxy = maxy.iter().map(|(_x, y)| y).max().unwrap();
-    const SANDSTART: (usize, usize) = (500,0);
+    const SANDSTART: (usize, usize) = (500, 0);
     let mut lastsand = SANDSTART;
     let mut sandcount = 0;
     loop {
@@ -76,10 +89,19 @@ fn dropsand(input: &str, floor: bool) -> usize {
     sandcount
 }
 
-pub fn print(rockandsand: &BTreeSet<(usize,usize)>, falling: (usize, usize)) {
+pub fn print(rockandsand: &BTreeSet<(usize, usize)>, falling: (usize, usize)) {
     for y in 0..30 {
         for x in 490..510 {
-            print!("{}", if (x, y) == falling { '~' } else if rockandsand.contains(&(x,y)) { '#' } else { '.' });
+            print!(
+                "{}",
+                if (x, y) == falling {
+                    '~'
+                } else if rockandsand.contains(&(x, y)) {
+                    '#'
+                } else {
+                    '.'
+                }
+            );
         }
         println!();
     }
