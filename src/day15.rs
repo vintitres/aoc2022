@@ -113,6 +113,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 4);
+        assert_eq!(part2(input()), 11645454855041);
     }
 }
