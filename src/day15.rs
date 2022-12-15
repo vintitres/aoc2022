@@ -54,12 +54,15 @@ impl Sensor {
 
     fn border(&self) -> impl Iterator<Item = Pos> {
         let bd = self.closest_beacon_dist() + 1;
-        let lt = (self.pos.0-bd..self.pos.0).zip((self.pos.1-bd..self.pos.1).rev());
-        let rt = (self.pos.0..self.pos.0+bd).zip(self.pos.1-bd..self.pos.1);
-        let lb = (self.pos.0-bd..self.pos.0).zip(self.pos.1..self.pos.1+bd);
-        let rb = (self.pos.0..self.pos.0+bd).zip((self.pos.1..self.pos.1+bd).rev());
+        let lt = (self.pos.0 - bd..self.pos.0).zip((self.pos.1 - bd..self.pos.1).rev());
+        let rt = (self.pos.0..self.pos.0 + bd).zip(self.pos.1 - bd..self.pos.1);
+        let lb = (self.pos.0 - bd..self.pos.0).zip(self.pos.1..self.pos.1 + bd);
+        let rb = (self.pos.0..self.pos.0 + bd).zip((self.pos.1..self.pos.1 + bd).rev());
 
-        lt.chain(rt).chain(lb).chain(rb).filter(|(x,y)| *x >= 0 && *x <= 4000000 && *y >= 0 && *y <= 4000000)
+        lt.chain(rt)
+            .chain(lb)
+            .chain(rb)
+            .filter(|(x, y)| *x >= 0 && *x <= 4000000 && *y >= 0 && *y <= 4000000)
     }
     fn in_range(&self, p: Pos) -> bool {
         dist(self.pos, p) <= self.closest_beacon_dist()
@@ -67,7 +70,7 @@ impl Sensor {
 }
 
 fn dist(p1: Pos, p2: Pos) -> i64 {
-    (p1.0 - p2.0).abs() + (p1.1- p2.1).abs()
+    (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
 }
 
 pub fn part1(input: &str) -> usize {
@@ -87,11 +90,11 @@ pub fn part2(input: &str) -> i64 {
                 None => {
                     println!("{:?}", p);
                     return p.1 + p.0 * 4000000;
-                },
+                }
                 Some(_) => continue,
             }
         }
-    };
+    }
     unimplemented!();
 }
 
