@@ -52,27 +52,21 @@ impl Sensor {
         if xl < 0 {
             skip = xl.abs();
         }
+        let yrange: Box<dyn Iterator<Item=i64>>;
         if ys < ye {
             if ys < 0 {
                 skip = core::cmp::max(skip, ys.abs());
             }
-            let yrange = ys + skip..ye;
-            (xl + skip..xr)
-                .zip(yrange)
-                .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
-                .collect_vec()
-                .into_iter()
+            yrange = Box::new(ys + skip..ye);
         } else {
             if ye < 0 {
                 skip = core::cmp::max(skip, ye.abs());
             }
-            let yrange = (ye..ys - skip).rev();
-            (xl + skip..xr)
-                .zip(yrange)
-                .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
-                .collect_vec()
-                .into_iter()
+            yrange = Box::new((ye..ys - skip).rev());
         }
+        (xl + skip..xr)
+            .zip(yrange)
+            .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
     }
 
     fn border(&self) -> impl Iterator<Item = Pos> {
