@@ -10,28 +10,15 @@ struct Sensor {
 
 impl Sensor {
     fn read(line: &str) -> Self {
-        // println!("{:?}", line.split_ascii_whitespace().collect_vec());
-        let (
-            _sensor,
-            _at,
-            posx,
-            posy,
-            _closest,
-            _beacon,
-            _is,
-            __at,
-            closest_beacon_x,
-            closest_beacon_y,
-        ) = line.split_ascii_whitespace().collect_tuple().unwrap();
+        let (_, _, sx, sy, _, _, _, _, bx, by) =
+            line.split_ascii_whitespace().collect_tuple().unwrap();
         let pos = (
-            posx[2..posx.len() - 1].parse().unwrap(),
-            posy[2..posy.len() - 1].parse().unwrap(),
+            sx[2..sx.len() - 1].parse().unwrap(),
+            sy[2..sy.len() - 1].parse().unwrap(),
         );
         let closest_beacon = (
-            closest_beacon_x[2..closest_beacon_x.len() - 1]
-                .parse()
-                .unwrap(),
-            closest_beacon_y[2..].parse().unwrap(),
+            bx[2..bx.len() - 1].parse().unwrap(),
+            by[2..].parse().unwrap(),
         );
         Sensor {
             pos,
@@ -52,7 +39,7 @@ impl Sensor {
         if xl < 0 {
             skip = xl.abs();
         }
-        let yrange: Box<dyn Iterator<Item=i64>>;
+        let yrange: Box<dyn Iterator<Item = i64>>;
         if ys < ye {
             if ys < 0 {
                 skip = core::cmp::max(skip, ys.abs());
@@ -62,11 +49,11 @@ impl Sensor {
             if ye < 0 {
                 skip = core::cmp::max(skip, ye.abs());
             }
-            yrange = Box::new((ye..ys - skip).rev());
+            yrange = Box::new((ye + skip..ys).rev());
         }
         (xl + skip..xr)
-            .zip(yrange)
-            .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
+            .take_while(|x| *x <= 4000000)
+            .zip(yrange.take_while(|y| *y <= 4000000))
     }
 
     fn border(&self) -> impl Iterator<Item = Pos> {
@@ -76,7 +63,7 @@ impl Sensor {
         let lb = Self::_border(self.pos.0 - bd, self.pos.0, self.pos.1, self.pos.1 + bd);
         let rb = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1 + bd, self.pos.1);
 
-        lt.chain(rt).chain(lb).chain(rb)
+        lt.chain(rt).chain(lb).chain(rb) //.inspect(|(x,y)| assert!(*x >= 0 && *x <= 4000000 && *y >= 0 && *y <= 4000000))
     }
     fn in_range(&self, p: Pos) -> bool {
         dist(self.pos, p) <= self.closest_beacon_dist
@@ -109,13 +96,32 @@ pub fn part1(input: &str) -> i64 {
     res
 }
 
+fn _limit(x: i64) -> i64 {
+    core::cmp::min(core::cmp::max(x, 0), 4000000)
+}
+fn limit((b, e): (i64, i64)) -> (i64, i64) {
+    (_limit(b), _limit(e))
+}
+
 pub fn part2(input: &str) -> i64 {
+    0
+}
+pub fn part2_slow(input: &str) -> i64 {
     let sensors = input.lines().map(Sensor::read).collect_vec();
-    let borderpoints = sensors.iter().flat_map(|s| s.border());
-    for p in borderpoints {
-        if !sensors.iter().any(|s| s.in_range(p)) {
-            println!("{:?}", p);
-            return p.1 + p.0 * 4000000;
+    for y in 0..=4000000 {
+        let mut lastend = 0;
+        let intervals = sensors
+            .iter()
+            .map(|sensor| sensor.blocked_at_y(y))
+            .map(limit)
+            .filter(|(b, e)| b != e)
+            .sorted();
+        for (b, e) in intervals {
+            if b > lastend {
+                return 4000000 * (lastend + 1) + y;
+            } else {
+                lastend = core::cmp::max(lastend, e);
+            }
         }
     }
     unimplemented!();
