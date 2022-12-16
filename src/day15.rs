@@ -5,7 +5,7 @@ type Pos = (i64, i64);
 #[derive(Debug)]
 struct Sensor {
     pos: Pos,
-    closest_beacon: Pos,
+    closest_beacon_dist: i64,
 }
 
 impl Sensor {
@@ -35,14 +35,11 @@ impl Sensor {
         );
         Sensor {
             pos,
-            closest_beacon,
+            closest_beacon_dist: dist(closest_beacon, pos),
         }
     }
-    fn closest_beacon_dist(&self) -> i64 {
-        dist(self.pos, self.closest_beacon)
-    }
     fn blocked_at_y(&self, y: i64) -> (i64, i64) {
-        let bd = self.closest_beacon_dist();
+        let bd = self.closest_beacon_dist;
         let yd = (self.pos.1 - y).abs();
         let fd = bd - yd;
         let l = self.pos.0 - fd;
@@ -50,7 +47,7 @@ impl Sensor {
         (l, r)
     }
 
-    fn _border(xl: i64, xr: i64, ys: i64, ye: i64)  -> impl Iterator<Item = Pos> {
+    fn _border(xl: i64, xr: i64, ys: i64, ye: i64) -> impl Iterator<Item = Pos> {
         let mut skip = 0;
         if xl < 0 {
             skip = xl.abs();
@@ -60,29 +57,35 @@ impl Sensor {
                 skip = core::cmp::max(skip, ys.abs());
             }
             let yrange = ys + skip..ye;
-            (xl + skip..xr).zip(yrange).take_while(|(x,y)| *x <= 4000000 && *y <= 4000000).collect_vec().into_iter()
+            (xl + skip..xr)
+                .zip(yrange)
+                .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
+                .collect_vec()
+                .into_iter()
         } else {
             if ye < 0 {
                 skip = core::cmp::max(skip, ye.abs());
             }
             let yrange = (ye..ys - skip).rev();
-            (xl + skip..xr).zip(yrange).take_while(|(x,y)| *x <= 4000000 && *y <= 4000000).collect_vec().into_iter()
+            (xl + skip..xr)
+                .zip(yrange)
+                .take_while(|(x, y)| *x <= 4000000 && *y <= 4000000)
+                .collect_vec()
+                .into_iter()
         }
     }
 
     fn border(&self) -> impl Iterator<Item = Pos> {
-        let bd = self.closest_beacon_dist() + 1;
-        let lt = Self::_border(self.pos.0 -bd, self.pos.0, self.pos.1, self.pos.1-bd);
-        let rt = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1-bd, self.pos.1);
-        let lb = Self::_border(self.pos.0 -bd, self.pos.0, self.pos.1, self.pos.1+bd);
-        let rb = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1 +bd, self.pos.1);
+        let bd = self.closest_beacon_dist + 1;
+        let lt = Self::_border(self.pos.0 - bd, self.pos.0, self.pos.1, self.pos.1 - bd);
+        let rt = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1 - bd, self.pos.1);
+        let lb = Self::_border(self.pos.0 - bd, self.pos.0, self.pos.1, self.pos.1 + bd);
+        let rb = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1 + bd, self.pos.1);
 
-        lt.chain(rt)
-            .chain(lb)
-            .chain(rb)
+        lt.chain(rt).chain(lb).chain(rb)
     }
     fn in_range(&self, p: Pos) -> bool {
-        dist(self.pos, p) <= self.closest_beacon_dist()
+        dist(self.pos, p) <= self.closest_beacon_dist
     }
 }
 
