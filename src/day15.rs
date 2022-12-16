@@ -83,16 +83,11 @@ pub fn part1(input: &str) -> usize {
 
 pub fn part2(input: &str) -> i64 {
     let sensors = input.lines().map(Sensor::read).collect_vec();
-    for s in &sensors {
-        let border = s.border();
-        for p in border {
-            match sensors.iter().find(|s| s.in_range(p)) {
-                None => {
-                    println!("{:?}", p);
-                    return p.1 + p.0 * 4000000;
-                }
-                Some(_) => continue,
-            }
+    let borderpoints = sensors.iter().flat_map(|s| s.border());
+    for p in borderpoints {
+        if !sensors.iter().any(|s| s.in_range(p)) {
+            println!("{:?}", p);
+            return p.1 + p.0 * 4000000;
         }
     }
     unimplemented!();
