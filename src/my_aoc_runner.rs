@@ -139,3 +139,23 @@ pub fn d14p1(input: &str) -> usize {
 pub fn d14p2(input: &str) -> usize {
     super::day14::part2(input)
 }
+
+#[aoc(day15, part1)]
+pub fn d15p1(input: &str) -> i64 {
+    super::day15::part1(input)
+}
+
+#[aoc(day15, part2)]
+pub fn d15p2(input: &str) -> i64 {
+    super::day15::part2(input)
+}
+
+#[aoc(day16, part1)]
+pub fn d16p1(input: &str) -> i64 {
+    super::day16::part1(input)
+}
+
+#[aoc(day16, part2)]
+pub fn d16p2(input: &str) -> usize {
+    super::day16::part2(input)
+}
