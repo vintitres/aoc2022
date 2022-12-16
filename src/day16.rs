@@ -26,7 +26,7 @@ fn dfs(valves: &BTreeMap<String, Valve>, at: &String, minute: i64, doneflow: i64
         }
         return;
     }
-    let max_possible_flow = doneflow + (30 - minute) * *allflow;
+    let max_possible_flow = doneflow + (30 - minute) * openflow + (29 - minute) * (allflow - openflow);
     if max_possible_flow < *bestflow {
         return;
     }
@@ -44,7 +44,7 @@ fn dfs(valves: &BTreeMap<String, Valve>, at: &String, minute: i64, doneflow: i64
 pub fn part1(input: &str) -> i64 {
     let valves = BTreeMap::from_iter(input.lines().map(Valve::read));
     let allflow = valves.iter().map(|(_, v)| v.flow_rate).sum();
-    let mut bestflow = 0;
+    let mut bestflow = 1500;
     dfs(&valves, &"AA".to_string(), 0, 0, 0, &mut bestflow, &allflow, &BTreeSet::new());
     bestflow
 }
