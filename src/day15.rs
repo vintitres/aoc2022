@@ -104,8 +104,17 @@ fn limit((b, e): (i64, i64)) -> (i64, i64) {
 }
 
 pub fn part2(input: &str) -> i64 {
-    0
+    let sensors = input.lines().map(Sensor::read).collect_vec();
+    let borderpoints = sensors.iter().flat_map(|s| s.border());
+    for p in borderpoints {
+        if !sensors.iter().any(|s| s.in_range(p)) {
+            println!("{:?}", p);
+            return p.1 + p.0 * 4000000;
+        }
+    }
+    unimplemented!();
 }
+
 pub fn part2_slow(input: &str) -> i64 {
     let sensors = input.lines().map(Sensor::read).collect_vec();
     for y in 0..=4000000 {
