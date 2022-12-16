@@ -50,17 +50,36 @@ impl Sensor {
         (l, r)
     }
 
+    fn _border(xl: i64, xr: i64, ys: i64, ye: i64)  -> impl Iterator<Item = Pos> {
+        let mut skip = 0;
+        if xl < 0 {
+            skip = xl.abs();
+        }
+        if ys < ye {
+            if ys < 0 {
+                skip = core::cmp::max(skip, ys.abs());
+            }
+            let yrange = ys + skip..ye;
+            (xl + skip..xr).zip(yrange).take_while(|(x,y)| *x <= 4000000 && *y <= 4000000).collect_vec().into_iter()
+        } else {
+            if ye < 0 {
+                skip = core::cmp::max(skip, ye.abs());
+            }
+            let yrange = (ye..ys - skip).rev();
+            (xl + skip..xr).zip(yrange).take_while(|(x,y)| *x <= 4000000 && *y <= 4000000).collect_vec().into_iter()
+        }
+    }
+
     fn border(&self) -> impl Iterator<Item = Pos> {
         let bd = self.closest_beacon_dist() + 1;
-        let lt = (self.pos.0 - bd..self.pos.0).zip((self.pos.1 - bd..self.pos.1).rev());
-        let rt = (self.pos.0..self.pos.0 + bd).zip(self.pos.1 - bd..self.pos.1);
-        let lb = (self.pos.0 - bd..self.pos.0).zip(self.pos.1..self.pos.1 + bd);
-        let rb = (self.pos.0..self.pos.0 + bd).zip((self.pos.1..self.pos.1 + bd).rev());
+        let lt = Self::_border(self.pos.0 -bd, self.pos.0, self.pos.1, self.pos.1-bd);
+        let rt = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1-bd, self.pos.1);
+        let lb = Self::_border(self.pos.0 -bd, self.pos.0, self.pos.1, self.pos.1+bd);
+        let rb = Self::_border(self.pos.0, self.pos.0 + bd, self.pos.1 +bd, self.pos.1);
 
         lt.chain(rt)
             .chain(lb)
             .chain(rb)
-            .filter(|(x, y)| *x >= 0 && *x <= 4000000 && *y >= 0 && *y <= 4000000)
     }
     fn in_range(&self, p: Pos) -> bool {
         dist(self.pos, p) <= self.closest_beacon_dist()
