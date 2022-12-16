@@ -1,5 +1,3 @@
-use std::collections::BTreeSet;
-
 use itertools::Itertools;
 
 type Pos = (i64, i64);
@@ -43,13 +41,13 @@ impl Sensor {
     fn closest_beacon_dist(&self) -> i64 {
         dist(self.pos, self.closest_beacon)
     }
-    fn blocked_at_y(&self, y: i64) -> impl Iterator<Item = i64> {
+    fn blocked_at_y(&self, y: i64) -> (i64, i64) {
         let bd = self.closest_beacon_dist();
         let yd = (self.pos.1 - y).abs();
         let fd = bd - yd;
         let l = self.pos.0 - fd;
         let r = self.pos.0 + fd;
-        l..r
+        (l, r)
     }
 
     fn border(&self) -> impl Iterator<Item = Pos> {
@@ -73,12 +71,26 @@ fn dist(p1: Pos, p2: Pos) -> i64 {
     (p1.0 - p2.0).abs() + (p1.1 - p2.1).abs()
 }
 
-pub fn part1(input: &str) -> usize {
-    let mut positions = BTreeSet::new();
-    input.lines().map(Sensor::read).for_each(|sensor| {
-        positions.extend(sensor.blocked_at_y(2000000));
-    });
-    positions.len()
+pub fn part1(input: &str) -> i64 {
+    let intervals = input
+        .lines()
+        .map(Sensor::read)
+        .map(|sensor| sensor.blocked_at_y(2000000))
+        .sorted()
+        .collect_vec();
+    let mut res = intervals[0].1 - intervals[0].0;
+    let mut lastintervalend = intervals[0].1;
+    for interval in &intervals[1..] {
+        if interval.1 < lastintervalend {
+            continue;
+        } else if interval.0 < lastintervalend {
+            res += interval.1 - lastintervalend;
+        } else {
+            res += interval.1 - interval.0;
+        }
+        lastintervalend = interval.1;
+    }
+    res
 }
 
 pub fn part2(input: &str) -> i64 {
