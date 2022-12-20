@@ -8,6 +8,7 @@ enum RobotType {
     Obsidian,
     Geode,
 }
+#[derive(Debug)]
 struct State {
     minute: i32,
     ore: i32,
@@ -180,11 +181,14 @@ impl State {
 
     fn next(&self, robot_type: &RobotType, blueprint: &Blueprint) -> State {
         assert!(self.minute < 24);
-        match self.time_until_can_build(robot_type, blueprint) {
+        let s = match self.time_until_can_build(robot_type, blueprint) {
             Some(time) if self.minute + time <= 24 => self.after(time).add_robot(robot_type, blueprint),
             Some(_) => self.after(24 - self.minute),
             None => self.after(24 - self.minute),
-        }
+        };
+        // println!("   {:?}", self);
+        // println!("=> {:?}", s);
+        s
     }
 
     fn best(&self, blueprint: &Blueprint) -> i32 {
@@ -192,8 +196,8 @@ impl State {
             return self.geode;
         }
         let mut b = 0;
-        for robot_type in vec![RobotType::Ore, RobotType::Clay, RobotType::Obsidian, RobotType::Geode] {
-            b = core::cmp::max(b, self.next(&robot_type, blueprint).best(blueprint));
+        for robot_type in vec![RobotType::Ore, RobotType::Clay, RobotType::Obsidian, RobotType::Geode].iter().rev() {
+            b = core::cmp::max(b, self.next(robot_type, blueprint).best(blueprint));
         }
         b
     }

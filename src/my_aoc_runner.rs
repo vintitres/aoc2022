@@ -159,3 +159,8 @@ pub fn d16p1(input: &str) -> i64 {
 pub fn d16p2(input: &str) -> usize {
     super::day16::part2(input)
 }
+
+#[aoc(day19, part1)]
+pub fn d19p1(input: &str) -> i32 {
+    super::day19::part1(input)
+}
