@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use itertools::Itertools;
 
 type RobotCost = (i32, i32, i32);
@@ -8,7 +10,7 @@ enum RobotType {
     Obsidian,
     Geode,
 }
-#[derive(Debug)]
+#[derive(Debug,PartialEq, Eq, PartialOrd, Ord)]
 struct State {
     minute: i32,
     ore: i32,
@@ -179,25 +181,30 @@ impl State {
 
     }
 
-    fn next(&self, robot_type: &RobotType, blueprint: &Blueprint) -> State {
-        assert!(self.minute < 24);
+    fn next(&self, robot_type: &RobotType, blueprint: &Blueprint, time_limit: i32) -> State {
+        assert!(self.minute < time_limit);
         let s = match self.time_until_can_build(robot_type, blueprint) {
-            Some(time) if self.minute + time <= 24 => self.after(time).add_robot(robot_type, blueprint),
-            Some(_) => self.after(24 - self.minute),
-            None => self.after(24 - self.minute),
+            Some(time) if self.minute + time <= time_limit => self.after(time).add_robot(robot_type, blueprint),
+            Some(_) => self.after(time_limit - self.minute),
+            None => self.after(time_limit - self.minute),
         };
         // println!("   {:?}", self);
         // println!("=> {:?}", s);
         s
     }
 
-    fn best(&self, blueprint: &Blueprint) -> i32 {
-        if self.minute == 24 {
+    fn best(&self, blueprint: &Blueprint, time_limit: i32, cur_best: &mut i32) -> i32 {
+        if self.minute == time_limit {
             return self.geode;
+        }
+        let time_left = time_limit - self.minute;
+        if self.geode + time_left * self.geode_robots + time_left * time_left / 2 < *cur_best {
+            return 0;
         }
         let mut b = 0;
         for robot_type in vec![RobotType::Ore, RobotType::Clay, RobotType::Obsidian, RobotType::Geode].iter().rev() {
-            b = core::cmp::max(b, self.next(robot_type, blueprint).best(blueprint));
+            b = core::cmp::max(b, self.next(robot_type, blueprint, time_limit).best(blueprint, time_limit, cur_best));
+            *cur_best = b;
         }
         b
     }
@@ -227,8 +234,8 @@ impl Blueprint {
             geode_robot_cost: (geode_ore, 0, geode_obsidian),
         }
     }
-    fn best(&self) -> i32 {
-        State::new().best(self)
+    fn best(&self, time_limit: i32) -> i32 {
+        State::new().best(self, time_limit, &mut 0)
 
         /* 
         let mut b = 0;
@@ -273,13 +280,18 @@ pub fn part1(input: &str) -> i32 {
         .lines()
         .map(Blueprint::read)
         .enumerate()
-        .map(|(i, b)| b.best() * (i as i32 + 1))
+        .map(|(i, b)| b.best(24) * (i as i32 + 1))
         .inspect(|s| println!("{:?}", s))
         .sum()
 }
 
-pub fn part2(input: &str) -> usize {
-    input.len()
+pub fn part2(input: &str) -> i32 {
+    input
+        .lines()
+        .take(3)
+        .map(Blueprint::read)
+        .map(|b| b.best(32))
+        .product()
 }
 
 #[cfg(test)]
