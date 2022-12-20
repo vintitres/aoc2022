@@ -10,7 +10,7 @@ enum RobotType {
     Obsidian,
     Geode,
 }
-#[derive(Debug,PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct State {
     minute: i32,
     ore: i32,
@@ -111,43 +111,49 @@ impl State {
     }
 
     fn _add_ore_robot(&self) -> Self {
-        Self { ore_robots: self.ore_robots + 1, ..*self }
+        Self {
+            ore_robots: self.ore_robots + 1,
+            ..*self
+        }
     }
 
     fn _add_clay_robot(&self) -> Self {
-        Self { clay_robots: self.clay_robots + 1, ..*self }
+        Self {
+            clay_robots: self.clay_robots + 1,
+            ..*self
+        }
     }
 
     fn _add_obsidian_robot(&self) -> Self {
-        Self { obsidian_robots: self.obsidian_robots + 1, ..*self }
+        Self {
+            obsidian_robots: self.obsidian_robots + 1,
+            ..*self
+        }
     }
 
     fn _add_geode_robot(&self) -> Self {
-        Self { geode_robots: self.geode_robots + 1, ..*self }
+        Self {
+            geode_robots: self.geode_robots + 1,
+            ..*self
+        }
     }
 
     fn add_robot(&self, robot_type: &RobotType, blueprint: &Blueprint) -> Self {
         match robot_type {
-            RobotType::Ore => {
-                self._sub_cost(blueprint.ore_robot_cost)._add_ore_robot()
-            }
-            RobotType::Clay => {
-                self._sub_cost(blueprint.clay_robot_cost)._add_clay_robot()
-            }
-            RobotType::Obsidian => {
-                self._sub_cost(blueprint.obsidian_robot_cost)._add_obsidian_robot()
-            }
-            RobotType::Geode => {
-                self._sub_cost(blueprint.geode_robot_cost)._add_geode_robot()
-            }
+            RobotType::Ore => self._sub_cost(blueprint.ore_robot_cost)._add_ore_robot(),
+            RobotType::Clay => self._sub_cost(blueprint.clay_robot_cost)._add_clay_robot(),
+            RobotType::Obsidian => self
+                ._sub_cost(blueprint.obsidian_robot_cost)
+                ._add_obsidian_robot(),
+            RobotType::Geode => self
+                ._sub_cost(blueprint.geode_robot_cost)
+                ._add_geode_robot(),
         }
     }
-
 
     fn _time_until_can_build(&self, cost: RobotCost) -> Option<i32> {
         fn div_ceil(a: i32, b: i32) -> i32 {
             a / b + if a % b == 0 { 0 } else { 1 }
-
         }
         fn t(have: i32, cost: i32, prod: i32) -> Option<i32> {
             if prod == 0 && cost > 0 {
@@ -171,20 +177,20 @@ impl State {
     }
 
     fn time_until_can_build(&self, robot_type: &RobotType, blueprint: &Blueprint) -> Option<i32> {
-        self._time_until_can_build(
-        match robot_type {
+        self._time_until_can_build(match robot_type {
             RobotType::Ore => blueprint.ore_robot_cost,
             RobotType::Clay => blueprint.clay_robot_cost,
             RobotType::Obsidian => blueprint.obsidian_robot_cost,
             RobotType::Geode => blueprint.geode_robot_cost,
         })
-
     }
 
     fn next(&self, robot_type: &RobotType, blueprint: &Blueprint, time_limit: i32) -> State {
         assert!(self.minute < time_limit);
         let s = match self.time_until_can_build(robot_type, blueprint) {
-            Some(time) if self.minute + time <= time_limit => self.after(time).add_robot(robot_type, blueprint),
+            Some(time) if self.minute + time <= time_limit => {
+                self.after(time).add_robot(robot_type, blueprint)
+            }
             Some(_) => self.after(time_limit - self.minute),
             None => self.after(time_limit - self.minute),
         };
@@ -202,8 +208,20 @@ impl State {
             return 0;
         }
         let mut b = 0;
-        for robot_type in vec![RobotType::Ore, RobotType::Clay, RobotType::Obsidian, RobotType::Geode].iter().rev() {
-            b = core::cmp::max(b, self.next(robot_type, blueprint, time_limit).best(blueprint, time_limit, cur_best));
+        for robot_type in vec![
+            RobotType::Ore,
+            RobotType::Clay,
+            RobotType::Obsidian,
+            RobotType::Geode,
+        ]
+        .iter()
+        .rev()
+        {
+            b = core::cmp::max(
+                b,
+                self.next(robot_type, blueprint, time_limit)
+                    .best(blueprint, time_limit, cur_best),
+            );
             *cur_best = b;
         }
         b
@@ -237,7 +255,7 @@ impl Blueprint {
     fn best(&self, time_limit: i32) -> i32 {
         State::new().best(self, time_limit, &mut 0)
 
-        /* 
+        /*
         let mut b = 0;
         for last_ore_robot in 1..24 {
             for last_clay_robot in last_ore_robot..24 {
