@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use itertools::Itertools;
 
@@ -32,7 +32,7 @@ fn dfs(
     allflow: &i64,
     openvalves: &BTreeSet<String>,
 ) {
-    if minute == 30 || openflow == *allflow {
+    if minute >= 30 || openflow == *allflow {
         let doneflow = doneflow + (30 - minute) * openflow;
         println!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
@@ -45,6 +45,7 @@ fn dfs(
     if max_possible_flow < *bestflow {
         return;
     }
+    println!("{}", at);
     let v = valves.get(at).unwrap();
     if v.flow_rate > 0 && !openvalves.contains(at) {
         let mut openvalves = openvalves.clone();
@@ -65,7 +66,7 @@ fn dfs(
             valves,
             vv,
             minute + dist,
-            doneflow + openflow,
+            doneflow + openflow * dist,
             openflow,
             bestflow,
             allflow,
@@ -76,31 +77,31 @@ fn dfs(
 
 pub fn part1(input: &str) -> i64 {
     let valves = BTreeMap::from_iter(input.lines().map(Valve::read));
-    let valves = valves.iter().filter(|(_, v)| v.flow > 0).map(|(name, valve)| {
-        let mut long_tunnels = BTreeMap::new();
-        let mut q = VecDeque::from_iter(valve.tunnels.iter());
-        let mut visited = BTreeSet::new();
+    let valves = BTreeMap::from_iter(valves.iter().filter(|(n, v)| *n == "AA" || v.flow_rate > 0).map(|(name, valve)| {
+        let mut long_tunnels: BTreeMap<String,i64> = BTreeMap::new();
+        let mut q: VecDeque<(String, i64)> = VecDeque::from_iter(valve.tunnels.iter().map(|(k,v)| (k.clone(), *v)));
+        let mut visited: BTreeSet<String> = BTreeSet::new();
         loop {
             match q.pop_front() {
                 None => break,
                 Some((name, dist)) => {
-                    if visited.contains(name) {
+                    if visited.contains(&name) {
                         continue;
                     }
-                    visited.insert(name);
-                    let to_valve = valves.get(name).unwrap();
-                    if to_valve.flow > 0 {
-                        long_tunnels.insert((name, dist));
+                    visited.insert(name.clone());
+                    let to_valve = valves.get(&name).unwrap();
+                    if to_valve.flow_rate > 0 {
+                        long_tunnels.insert(name.to_string(), dist);
                     }
-                    for (name, len) in to_valve.tunnels {
-                        assert!(len == 1);
-                        q.push_back((name, dist + len));
+                    for (name, len) in to_valve.tunnels.iter() {
+                        assert!(*len == 1);
+                        q.push_back((name.clone(), dist + len));
                     }
                 }
             }
         }
-        (name, Valve {flow: valve.flow, tunnels: long_tunnels})
-    }
+        (name.to_string(), Valve {flow_rate: valve.flow_rate, tunnels: long_tunnels})
+    }));
     let allflow = valves.iter().map(|(_, v)| v.flow_rate).sum();
     let mut bestflow = 1500;
     dfs(
@@ -128,7 +129,7 @@ mod tests {
         include_str!("../input/2022/day16.txt")
     }
 
-    #[ignore = "slow"]
+    // #[ignore = "slow"]
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 2250);

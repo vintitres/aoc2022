@@ -1,7 +1,10 @@
+use itertools::Itertools;
+
 struct Elem {
     val: i32,
     moved: bool,
 }
+
 
 impl Elem {
     fn read(sval: &str) -> Elem {
@@ -12,13 +15,38 @@ impl Elem {
     }
 }
 
+
 pub fn part1(input: &str) -> usize {
-    let mut l = LinkedList::from_iter(input.split(' ').map(Elem::read));
+    0
+    /* 
+    let mut l = input.split(' ').map(Elem::read).collect_vec();
     let ll = l.len();
     for _ in 0..ll {
+        for i in 0..ll {
+            if l[i].moved == false {
+                l[i].moved = true;
+                let step = l[i].val.signum();
+                let till = i as i32 + l[i].val;
+                let j = i + step;
+                core::swap()
+
+
+
+
+
+
+
+
+                loop {
+                    l
+                }
+            }
+        }
         // TODO move first not moved
     }
-    vec![1000, 2000, 3000, 4000].iter().map(|i| l.nth(1000 % ll).unwrap()).product()
+    //vec![1000, 2000, 3000, 4000].iter().map(|i| l.nth(1000 % ll).unwrap()).product()
+    0
+    */
 }
 
 pub fn part2(input: &str) -> usize {

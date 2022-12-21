@@ -24,5 +24,3 @@ mod tests {
         assert_eq!(part2(input()), 4);
     }
 }
-   }
-}
