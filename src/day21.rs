@@ -28,21 +28,6 @@ enum Monkey {
 }
 
 impl Monkey {
-    fn print(&self, monkeys: &BTreeMap<String, Monkey>) -> String {
-        match self {
-            Monkey::Num(n) => format!("{}", n),
-            Monkey::X => format!("x"),
-            Monkey::Calc(l, op, r) => format!(
-                "({} {:?} {})",
-                monkeys.get(l).unwrap().print(&monkeys),
-                op,
-                monkeys.get(r).unwrap().print(&monkeys)
-            ),
-            Monkey::Calc2(l, op, r) => {
-                format!("({} {:?} {})", l.print(&monkeys), op, r.print(&monkeys))
-            }
-        }
-    }
     fn val(&self, monkeys: &BTreeMap<String, Monkey>) -> i64 {
         match self {
             Self::Num(v) => *v,
@@ -62,7 +47,7 @@ impl Monkey {
     }
     fn simpl(&self, monkeys: &BTreeMap<String, Monkey>) -> Monkey {
         match self {
-            n @ Self::Num(v) => n.clone(),
+            n @ Self::Num(_) => n.clone(),
             Self::Calc(l, op, r) => {
                 let ll = monkeys.get(l).unwrap().simpl(monkeys);
                 let rr = monkeys.get(r).unwrap().simpl(monkeys);
