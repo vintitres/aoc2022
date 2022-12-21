@@ -5,7 +5,6 @@ struct Elem {
     moved: bool,
 }
 
-
 impl Elem {
     fn read(sval: &str) -> Elem {
         Elem {
@@ -15,10 +14,9 @@ impl Elem {
     }
 }
 
-
 pub fn part1(input: &str) -> usize {
     0
-    /* 
+    /*
     let mut l = input.split(' ').map(Elem::read).collect_vec();
     let ll = l.len();
     for _ in 0..ll {

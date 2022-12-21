@@ -41,8 +41,9 @@ fn dfs(
         }
         return;
     }
-    let max_possible_flow =
-        doneflow + (time_limit - minute) * openflow + (time_limit - 1 - minute) * (allflow - openflow);
+    let max_possible_flow = doneflow
+        + (time_limit - minute) * openflow
+        + (time_limit - 1 - minute) * (allflow - openflow);
     if max_possible_flow < *bestflow {
         return;
     }
@@ -60,7 +61,7 @@ fn dfs(
             bestflow,
             allflow,
             &openvalves,
-            time_limit
+            time_limit,
         );
     }
     for (vv, dist) in &v.tunnels {
@@ -78,33 +79,48 @@ fn dfs(
     }
 }
 
-pub fn part1(input: &str) -> i64 {
-    let valves = BTreeMap::from_iter(input.lines().map(Valve::read));
-    let valves = BTreeMap::from_iter(valves.iter().filter(|(n, v)| *n == "AA" || v.flow_rate > 0).map(|(name, valve)| {
-        let mut long_tunnels: BTreeMap<String,i64> = BTreeMap::new();
-        let mut q: VecDeque<(String, i64)> = VecDeque::from_iter(valve.tunnels.iter().map(|(k,v)| (k.clone(), *v)));
-        let mut visited: BTreeSet<String> = BTreeSet::new();
-        loop {
-            match q.pop_front() {
-                None => break,
-                Some((name, dist)) => {
-                    if visited.contains(&name) {
-                        continue;
-                    }
-                    visited.insert(name.clone());
-                    let to_valve = valves.get(&name).unwrap();
-                    if to_valve.flow_rate > 0 {
-                        long_tunnels.insert(name.to_string(), dist);
-                    }
-                    for (name, len) in to_valve.tunnels.iter() {
-                        assert!(*len == 1);
-                        q.push_back((name.clone(), dist + len));
+fn consolidate(valves: &BTreeMap<String, Valve>) -> BTreeMap<String, Valve> {
+    BTreeMap::from_iter(
+        valves
+            .iter()
+            .filter(|(n, v)| *n == "AA" || v.flow_rate > 0)
+            .map(|(name, valve)| {
+                let mut long_tunnels: BTreeMap<String, i64> = BTreeMap::new();
+                let mut q: VecDeque<(String, i64)> =
+                    VecDeque::from_iter(valve.tunnels.iter().map(|(k, v)| (k.clone(), *v)));
+                let mut visited: BTreeSet<String> = BTreeSet::new();
+                loop {
+                    match q.pop_front() {
+                        None => break,
+                        Some((name, dist)) => {
+                            if visited.contains(&name) {
+                                continue;
+                            }
+                            visited.insert(name.clone());
+                            let to_valve = valves.get(&name).unwrap();
+                            if to_valve.flow_rate > 0 {
+                                long_tunnels.insert(name.to_string(), dist);
+                            }
+                            for (name, len) in to_valve.tunnels.iter() {
+                                assert!(*len == 1);
+                                q.push_back((name.clone(), dist + len));
+                            }
+                        }
                     }
                 }
-            }
-        }
-        (name.to_string(), Valve {flow_rate: valve.flow_rate, tunnels: long_tunnels})
-    }));
+                (
+                    name.to_string(),
+                    Valve {
+                        flow_rate: valve.flow_rate,
+                        tunnels: long_tunnels,
+                    },
+                )
+            }),
+    )
+}
+
+pub fn part1(input: &str) -> i64 {
+    let valves = consolidate(&BTreeMap::from_iter(input.lines().map(Valve::read)));
     let allflow = valves.iter().map(|(_, v)| v.flow_rate).sum();
     let mut bestflow = 1500;
     dfs(
@@ -121,8 +137,23 @@ pub fn part1(input: &str) -> i64 {
     bestflow
 }
 
-pub fn part2(input: &str) -> usize {
-    input.len()
+pub fn part2(input: &str) -> i64 {
+    let valves = consolidate(&BTreeMap::from_iter(input.lines().map(Valve::read)));
+    let allflow = valves.iter().map(|(_, v)| v.flow_rate).sum();
+    let mut bestflow = 0;
+    dfs(
+        &valves,
+        &"AA".to_string(),
+        // &"AA".to_string(),
+        0,
+        0,
+        0,
+        &mut bestflow,
+        &allflow,
+        &BTreeSet::new(),
+        24,
+    );
+    bestflow
 }
 
 #[cfg(test)]

@@ -156,7 +156,7 @@ pub fn d16p1(input: &str) -> i64 {
 }
 
 #[aoc(day16, part2)]
-pub fn d16p2(input: &str) -> usize {
+pub fn d16p2(input: &str) -> i64 {
     super::day16::part2(input)
 }
 
