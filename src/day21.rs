@@ -1,5 +1,5 @@
-use std::fmt;
 use std::collections::BTreeMap;
+use std::fmt;
 
 #[derive(Clone)]
 enum Op {
@@ -32,12 +32,17 @@ impl Monkey {
         match self {
             Monkey::Num(n) => format!("{}", n),
             Monkey::X => format!("x"),
-            Monkey::Calc(l, op, r) =>
-                format!("({} {:?} {})", monkeys.get(l).unwrap().print(&monkeys), op, monkeys.get(r).unwrap().print(&monkeys)),
-            Monkey::Calc2(l, op, r) =>
-                format!("({} {:?} {})", l.print(&monkeys), op, r.print(&monkeys)),
+            Monkey::Calc(l, op, r) => format!(
+                "({} {:?} {})",
+                monkeys.get(l).unwrap().print(&monkeys),
+                op,
+                monkeys.get(r).unwrap().print(&monkeys)
+            ),
+            Monkey::Calc2(l, op, r) => {
+                format!("({} {:?} {})", l.print(&monkeys), op, r.print(&monkeys))
+            }
         }
-    } 
+    }
     fn val(&self, monkeys: &BTreeMap<String, Monkey>) -> i64 {
         match self {
             Self::Num(v) => *v,
@@ -62,15 +67,17 @@ impl Monkey {
                 let ll = monkeys.get(l).unwrap().simpl(monkeys);
                 let rr = monkeys.get(r).unwrap().simpl(monkeys);
                 match (ll, rr) {
-                    (Monkey::Num(ll), Monkey::Num(rr)) => 
-                        Monkey::Num(
-                        match op {
-                            Op::Add => ll + rr,
-                            Op::Sub => ll - rr,
-                            Op::Mul => ll * rr,
-                            Op::Div => ll / rr,
-                        }),
-                    (l, r) => Monkey::Calc2(Box::new(l.simpl(monkeys)), op.clone(), Box::new(r.simpl(monkeys))),
+                    (Monkey::Num(ll), Monkey::Num(rr)) => Monkey::Num(match op {
+                        Op::Add => ll + rr,
+                        Op::Sub => ll - rr,
+                        Op::Mul => ll * rr,
+                        Op::Div => ll / rr,
+                    }),
+                    (l, r) => Monkey::Calc2(
+                        Box::new(l.simpl(monkeys)),
+                        op.clone(),
+                        Box::new(r.simpl(monkeys)),
+                    ),
                 }
             }
             c2 @ Self::Calc2(_, _, _) => c2.clone(),
@@ -105,23 +112,23 @@ impl Monkey {
             Monkey::Calc2(l, op, r) => {
                 if let Monkey::Num(ll) = l.as_ref() {
                     match op {
-                        Op::Add => r.solve(eq - ll),  // ll + x = eq
-                        Op::Sub => r.solve(ll - eq),  // ll - x = eq
-                        Op::Mul => r.solve(eq / ll),  // ll * x = eq
-                        Op::Div => r.solve(ll / eq),  // ll / x = eq  -> ll = eq * x 
+                        Op::Add => r.solve(eq - ll), // ll + x = eq
+                        Op::Sub => r.solve(ll - eq), // ll - x = eq
+                        Op::Mul => r.solve(eq / ll), // ll * x = eq
+                        Op::Div => r.solve(ll / eq), // ll / x = eq  -> ll = eq * x
                     }
                 } else if let Monkey::Num(rr) = r.as_ref() {
                     match op {
-                        Op::Add => l.solve(eq - rr),  // x + rr = eq
-                        Op::Sub => l.solve(eq + rr),  // x - rr = eq
-                        Op::Mul => l.solve(eq / rr),  // x * rr = eq
-                        Op::Div => l.solve(eq * rr),  // x / rr = eq
+                        Op::Add => l.solve(eq - rr), // x + rr = eq
+                        Op::Sub => l.solve(eq + rr), // x - rr = eq
+                        Op::Mul => l.solve(eq / rr), // x * rr = eq
+                        Op::Div => l.solve(eq * rr), // x / rr = eq
                     }
                 } else {
                     unimplemented!();
                 }
             }
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
     }
 }
@@ -133,7 +140,9 @@ pub fn part1(input: &str) -> i64 {
 
 pub fn part2(input: &str) -> i64 {
     let mut monkeys = BTreeMap::from_iter(input.lines().map(Monkey::read));
-    monkeys.entry("humn".to_string()).and_modify(|m| *m = Monkey::X);
+    monkeys
+        .entry("humn".to_string())
+        .and_modify(|m| *m = Monkey::X);
     match monkeys.get("root").unwrap() {
         Monkey::Calc(l, _, r) => {
             let r = match monkeys.get(r).unwrap().simpl(&monkeys) {
