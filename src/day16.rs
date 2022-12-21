@@ -4,7 +4,7 @@ use itertools::Itertools;
 
 struct Valve {
     flow_rate: i64,
-    tunnels: Vec<String>,
+    tunnels: BTreeMap<String, i64>,
 }
 
 impl Valve {
@@ -15,7 +15,7 @@ impl Valve {
             name.to_string(),
             Valve {
                 flow_rate: flow_rate[5..flow_rate.len() - 1].parse().unwrap(),
-                tunnels: tunnels.split(", ").map(String::from).collect_vec(),
+                tunnels: BTreeMap::from_iter(tunnels.split(", ").map(String::from).map(|t| (t, 1))),
             },
         )
     }
@@ -60,11 +60,11 @@ fn dfs(
             &openvalves,
         );
     }
-    for vv in &v.tunnels {
+    for (vv, dist) in &v.tunnels {
         dfs(
             valves,
             vv,
-            minute + 1,
+            minute + dist,
             doneflow + openflow,
             openflow,
             bestflow,
@@ -76,6 +76,31 @@ fn dfs(
 
 pub fn part1(input: &str) -> i64 {
     let valves = BTreeMap::from_iter(input.lines().map(Valve::read));
+    let valves = valves.iter().filter(|(_, v)| v.flow > 0).map(|(name, valve)| {
+        let mut long_tunnels = BTreeMap::new();
+        let mut q = VecDeque::from_iter(valve.tunnels.iter());
+        let mut visited = BTreeSet::new();
+        loop {
+            match q.pop_front() {
+                None => break,
+                Some((name, dist)) => {
+                    if visited.contains(name) {
+                        continue;
+                    }
+                    visited.insert(name);
+                    let to_valve = valves.get(name).unwrap();
+                    if to_valve.flow > 0 {
+                        long_tunnels.insert((name, dist));
+                    }
+                    for (name, len) in to_valve.tunnels {
+                        assert!(len == 1);
+                        q.push_back((name, dist + len));
+                    }
+                }
+            }
+        }
+        (name, Valve {flow: valve.flow, tunnels: long_tunnels})
+    }
     let allflow = valves.iter().map(|(_, v)| v.flow_rate).sum();
     let mut bestflow = 1500;
     dfs(
