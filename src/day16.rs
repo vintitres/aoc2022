@@ -31,9 +31,10 @@ fn dfs(
     bestflow: &mut i64,
     allflow: &i64,
     openvalves: &BTreeSet<String>,
+    time_limit: i64,
 ) {
-    if minute >= 30 || openflow == *allflow {
-        let doneflow = doneflow + (30 - minute) * openflow;
+    if minute >= time_limit || openflow == *allflow {
+        let doneflow = doneflow + (time_limit - minute) * openflow;
         println!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
             *bestflow = doneflow;
@@ -41,7 +42,7 @@ fn dfs(
         return;
     }
     let max_possible_flow =
-        doneflow + (30 - minute) * openflow + (29 - minute) * (allflow - openflow);
+        doneflow + (time_limit - minute) * openflow + (time_limit - 1 - minute) * (allflow - openflow);
     if max_possible_flow < *bestflow {
         return;
     }
@@ -59,6 +60,7 @@ fn dfs(
             bestflow,
             allflow,
             &openvalves,
+            time_limit
         );
     }
     for (vv, dist) in &v.tunnels {
@@ -71,6 +73,7 @@ fn dfs(
             bestflow,
             allflow,
             openvalves,
+            time_limit,
         );
     }
 }
@@ -113,6 +116,7 @@ pub fn part1(input: &str) -> i64 {
         &mut bestflow,
         &allflow,
         &BTreeSet::new(),
+        30,
     );
     bestflow
 }
