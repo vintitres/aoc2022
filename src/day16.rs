@@ -103,11 +103,13 @@ mod tests {
         include_str!("../input/2022/day16.txt")
     }
 
+    #[ignore = "slow"]
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 4);
+        assert_eq!(part1(input()), 2250);
     }
 
+    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 4);

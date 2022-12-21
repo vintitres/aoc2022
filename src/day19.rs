@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use itertools::Itertools;
 
 type RobotCost = (i32, i32, i32);
@@ -35,59 +33,6 @@ impl State {
             clay_robots: 0,
             obsidian_robots: 0,
             geode_robots: 0,
-        }
-    }
-    fn produce_and_try_build(&mut self, robot_type: RobotType, blueprint: &Blueprint) {
-        let built_robot = match robot_type {
-            RobotType::Ore => match self.ore - blueprint.ore_robot_cost.0 {
-                ore if ore >= 0 => {
-                    self.ore = ore;
-                    true
-                }
-                _ => false,
-            },
-            RobotType::Clay => match self.ore - blueprint.clay_robot_cost.0 {
-                ore if ore >= 0 => {
-                    self.ore = ore;
-                    true
-                }
-                _ => false,
-            },
-            RobotType::Obsidian => match (
-                self.ore - blueprint.obsidian_robot_cost.0,
-                self.clay - blueprint.obsidian_robot_cost.1,
-            ) {
-                (ore, clay) if ore >= 0 && clay >= 0 => {
-                    self.ore = ore;
-                    self.clay = clay;
-                    true
-                }
-                _ => false,
-            },
-            RobotType::Geode => match (
-                self.ore - blueprint.geode_robot_cost.0,
-                self.obsidian - blueprint.geode_robot_cost.2,
-            ) {
-                (ore, obsidian) if ore >= 0 && obsidian >= 0 => {
-                    self.ore = ore;
-                    self.obsidian = obsidian;
-                    true
-                }
-                _ => false,
-            },
-        };
-        self.ore += self.ore_robots;
-        self.clay += self.clay_robots;
-        self.obsidian += self.obsidian_robots;
-        self.geode += self.geode_robots;
-
-        if built_robot {
-            match robot_type {
-                RobotType::Ore => self.ore_robots += 1,
-                RobotType::Clay => self.clay_robots += 1,
-                RobotType::Obsidian => self.obsidian_robots += 1,
-                RobotType::Geode => self.geode_robots += 1,
-            }
         }
     }
     fn after(&self, time: i32) -> State {
@@ -187,16 +132,13 @@ impl State {
 
     fn next(&self, robot_type: &RobotType, blueprint: &Blueprint, time_limit: i32) -> State {
         assert!(self.minute < time_limit);
-        let s = match self.time_until_can_build(robot_type, blueprint) {
+        match self.time_until_can_build(robot_type, blueprint) {
             Some(time) if self.minute + time <= time_limit => {
                 self.after(time).add_robot(robot_type, blueprint)
             }
             Some(_) => self.after(time_limit - self.minute),
             None => self.after(time_limit - self.minute),
-        };
-        // println!("   {:?}", self);
-        // println!("=> {:?}", s);
-        s
+        }
     }
 
     fn best(&self, blueprint: &Blueprint, time_limit: i32, cur_best: &mut i32) -> i32 {
@@ -270,27 +212,6 @@ impl Blueprint {
         b
         */
     }
-    fn simulate(
-        &self,
-        last_ore_robot: usize,
-        last_clay_robot: usize,
-        last_obsidian_robot: usize,
-    ) -> i32 {
-        let mut state = State::new();
-        for minute in 0..24 {
-            let robot_type = if minute <= last_ore_robot {
-                RobotType::Ore
-            } else if minute <= last_clay_robot {
-                RobotType::Clay
-            } else if minute <= last_obsidian_robot {
-                RobotType::Obsidian
-            } else {
-                RobotType::Geode
-            };
-            state.produce_and_try_build(robot_type, self);
-        }
-        state.geode
-    }
 }
 
 pub fn part1(input: &str) -> i32 {
@@ -317,16 +238,18 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day19e.txt")
+        include_str!("../input/2022/day19.txt")
     }
 
+    #[ignore = "slow"]
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 15120);
+        assert_eq!(part1(input()), 1659);
     }
 
+    #[ignore = "slow"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1234);
+        assert_eq!(part2(input()), 6804);
     }
 }
