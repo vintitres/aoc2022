@@ -1,17 +1,43 @@
+use std::fmt;
 use std::collections::BTreeMap;
 
+#[derive(Clone)]
 enum Op {
     Add,
     Sub,
     Mul,
     Div,
 }
+impl fmt::Debug for Op {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Add => write!(f, "+"),
+            Self::Sub => write!(f, "-"),
+            Self::Mul => write!(f, "*"),
+            Self::Div => write!(f, "/"),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 enum Monkey {
     Num(i64),
     Calc(String, Op, String),
+    Calc2(Box<Monkey>, Op, Box<Monkey>),
+    X,
 }
 
 impl Monkey {
+    fn print(&self, monkeys: &BTreeMap<String, Monkey>) -> String {
+        match self {
+            Monkey::Num(n) => format!("{}", n),
+            Monkey::X => format!("x"),
+            Monkey::Calc(l, op, r) =>
+                format!("({} {:?} {})", monkeys.get(l).unwrap().print(&monkeys), op, monkeys.get(r).unwrap().print(&monkeys)),
+            Monkey::Calc2(l, op, r) =>
+                format!("({} {:?} {})", l.print(&monkeys), op, r.print(&monkeys)),
+        }
+    } 
     fn val(&self, monkeys: &BTreeMap<String, Monkey>) -> i64 {
         match self {
             Self::Num(v) => *v,
@@ -25,6 +51,30 @@ impl Monkey {
                     Op::Div => ll / rr,
                 }
             }
+            Self::Calc2(_, _, _) => unimplemented!(),
+            Self::X => unimplemented!(),
+        }
+    }
+    fn simpl(&self, monkeys: &BTreeMap<String, Monkey>) -> Monkey {
+        match self {
+            n @ Self::Num(v) => n.clone(),
+            Self::Calc(l, op, r) => {
+                let ll = monkeys.get(l).unwrap().simpl(monkeys);
+                let rr = monkeys.get(r).unwrap().simpl(monkeys);
+                match (ll, rr) {
+                    (Monkey::Num(ll), Monkey::Num(rr)) => 
+                        Monkey::Num(
+                        match op {
+                            Op::Add => ll + rr,
+                            Op::Sub => ll - rr,
+                            Op::Mul => ll * rr,
+                            Op::Div => ll / rr,
+                        }),
+                    (l, r) => Monkey::Calc2(Box::new(l.simpl(monkeys)), op.clone(), Box::new(r.simpl(monkeys))),
+                }
+            }
+            c2 @ Self::Calc2(_, _, _) => c2.clone(),
+            Self::X => Self::X,
         }
     }
     fn _read(shout: &str) -> Monkey {
@@ -49,6 +99,31 @@ impl Monkey {
         let (name, shout) = line.split_once(": ").unwrap();
         (name.to_string(), Monkey::_read(shout))
     }
+    fn solve(&self, eq: i64) -> i64 {
+        match self {
+            Monkey::X => eq,
+            Monkey::Calc2(l, op, r) => {
+                if let Monkey::Num(ll) = l.as_ref() {
+                    match op {
+                        Op::Add => r.solve(eq - ll),  // ll + x = eq
+                        Op::Sub => r.solve(ll - eq),  // ll - x = eq
+                        Op::Mul => r.solve(eq / ll),  // ll * x = eq
+                        Op::Div => r.solve(ll / eq),  // ll / x = eq  -> ll = eq * x 
+                    }
+                } else if let Monkey::Num(rr) = r.as_ref() {
+                    match op {
+                        Op::Add => l.solve(eq - rr),  // x + rr = eq
+                        Op::Sub => l.solve(eq + rr),  // x - rr = eq
+                        Op::Mul => l.solve(eq / rr),  // x * rr = eq
+                        Op::Div => l.solve(eq * rr),  // x / rr = eq
+                    }
+                } else {
+                    unimplemented!();
+                }
+            }
+            _ => unimplemented!()
+        }
+    }
 }
 
 pub fn part1(input: &str) -> i64 {
@@ -56,8 +131,19 @@ pub fn part1(input: &str) -> i64 {
     monkeys.get("root").unwrap().val(&monkeys)
 }
 
-pub fn part2(input: &str) -> usize {
-    input.len()
+pub fn part2(input: &str) -> i64 {
+    let mut monkeys = BTreeMap::from_iter(input.lines().map(Monkey::read));
+    monkeys.entry("humn".to_string()).and_modify(|m| *m = Monkey::X);
+    match monkeys.get("root").unwrap() {
+        Monkey::Calc(l, _, r) => {
+            let r = match monkeys.get(r).unwrap().simpl(&monkeys) {
+                Monkey::Num(n) => n,
+                _ => unimplemented!(),
+            };
+            monkeys.get(l).unwrap().simpl(&monkeys).solve(r)
+        }
+        _ => unimplemented!(),
+    }
 }
 
 #[cfg(test)]
@@ -75,6 +161,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1234);
+        assert_eq!(part2(input()), 3352886133831);
     }
 }
