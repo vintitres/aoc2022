@@ -160,6 +160,16 @@ pub fn d16p2(input: &str) -> i64 {
     super::day16::part2(input)
 }
 
+#[aoc(day17, part1)]
+pub fn d17p1(input: &str) -> u64 {
+    super::day17::part1(input)
+}
+
+#[aoc(day17, part2)]
+pub fn d17p2(input: &str) -> u64 {
+    super::day17::part2(input)
+}
+
 #[aoc(day19, part1)]
 pub fn d19p1(input: &str) -> i32 {
     super::day19::part1(input)
