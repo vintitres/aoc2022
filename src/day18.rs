@@ -99,11 +99,9 @@ pub fn part2(input: &str) -> i32 {
             let (sx, sy, sz) = leak;
             let xyz = (px + sx, py + sy, pz + sz);
             let (x, y, z) = xyz;
-            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z {
-                if !cubes.contains(&Cube { x, y, z }) && !seen.contains(&xyz) {
-                    q.push_back(xyz);
-                    seen.insert(xyz);
-                }
+            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z && !cubes.contains(&Cube { x, y, z }) && !seen.contains(&xyz) {
+                q.push_back(xyz);
+                seen.insert(xyz);
             }
         }
     }
