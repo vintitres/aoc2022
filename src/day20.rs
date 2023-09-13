@@ -52,7 +52,7 @@ pub fn part1(input: &str) -> i32 {
     while file[zeropos].val != 0 {
         zeropos += 1;
     }
-    vec![1000, 2000, 3000]
+    [1000, 2000, 3000]
         .iter()
         .map(|i| file[(i + zeropos) % ll].val)
         .sum()
