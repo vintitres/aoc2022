@@ -53,7 +53,7 @@ fn move_rock(rock: &Rock, by: Pos) -> Rock {
 }
 
 fn check_rock(chamber: Chamber, rock: &Rock) -> bool {
-    usize_rock(&rock).iter().all(|pos| match pos {
+    usize_rock(rock).iter().all(|pos| match pos {
         None => false,
         Some(pos) => !chamber[pos.0][pos.1],
     })
@@ -75,7 +75,7 @@ fn usize_rock(rock: &Rock) -> Vec<Option<(usize, usize)>> {
 }
 
 fn fill_rock(chamber: &mut Chamber, rock: &Rock) {
-    usize_rock(&rock).iter().for_each(|pos| match pos {
+    usize_rock(rock).iter().for_each(|pos| match pos {
         Some(pos) => chamber[pos.0][pos.1] = true,
         None => {}
     });
@@ -121,7 +121,7 @@ fn print_chamber(chamber: &Chamber, height: usize) {
         );
     }
     eprintln!("--------");
-    eprintln!("");
+    eprintln!();
 }
 
 pub fn part2(input: &str) -> usize {
