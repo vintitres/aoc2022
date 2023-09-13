@@ -31,7 +31,7 @@ pub fn part1(input: &str) -> i64 {
         let mut i = 0;
         let mut j = ll;
         while i < ll {
-            if file[i].moved == false {
+            if !file[i].moved {
                 j = negmod(i as i32 + file[i].val, ll - 1);
                 break;
             }
