@@ -48,10 +48,7 @@ pub fn part1(input: &str) -> i32 {
         );
         // eprintln!("{:?}", file);
     }
-    let mut zeropos = 0;
-    while file[zeropos].val != 0 {
-        zeropos += 1;
-    }
+    let zeropos = file.iter().position(|f| f.val == 0).unwrap();
     [1000, 2000, 3000]
         .iter()
         .map(|i| file[(i + zeropos) % ll].val)
