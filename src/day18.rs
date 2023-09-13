@@ -23,7 +23,7 @@ pub fn part1(input: &str) -> i64 {
     let cubes2 = cubes.clone();
     let mut surface = 0;
     for cube in cubes {
-        for side in vec![
+        for side in [
             (0, 0, 1),
             (0, 0, -1),
             (0, 1, 0),
