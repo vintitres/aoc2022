@@ -24,7 +24,7 @@ fn tetris(input: &str, rocks: u64) -> u64 {
     let mut skipped = false;
     while rock_num < rocks {
         let rock_type: usize = usize::try_from(rock_num % 5).unwrap();
-        if (!skipped) {
+        if !skipped {
             let wrs = (rock_type, blow_num);
             let real_height = base_height + u64::try_from(height).unwrap();
             if let Some((2, old_height, old_rock_num)) = seen.get(&wrs) {
@@ -52,7 +52,7 @@ fn tetris(input: &str, rocks: u64) -> u64 {
                 (0, if blows.next().unwrap() == '<' { -1 } else { 1 }),
             );
             blow_num += 1;
-            if (blow_num == blows_len) {
+            if blow_num == blows_len {
                 blow_num = 0;
             }
             if check_rock(chamber, &new_rock) {
