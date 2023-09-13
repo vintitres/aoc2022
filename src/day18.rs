@@ -11,29 +11,6 @@ const SIDES: [(i32, i32, i32); 6] = [
     (-1, 0, 0),
 ];
 
-const LEAKS: [(i32, i32, i32); 20] = [
-    (1, 1, 0),
-    (1, 0, 1),
-    (1, -1, 0),
-    (1, 0, -1),
-    (1, 1, 1),
-    (1, 1, -1),
-    (1, -1, 1),
-    (1, -1, -1),
-    (-1, 1, 0),
-    (-1, 0, 1),
-    (-1, -1, 0),
-    (-1, 0, -1),
-    (-1, 1, 1),
-    (-1, 1, -1),
-    (-1, -1, 1),
-    (-1, -1, -1),
-    (0, 1, 1),
-    (0, 1, -1),
-    (0, -1, 1),
-    (0, -1, -1),
-];
-
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Cube {
     x: i32,
@@ -86,22 +63,13 @@ pub fn part2(input: &str) -> i32 {
             let (sx, sy, sz) = side;
             let xyz = (px + sx, py + sy, pz + sz);
             let (x, y, z) = xyz;
-            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z {
+            if x >= -1 && x <= max_x && y >= -1 && y <= max_y && z >= -1 && z <= max_z {
                 if cubes.contains(&Cube { x, y, z }) {
                     surface += 1;
                 } else if !seen.contains(&xyz) {
                     q.push_back(xyz);
                     seen.insert(xyz);
                 }
-            }
-        }
-        for leak in LEAKS {
-            let (sx, sy, sz) = leak;
-            let xyz = (px + sx, py + sy, pz + sz);
-            let (x, y, z) = xyz;
-            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z && !cubes.contains(&Cube { x, y, z }) && !seen.contains(&xyz) {
-                q.push_back(xyz);
-                seen.insert(xyz);
             }
         }
     }
@@ -123,6 +91,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 3318);
+        assert_eq!(part2(input()), 1996);
     }
 }
