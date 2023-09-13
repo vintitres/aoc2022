@@ -66,7 +66,7 @@ mod tests {
     fn input() -> &'static str {
         include_str!("../input/2022/day20.txt")
     }
-    #[ignore = "not implemented"]
+    
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 2215);
