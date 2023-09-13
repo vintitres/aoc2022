@@ -24,7 +24,7 @@ fn negmod(x: i32, m: usize) -> usize {
             .unwrap()
     }
 }
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> i32 {
     let mut file = input.lines().map(Elem::read).collect_vec();
     let ll = file.len();
     for _ in 0..ll {
@@ -48,14 +48,14 @@ pub fn part1(input: &str) -> i64 {
         );
         // eprintln!("{:?}", file);
     }
-    let mut i = 0;
-    while file[i].val != 0 {
-        i += 1;
+    let mut zeropos = 0;
+    while file[zeropos].val != 0 {
+        zeropos += 1;
     }
-    file[(i + 1000) % ll].val as i64
-        + file[(i + 2000) % ll].val as i64
-        + file[(i + 3000) % ll].val as i64
-    //vec![1000, 2000, 3000, 4000].iter().map(|i| l.nth(1000 % ll).unwrap()).product()
+    vec![1000, 2000, 3000]
+        .iter()
+        .map(|i| file[(i + zeropos) % ll].val)
+        .sum()
 }
 
 pub fn part2(input: &str) -> usize {
