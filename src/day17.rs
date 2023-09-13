@@ -38,6 +38,7 @@ pub fn part1(input: &str) -> usize {
         }
         // print_chamber(&chamber, height);
     }
+    print_chamber(&chamber, height);
     height
 }
 
