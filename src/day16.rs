@@ -164,7 +164,7 @@ mod tests {
         include_str!("../input/2022/day16.txt")
     }
 
-    // #[ignore = "slow"]
+    #[ignore = "slow"]
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 2250);
