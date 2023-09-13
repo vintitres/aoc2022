@@ -1,14 +1,19 @@
-const ROCKS: usize = 2022;
 const WIDTH: usize = 7;
-const HEIGHT: usize = (ROCKS + 1) * 4;
+const HEIGHT: usize = 1000;
+const ROCKS: u64 = 2022;
+const ROCKS2: u64 = 1000000000000;
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u64 {
+    tetris(input, ROCKS)
+}
+
+fn tetris(input: &str, rocks: u64) -> u64 {
     let mut chamber = [[false; WIDTH]; HEIGHT];
+    let mut base_height: u64 = 0;
     let mut height: usize = 0;
 
     let mut blows = input.trim().chars().cycle();
-    for rock_num in 0..ROCKS {
-        // ROCKS
+    for rock_num in 0..rocks {
         let mut rock = get_rock(rock_num, height);
         loop {
             let new_rock = move_rock(
@@ -34,12 +39,24 @@ pub fn part1(input: &str) -> usize {
                 );
                 break;
             }
+            if height > HEIGHT - 10 {
+                let shift = HEIGHT / 2;
+                height -= shift;
+                base_height += u64::try_from(shift).unwrap();
+                for x in shift..HEIGHT {
+                    for y in 0..WIDTH {
+                        chamber[x - shift][y] = chamber[x][y];
+                        chamber[x][y] = false;
+                    }
+                }
+                rock = move_rock(&rock, (-isize::try_from(shift).unwrap(), 0));
+            }
             // eprintln!("{:?}", rock[0])
         }
         // print_chamber(&chamber, height);
     }
     print_chamber(&chamber, height);
-    height
+    base_height + u64::try_from(height).unwrap()
 }
 
 type Pos = (isize, isize);
@@ -81,7 +98,7 @@ fn fill_rock(chamber: &mut Chamber, rock: &Rock) {
     });
 }
 
-fn get_rock(rock_num: usize, height: usize) -> Rock {
+fn get_rock(rock_num: u64, height: usize) -> Rock {
     let height: isize = (height + 3).try_into().unwrap();
     match rock_num % 5 {
         0 => vec![(height, 2), (height, 3), (height, 4), (height, 5)], // --
@@ -124,8 +141,8 @@ fn print_chamber(chamber: &Chamber, height: usize) {
     eprintln!();
 }
 
-pub fn part2(input: &str) -> usize {
-    input.len()
+pub fn part2(input: &str) -> u64 {
+    tetris(input, ROCKS2)
 }
 
 #[cfg(test)]
@@ -141,7 +158,6 @@ mod tests {
         assert_eq!(part1(input()), 3151);
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 1234);
