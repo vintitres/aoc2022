@@ -11,6 +11,29 @@ const SIDES: [(i32, i32, i32); 6] = [
     (-1, 0, 0),
 ];
 
+const LEAKS: [(i32, i32, i32); 20] = [
+    (1, 1, 0),
+    (1, 0, 1),
+    (1, -1, 0),
+    (1, 0, -1),
+    (1, 1, 1),
+    (1, 1, -1),
+    (1, -1, 1),
+    (1, -1, -1),
+    (-1, 1, 0),
+    (-1, 0, 1),
+    (-1, -1, 0),
+    (-1, 0, -1),
+    (-1, 1, 1),
+    (-1, 1, -1),
+    (-1, -1, 1),
+    (-1, -1, -1),
+    (0, 1, 1),
+    (0, 1, -1),
+    (0, -1, 1),
+    (0, -1, -1),
+];
+
 #[derive(Debug, Eq, PartialEq, Hash, Clone)]
 struct Cube {
     x: i32,
@@ -61,13 +84,25 @@ pub fn part2(input: &str) -> i32 {
         let (px, py, pz) = q.pop_front().unwrap();
         for side in SIDES {
             let (sx, sy, sz) = side;
-            let (x, y, z) = (px + sx, py + sy, pz + sz);
+            let xyz = (px + sx, py + sy, pz + sz);
+            let (x, y, z) = xyz;
             if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z {
                 if cubes.contains(&Cube { x, y, z }) {
                     surface += 1;
-                } else if !seen.contains(&(x, y, z)) {
-                    q.push_back((x, y, z));
-                    seen.insert((x, y, z));
+                } else if !seen.contains(&xyz) {
+                    q.push_back(xyz);
+                    seen.insert(xyz);
+                }
+            }
+        }
+        for leak in LEAKS {
+            let (sx, sy, sz) = leak;
+            let xyz = (px + sx, py + sy, pz + sz);
+            let (x, y, z) = xyz;
+            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z {
+                if !cubes.contains(&Cube { x, y, z }) && !seen.contains(&xyz) {
+                    q.push_back(xyz);
+                    seen.insert(xyz);
                 }
             }
         }
@@ -80,7 +115,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day18e.txt")
+        include_str!("../input/2022/day18.txt")
     }
 
     #[test]
@@ -90,6 +125,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1234);
+        assert_eq!(part2(input()), 3318);
     }
 }
