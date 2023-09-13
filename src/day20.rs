@@ -1,5 +1,6 @@
 use itertools::Itertools;
 
+#[derive(Debug)]
 struct Elem {
     val: i32,
     moved: bool,
@@ -14,37 +15,47 @@ impl Elem {
     }
 }
 
-pub fn part1(input: &str) -> usize {
-    0
-    /*
-    let mut l = input.split(' ').map(Elem::read).collect_vec();
-    let ll = l.len();
-    for _ in 0..ll {
-        for i in 0..ll {
-            if l[i].moved == false {
-                l[i].moved = true;
-                let step = l[i].val.signum();
-                let till = i as i32 + l[i].val;
-                let j = i + step;
-                core::swap()
-
-
-
-
-
-
-
-
-                loop {
-                    l
-                }
-            }
-        }
-        // TODO move first not moved
+fn negmod(x: i32, m: usize) -> usize {
+    if x >= 0 {
+        ((x as u32) % (m as u32)).try_into().unwrap()
+    } else {
+        (x + ((-x) / (m as i32) + 1) * (m as i32))
+            .try_into()
+            .unwrap()
     }
+}
+pub fn part1(input: &str) -> i64 {
+    let mut file = input.lines().map(Elem::read).collect_vec();
+    let ll = file.len();
+    for _ in 0..ll {
+        let mut i = 0;
+        let mut j = ll;
+        while i < ll {
+            if file[i].moved == false {
+                j = negmod(i as i32 + file[i].val, ll - 1);
+                break;
+            }
+            i += 1;
+        }
+        let v = file[i].val;
+        file.remove(i);
+        file.insert(
+            j,
+            Elem {
+                val: v,
+                moved: true,
+            },
+        );
+        // eprintln!("{:?}", file);
+    }
+    let mut i = 0;
+    while file[i].val != 0 {
+        i += 1;
+    }
+    file[(i + 1000) % ll].val as i64
+        + file[(i + 2000) % ll].val as i64
+        + file[(i + 3000) % ll].val as i64
     //vec![1000, 2000, 3000, 4000].iter().map(|i| l.nth(1000 % ll).unwrap()).product()
-    0
-    */
 }
 
 pub fn part2(input: &str) -> usize {
@@ -61,7 +72,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 15120);
+        assert_eq!(part1(input()), 2215);
     }
 
     #[test]
