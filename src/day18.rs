@@ -62,10 +62,10 @@ pub fn part2(input: &str) -> i32 {
         for side in SIDES {
             let (sx, sy, sz) = side;
             let (x, y, z) = (px + sx, py + sy, pz + sz);
-            if (x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z) {
+            if x >= 0 && x <= max_x && y >= 0 && y <= max_y && z >= 0 && z <= max_z {
                 if cubes.contains(&Cube { x, y, z }) {
                     surface += 1;
-                } else if (!seen.contains(&(x, y, z))) {
+                } else if !seen.contains(&(x, y, z)) {
                     q.push_back((x, y, z));
                     seen.insert((x, y, z));
                 }
