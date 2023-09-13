@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 const WIDTH: usize = 7;
 const HEIGHT: usize = 1000;
 const ROCKS: u64 = 2022;
@@ -8,18 +10,51 @@ pub fn part1(input: &str) -> u64 {
 }
 
 fn tetris(input: &str, rocks: u64) -> u64 {
+    let input = input.trim();
+    let blows_len = input.len();
+
     let mut chamber = [[false; WIDTH]; HEIGHT];
     let mut base_height: u64 = 0;
     let mut height: usize = 0;
 
-    let mut blows = input.trim().chars().cycle();
-    for rock_num in 0..rocks {
-        let mut rock = get_rock(rock_num, height);
+    let mut blows = input.chars().cycle();
+    let mut seen: HashMap<(usize, usize), (usize, u64, u64)> = HashMap::new();
+    let mut blow_num: usize = 0;
+    let mut rock_num: u64 = 0;
+    let mut skipped = false;
+    while rock_num < rocks {
+        let rock_type: usize = usize::try_from(rock_num % 5).unwrap();
+        if (!skipped) {
+            let wrs = (rock_type, blow_num);
+            let real_height = base_height + u64::try_from(height).unwrap();
+            if let Some((2, old_height, old_rock_num)) = seen.get(&wrs) {
+                let cycle_rock_length = rock_num - old_rock_num;
+                let cycle_height = real_height - old_height;
+                let skip_cycles = (rocks - rock_num) / cycle_rock_length;
+                rock_num += skip_cycles * cycle_rock_length;
+                base_height += skip_cycles * cycle_height;
+                skipped = true;
+            } else {
+                seen.entry(wrs)
+                    .and_modify(|(old_count, old_height, old_rock_num)| {
+                        *old_count += 1;
+                        *old_height = real_height;
+                        *old_rock_num = rock_num;
+                    })
+                    .or_insert((1, real_height, rock_num));
+            }
+        }
+        let mut rock = get_rock(rock_type, height);
+        rock_num += 1;
         loop {
             let new_rock = move_rock(
                 &rock,
                 (0, if blows.next().unwrap() == '<' { -1 } else { 1 }),
             );
+            blow_num += 1;
+            if (blow_num == blows_len) {
+                blow_num = 0;
+            }
             if check_rock(chamber, &new_rock) {
                 rock = new_rock;
             }
@@ -98,9 +133,9 @@ fn fill_rock(chamber: &mut Chamber, rock: &Rock) {
     });
 }
 
-fn get_rock(rock_num: u64, height: usize) -> Rock {
+fn get_rock(rock_type: usize, height: usize) -> Rock {
     let height: isize = (height + 3).try_into().unwrap();
-    match rock_num % 5 {
+    match rock_type {
         0 => vec![(height, 2), (height, 3), (height, 4), (height, 5)], // --
         1 => vec![
             (height, 3),
@@ -158,9 +193,9 @@ mod tests {
         assert_eq!(part1(input()), 3151);
     }
 
-    #[ignore = "not implemented in fast enough way"]
+    // #[ignore = "not implemented in fast enough way"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1234);
+        assert_eq!(part2(input()), 1560919540245);
     }
 }
