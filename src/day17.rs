@@ -25,6 +25,7 @@ fn tetris(input: &str, rocks: u64) -> u64 {
     while rock_num < rocks {
         let rock_type: usize = usize::try_from(rock_num % 5).unwrap();
         if !skipped {
+            // cycle detection
             let wrs = (rock_type, blow_num);
             let real_height = base_height + u64::try_from(height).unwrap();
             if let Some((2, old_height, old_rock_num)) = seen.get(&wrs) {
@@ -193,7 +194,6 @@ mod tests {
         assert_eq!(part1(input()), 3151);
     }
 
-    // #[ignore = "not implemented in fast enough way"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 1560919540245);
