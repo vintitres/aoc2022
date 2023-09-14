@@ -1,7 +1,9 @@
 use itertools::Itertools;
 
 pub fn part1(input: &str) -> usize {
+    eprintln!("{:?}", input);
     let input = input.lines().collect_vec();
+    eprintln!("{:?}", input);
     input.len()
     /* 
     let (map, moves) = input.split_at(input.len() - 2);
