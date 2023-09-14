@@ -79,7 +79,7 @@ fn walk(
         Facing,
         &Vec<Wall>,
     ) -> Option<((usize, usize), Facing)>,
-    walls: &Vec<Wall>
+    walls: &Vec<Wall>,
 ) -> usize {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
@@ -123,7 +123,7 @@ fn step_fn1(
     map: &Vec<Vec<char>>,
     pos: (usize, usize),
     face: Facing,
-    _walls: &Vec<Wall>
+    _walls: &Vec<Wall>,
 ) -> Option<((usize, usize), Facing)> {
     let mut pos = pos;
     loop {
@@ -181,44 +181,63 @@ impl Wall {
         (pos.0 - self.wall_start.0, pos.1 - self.wall_start.1)
     }
     fn global_pos(&self, pos: LocalPos) -> GlobalPos {
-        (self.wall_start.0 - pos.0, self.wall_start.1 - pos.1)
+        (self.wall_start.0 + pos.0, self.wall_start.1 + pos.1)
     }
-    fn new_pos_when_entering(&self, facing: Facing, shift: usize, invert_shift: bool) -> (GlobalPos, Facing) {
-        (self.global_pos(match facing {
-            Facing::Down => (0, if invert_shift { L - 1 - shift } else { shift }),
-            Facing::Up => (L - 1, if invert_shift { L - 1 - shift } else { shift }),
-            Facing::Right => (if invert_shift { L - 1 - shift } else { shift }, 0),
-            Facing::Left => (if invert_shift { L - 1 - shift } else { shift }, L - 1),
-        }), facing)
+    fn new_pos_when_entering(
+        &self,
+        facing: Facing,
+        shift: usize,
+        invert_shift: bool,
+    ) -> (GlobalPos, Facing) {
+        (
+            self.global_pos(match facing {
+                Facing::Down => (0, if invert_shift { L - 1 - shift } else { shift }),
+                Facing::Up => (L - 1, if invert_shift { L - 1 - shift } else { shift }),
+                Facing::Right => (if invert_shift { L - 1 - shift } else { shift }, 0),
+                Facing::Left => (if invert_shift { L - 1 - shift } else { shift }, L - 1),
+            }),
+            facing,
+        )
     }
 
     fn try_step(&self, pos: GlobalPos, face: Facing, walls: &Vec<Wall>) -> (GlobalPos, Facing) {
         let local_pos = self.local_pos(pos);
         match face {
-            Facing::Up => if local_pos.0 == 0 {
-                self.up_wall.new_pos_when_entering(local_pos.1, walls)
-            } else {
-                ((pos.0 - 1, pos.1), face)
-            },
-            Facing::Down => if local_pos.0 == L - 1 {
-                self.down_wall.new_pos_when_entering(local_pos.1, walls)
-            } else {
-                ((pos.0 + 1, pos.1), face)
-            },
-            Facing::Left => if local_pos.1 == 0 {
-                self.left_wall.new_pos_when_entering(local_pos.0, walls)
-            } else {
-                ((pos.0, pos.1 - 1), face)
-            },
-            Facing::Right => if local_pos.1 == L - 1 {
-                self.right_wall.new_pos_when_entering(local_pos.0, walls)
-            } else {
-                ((pos.0, pos.1 + 1), face)
-            },
+            Facing::Up => {
+                if local_pos.0 == 0 {
+                    self.up_wall.new_pos_when_entering(local_pos.1, walls)
+                } else {
+                    ((pos.0 - 1, pos.1), face)
+                }
+            }
+            Facing::Down => {
+                if local_pos.0 == L - 1 {
+                    self.down_wall.new_pos_when_entering(local_pos.1, walls)
+                } else {
+                    ((pos.0 + 1, pos.1), face)
+                }
+            }
+            Facing::Left => {
+                if local_pos.1 == 0 {
+                    self.left_wall.new_pos_when_entering(local_pos.0, walls)
+                } else {
+                    ((pos.0, pos.1 - 1), face)
+                }
+            }
+            Facing::Right => {
+                if local_pos.1 == L - 1 {
+                    self.right_wall.new_pos_when_entering(local_pos.0, walls)
+                } else {
+                    ((pos.0, pos.1 + 1), face)
+                }
+            }
         }
     }
     fn has_global_pos(&self, pos: GlobalPos) -> bool {
-        pos.0 >= self.wall_start.0 && pos.0 < self.wall_start.0 + L && pos.1 >= self.wall_start.1 && pos.1 < self.wall_start.1 + L
+        pos.0 >= self.wall_start.0
+            && pos.0 < self.wall_start.0 + L
+            && pos.1 >= self.wall_start.1
+            && pos.1 < self.wall_start.1 + L
     }
 }
 
@@ -231,34 +250,207 @@ fn step_fn_cube(
     eprintln!("{:?} {:?}", pos, face);
     let wall = walls.iter().find(|w| w.has_global_pos(pos)).unwrap();
     let (new_pos, new_face) = wall.try_step(pos, face, walls);
-
-        /*
-              12-----|
-              |     1111
-              |     1111
-              |  13-1111------16
-              |  |  1111       |
-            222233334444       |
-            222233334444-46    |
-        |---222233334444  |    |
-        |   222233334444  |    |
-        |     |  |  55556666   |
-        |     |  35-55556666---|
-        |     |     55556666
-        |     |     55556666
-        |     25-----|    |
-        26----------------|
-
-
-        */
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
         Some('.') => Some((new_pos, new_face)),
         _ => panic!("out of bounds: {:?}", pos),
     }
 }
+
+/*
+      12-----|
+      |     1111
+      |     1111
+      |  13-1111------16
+      |  |  1111       |
+    222233334444       |
+    222233334444-46    |
+|---222233334444  |    |
+|   222233334444  |    |
+|     |  |  55556666   |
+|     |  35-55556666---|
+|     |     55556666
+|     |     55556666
+|     25-----|    |
+26----------------|
+
+
+*/
 pub fn part2(input: &str) -> usize {
-    walk(input, step_fn_cube, &vec![])
+    walk(
+        input,
+        step_fn_cube,
+        &vec![
+            Wall {
+                // mock wall to number form 1
+                left_wall: WallConnectionInfo {
+                    wall_index: 0,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 0,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 0,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 0,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                wall_start: (1000, 1000),
+            },
+            Wall {
+                // 1
+                left_wall: WallConnectionInfo {
+                    wall_index: 3,
+                    new_facing: Facing::Down,
+                    invert_shift: false,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 6,
+                    new_facing: Facing::Left,
+                    invert_shift: true,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 2,
+                    new_facing: Facing::Down,
+                    invert_shift: true,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 4,
+                    new_facing: Facing::Down,
+                    invert_shift: false,
+                },
+                wall_start: (0, 2 * L),
+            },
+            Wall {
+                // 2
+                left_wall: WallConnectionInfo {
+                    wall_index: 6,
+                    new_facing: Facing::Up,
+                    invert_shift: true,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 3,
+                    new_facing: Facing::Right,
+                    invert_shift: false,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 1,
+                    new_facing: Facing::Down,
+                    invert_shift: true,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 5,
+                    new_facing: Facing::Up,
+                    invert_shift: true,
+                },
+                wall_start: (L, 0),
+            },
+            Wall {
+                // 3
+                left_wall: WallConnectionInfo {
+                    wall_index: 2,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 4,
+                    new_facing: Facing::Right,
+                    invert_shift: false,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 1,
+                    new_facing: Facing::Right,
+                    invert_shift: false,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 5,
+                    new_facing: Facing::Right,
+                    invert_shift: false,
+                },
+                wall_start: (L, L),
+            },
+            Wall {
+                // 4
+                left_wall: WallConnectionInfo {
+                    wall_index: 3,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 6,
+                    new_facing: Facing::Down,
+                    invert_shift: true,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 1,
+                    new_facing: Facing::Up,
+                    invert_shift: false,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 5,
+                    new_facing: Facing::Down,
+                    invert_shift: false,
+                },
+                wall_start: (L, 2 * L),
+            },
+            Wall {
+                // 5
+                left_wall: WallConnectionInfo {
+                    wall_index: 3,
+                    new_facing: Facing::Up,
+                    invert_shift: true,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 6,
+                    new_facing: Facing::Right,
+                    invert_shift: false,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 4,
+                    new_facing: Facing::Up,
+                    invert_shift: false,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 2,
+                    new_facing: Facing::Up,
+                    invert_shift: true,
+                },
+                wall_start: (2 * L, 2 * L),
+            },
+            Wall {
+                // 6
+                left_wall: WallConnectionInfo {
+                    wall_index: 5,
+                    new_facing: Facing::Left,
+                    invert_shift: false,
+                },
+                right_wall: WallConnectionInfo {
+                    wall_index: 1,
+                    new_facing: Facing::Left,
+                    invert_shift: true,
+                },
+                up_wall: WallConnectionInfo {
+                    wall_index: 4,
+                    new_facing: Facing::Left,
+                    invert_shift: true,
+                },
+                down_wall: WallConnectionInfo {
+                    wall_index: 2,
+                    new_facing: Facing::Right,
+                    invert_shift: true,
+                },
+                wall_start: (2 * L, 3 * L),
+            },
+        ],
+    )
 }
 
 #[cfg(test)]
