@@ -139,7 +139,7 @@ fn step_fn1(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(
     }
 }
 
-fn step_fn_cube(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
+fn step_fn_cube(_map: &Vec<Vec<char>>, pos: (usize, usize), _face: Facing) -> Option<(usize, usize)> {
     Some(pos)
 }
 
