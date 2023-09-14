@@ -23,14 +23,12 @@ impl Facing {
     fn turn(&self, direction: Wise) -> Self {
         let values = [Self::Left, Self::Up, Self::Right, Self::Down].iter();
         match direction {
-            Wise::Clockwise => *values
-                .cycle()
-                .skip_while(|&f| f != self).nth(1)
-                .unwrap(),
+            Wise::Clockwise => *values.cycle().skip_while(|&f| f != self).nth(1).unwrap(),
             Wise::Counterclockwise => *values
                 .rev()
                 .cycle()
-                .skip_while(|&f| f != self).nth(1)
+                .skip_while(|&f| f != self)
+                .nth(1)
                 .unwrap(),
         }
     }
@@ -151,6 +149,7 @@ mod tests {
         assert_eq!(part1(input()), 56372);
     }
 
+    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 4);
