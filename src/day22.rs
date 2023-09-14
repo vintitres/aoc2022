@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-const L: usize = 4;
+const L: usize = 50;
 
 #[derive(Debug)]
 enum Wise {
@@ -277,180 +277,353 @@ fn step_fn_cube(
 
 */
 pub fn part2(input: &str) -> usize {
-    walk(
-        input,
-        step_fn_cube,
-        &vec![
-            Wall {
-                // mock wall to number form 1
-                left_wall: WallConnectionInfo {
-                    wall_index: 0,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 0,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 0,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 0,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                wall_start: (1000, 1000),
+    let _example_walls = vec![
+        Wall {
+            // mock wall to number form 1
+            left_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
             },
-            Wall {
-                // 1
-                left_wall: WallConnectionInfo {
-                    wall_index: 3,
-                    new_facing: Facing::Down,
-                    invert_shift: false,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 6,
-                    new_facing: Facing::Left,
-                    invert_shift: true,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 2,
-                    new_facing: Facing::Down,
-                    invert_shift: true,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 4,
-                    new_facing: Facing::Down,
-                    invert_shift: false,
-                },
-                wall_start: (0, 2 * L),
+            right_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
             },
-            Wall {
-                // 2
-                left_wall: WallConnectionInfo {
-                    wall_index: 6,
-                    new_facing: Facing::Up,
-                    invert_shift: true,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 3,
-                    new_facing: Facing::Right,
-                    invert_shift: false,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 1,
-                    new_facing: Facing::Down,
-                    invert_shift: true,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 5,
-                    new_facing: Facing::Up,
-                    invert_shift: true,
-                },
-                wall_start: (L, 0),
+            up_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
             },
-            Wall {
-                // 3
-                left_wall: WallConnectionInfo {
-                    wall_index: 2,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 4,
-                    new_facing: Facing::Right,
-                    invert_shift: false,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 1,
-                    new_facing: Facing::Right,
-                    invert_shift: false,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 5,
-                    new_facing: Facing::Right,
-                    invert_shift: false,
-                },
-                wall_start: (L, L),
+            down_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
             },
-            Wall {
-                // 4
-                left_wall: WallConnectionInfo {
-                    wall_index: 3,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 6,
-                    new_facing: Facing::Down,
-                    invert_shift: true,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 1,
-                    new_facing: Facing::Up,
-                    invert_shift: false,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 5,
-                    new_facing: Facing::Down,
-                    invert_shift: false,
-                },
-                wall_start: (L, 2 * L),
+            wall_start: (1000, 1000),
+        },
+        Wall {
+            // 1
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Down,
+                invert_shift: false,
             },
-            Wall {
-                // 5
-                left_wall: WallConnectionInfo {
-                    wall_index: 3,
-                    new_facing: Facing::Up,
-                    invert_shift: true,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 6,
-                    new_facing: Facing::Right,
-                    invert_shift: false,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 4,
-                    new_facing: Facing::Up,
-                    invert_shift: false,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 2,
-                    new_facing: Facing::Up,
-                    invert_shift: true,
-                },
-                wall_start: (2 * L, 2 * L),
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Left,
+                invert_shift: true,
             },
-            Wall {
-                // 6
-                left_wall: WallConnectionInfo {
-                    wall_index: 5,
-                    new_facing: Facing::Left,
-                    invert_shift: false,
-                },
-                right_wall: WallConnectionInfo {
-                    wall_index: 1,
-                    new_facing: Facing::Left,
-                    invert_shift: true,
-                },
-                up_wall: WallConnectionInfo {
-                    wall_index: 4,
-                    new_facing: Facing::Left,
-                    invert_shift: true,
-                },
-                down_wall: WallConnectionInfo {
-                    wall_index: 2,
-                    new_facing: Facing::Right,
-                    invert_shift: true,
-                },
-                wall_start: (2 * L, 3 * L),
+            up_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Down,
+                invert_shift: true,
             },
-        ],
-    )
+            down_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Down,
+                invert_shift: false,
+            },
+            wall_start: (0, 2 * L),
+        },
+        Wall {
+            // 2
+            left_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Down,
+                invert_shift: true,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            wall_start: (L, 0),
+        },
+        Wall {
+            // 3
+            left_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            wall_start: (L, L),
+        },
+        Wall {
+            // 4
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Down,
+                invert_shift: true,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Up,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Down,
+                invert_shift: false,
+            },
+            wall_start: (L, 2 * L),
+        },
+        Wall {
+            // 5
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Up,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            wall_start: (2 * L, 2 * L),
+        },
+        Wall {
+            // 6
+            left_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Left,
+                invert_shift: true,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Left,
+                invert_shift: true,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Right,
+                invert_shift: true,
+            },
+            wall_start: (2 * L, 3 * L),
+        },
+    ];
+    /*
+       12
+       3
+      45
+      6
+    */
+    let walls = vec![
+        Wall {
+            // mock wall to number form 1
+            left_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 0,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            wall_start: (1000, 1000),
+        },
+        Wall {
+            // 1
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Down,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Left,
+                invert_shift: true,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Down,
+                invert_shift: true,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Down,
+                invert_shift: false,
+            },
+            wall_start: (0, 2 * L),
+        },
+        Wall {
+            // 2
+            left_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Down,
+                invert_shift: true,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            wall_start: (L, 0),
+        },
+        Wall {
+            // 3
+            left_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            wall_start: (L, L),
+        },
+        Wall {
+            // 4
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Down,
+                invert_shift: true,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Up,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Down,
+                invert_shift: false,
+            },
+            wall_start: (L, 2 * L),
+        },
+        Wall {
+            // 5
+            left_wall: WallConnectionInfo {
+                wall_index: 3,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 6,
+                new_facing: Facing::Right,
+                invert_shift: false,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Up,
+                invert_shift: false,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Up,
+                invert_shift: true,
+            },
+            wall_start: (2 * L, 2 * L),
+        },
+        Wall {
+            // 6
+            left_wall: WallConnectionInfo {
+                wall_index: 5,
+                new_facing: Facing::Left,
+                invert_shift: false,
+            },
+            right_wall: WallConnectionInfo {
+                wall_index: 1,
+                new_facing: Facing::Left,
+                invert_shift: true,
+            },
+            up_wall: WallConnectionInfo {
+                wall_index: 4,
+                new_facing: Facing::Left,
+                invert_shift: true,
+            },
+            down_wall: WallConnectionInfo {
+                wall_index: 2,
+                new_facing: Facing::Right,
+                invert_shift: true,
+            },
+            wall_start: (2 * L, 3 * L),
+        },
+    ];
+    walk(input, step_fn_cube, &walls)
 }
 
 #[cfg(test)]
@@ -458,7 +631,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day22e.txt")
+        include_str!("../input/2022/day22.txt")
     }
 
     #[test]
