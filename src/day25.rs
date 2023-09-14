@@ -13,7 +13,7 @@ mod tests {
     fn input() -> &'static str {
         include_str!("../input/2022/day25.txt")
     }
-    
+
     #[ignore = "not implemented"]
     #[test]
     fn test_part1() {

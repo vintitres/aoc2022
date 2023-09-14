@@ -147,7 +147,7 @@ mod tests {
     fn input() -> &'static str {
         include_str!("../input/2022/day21.txt")
     }
-    
+
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 158661812617812);

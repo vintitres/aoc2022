@@ -1,62 +1,45 @@
 use itertools::Itertools;
 
-#[derive(Debug)]
-struct Elem {
-    val: i32,
-    moved: bool,
-}
-
-impl Elem {
-    fn read(sval: &str) -> Elem {
-        Elem {
-            val: sval.parse().unwrap(),
-            moved: false,
-        }
-    }
-}
-
-fn negmod(x: i32, m: usize) -> usize {
+fn negmod(x: i64, m: usize) -> usize {
     if x >= 0 {
-        ((x as u32) % (m as u32)).try_into().unwrap()
+        ((x as u64) % (m as u64)).try_into().unwrap()
     } else {
-        (x + ((-x) / (m as i32) + 1) * (m as i32))
+        (x + ((-x) / (m as i64) + 1) * (m as i64))
             .try_into()
             .unwrap()
     }
 }
-pub fn part1(input: &str) -> i32 {
-    let mut file = input.lines().map(Elem::read).collect_vec();
+
+pub fn part1(input: &str) -> i64 {
+    decrypt(input, 1, 1)
+}
+
+fn decrypt(input: &str, key: i64, times: usize) -> i64 {
+    let mut file: Vec<(usize, i64)> = input
+        .lines()
+        .map(|e| e.parse::<i64>().unwrap() * key)
+        .enumerate()
+        .collect_vec();
     let ll = file.len();
-    for _ in 0..ll {
-        let mut i = 0;
-        let mut j = ll;
-        while i < ll {
-            if !file[i].moved {
-                j = negmod(i as i32 + file[i].val, ll - 1);
-                break;
-            }
-            i += 1;
-        }
-        let v = file[i].val;
+    for index_to_move in (0..ll).cycle().take(ll * times) {
+        let i = file
+            .iter()
+            .position(|&(index, _)| index == index_to_move)
+            .unwrap();
+        let val = file[i].1;
+        let j = negmod(i as i64 + val, ll - 1);
         file.remove(i);
-        file.insert(
-            j,
-            Elem {
-                val: v,
-                moved: true,
-            },
-        );
-        // eprintln!("{:?}", file);
+        file.insert(j, (index_to_move, val));
     }
-    let zeropos = file.iter().position(|f| f.val == 0).unwrap();
+    let zeropos = file.iter().position(|&(_, val)| val == 0).unwrap();
     [1000, 2000, 3000]
         .iter()
-        .map(|i| file[(i + zeropos) % ll].val)
+        .map(|i| file[(i + zeropos) % ll].1)
         .sum()
 }
 
-pub fn part2(input: &str) -> usize {
-    input.len()
+pub fn part2(input: &str) -> i64 {
+    decrypt(input, 811589153, 10)
 }
 
 #[cfg(test)]
@@ -66,14 +49,13 @@ mod tests {
     fn input() -> &'static str {
         include_str!("../input/2022/day20.txt")
     }
-    
+
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 2215);
     }
-    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 1234);
+        assert_eq!(part2(input()), 8927480683);
     }
 }
