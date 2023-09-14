@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-const L: usize = 50;
+const L: usize = 4;
 
 #[derive(Debug)]
 enum Wise {
@@ -157,6 +157,7 @@ fn step_fn_cube(
     pos: (usize, usize),
     face: Facing,
 ) -> Option<((usize, usize), Facing)> {
+    eprintln!("{:?} {:?}", pos, face);
     let (new_pos, new_face) = match face {
         /*
               12-----|
@@ -184,10 +185,10 @@ fn step_fn_cube(
             } else if pos.0 == 2 * L - 1 && pos.1 >= L && pos.1 < 2 * L {
                 // 35
                 ((2 * L + 2 * L - 1 - pos.1, 2 * L), Facing::Right)
-            } else if pos.0 == 3 * L && pos.1 >= 2 * L && pos.1 < 3 * L {
+            } else if pos.0 == 3 * L - 1 && pos.1 >= 2 * L && pos.1 < 3 * L {
                 // 52
-                ((2 * L, 3 * L - 1 - pos.1), Facing::Up)
-            } else if pos.0 == 3 * L && pos.1 >= 3 * L {
+                ((2 * L - 1, 3 * L - 1 - pos.1), Facing::Up)
+            } else if pos.0 == 3 * L - 1 && pos.1 >= 3 * L {
                 // 62
                 ((L + 4 * L - 1 - pos.1, 0), Facing::Right)
             } else {
@@ -198,7 +199,7 @@ fn step_fn_cube(
             if pos.1 < L && pos.0 == L - 1 {
                 // 21
                 ((0, 2 * L + L - 1 - pos.1), Facing::Down)
-            } else if pos.1 >= L && pos.1 < 2 * L && pos.0 == L - 1 {
+            } else if pos.1 >= L && pos.1 < 2 * L && pos.0 == L {
                 // 31
                 ((pos.1 - L, 2 * L), Facing::Right)
             } else if pos.0 == 0 && pos.1 >= 2 * L && pos.1 < 3 * L {
@@ -255,7 +256,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day22.txt")
+        include_str!("../input/2022/day22e.txt")
     }
 
     #[test]
