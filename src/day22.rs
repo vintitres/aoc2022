@@ -1,7 +1,4 @@
 use itertools::Itertools;
-use std::thread::sleep;
-use std::time;
-
 
 const L: usize = 50;
 
@@ -101,29 +98,7 @@ fn walk(
                             face = f;
                         }
                     }
-                    map[pos.0][pos.1] = match face {Facing::Down => 'v', Facing::Up => '^', Facing::Left => '<', Facing::Right => '>'};
-
-                    // debug
-                    /* 
-                    let ib = std::cmp::max(0, pos.0 as isize - 10) as usize;
-                    let ie = std::cmp::min(pos.0 + 10, map.len());
-                    for i in ib..ie {
-                        let jb = std::cmp::max(0, pos.1 as isize - 10) as usize;
-                        let je = std::cmp::min(pos.1 + 10, map[i].len());
-                        // eprintln!("{:?} {:?}", jb, je);
-                        for j in jb..je {
-                            if (i, j) == pos {
-                                eprint!("*");
-                            } else {
-                                eprint!("{}", map[i][j]);
-                            }
-                        }
-                        eprintln!();
-                    }
-                    // eprintln!("{:?} {:?}", ib, ie);
-                    sleep(time::Duration::from_millis(500));
-                    */
-                    eprintln!("{:?} {:?}", pos, face);
+                    //map[pos.0][pos.1] = match face {Facing::Down => 'v', Facing::Up => '^', Facing::Left => '<', Facing::Right => '>'};
                 }
             }
             Move::Turn(wise) => {
@@ -294,26 +269,24 @@ fn step_fn_cube(
     }
 }
 
-/*
-      12-----|
-      |     1111
-      |     1111
-      |  13-1111------16
-      |  |  1111       |
-    222233334444       |
-    222233334444-46    |
-|---222233334444  |    |
-|   222233334444  |    |
-|     |  |  55556666   |
-|     |  35-55556666---|
-|     |     55556666
-|     |     55556666
-|     25-----|    |
-26----------------|
-
-
-*/
 pub fn part2(input: &str) -> u64 {
+    /*
+        12-----|
+        |     1111
+        |     1111
+        |  13-1111------16
+        |  |  1111       |
+        222233334444       |
+        222233334444-46    |
+    |---222233334444  |    |
+    |   222233334444  |    |
+    |     |  |  55556666   |
+    |     |  35-55556666---|
+    |     |     55556666
+    |     |     55556666
+    |     25-----|    |
+    26----------------|
+    */
     let _example_walls = vec![
         Wall {
             // mock wall to number form 1
@@ -678,6 +651,6 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 4);
+        assert_eq!(part2(input()), 197047);
     }
 }
