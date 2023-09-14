@@ -83,7 +83,7 @@ fn walk(
 ) -> u64 {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
-    let mut map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
+    let map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
     let moves = parse_moves(moves[1]);
     let mut face = Facing::Right;
     let mut pos = (0, map[0].iter().position(|&c| c == '.').unwrap());
