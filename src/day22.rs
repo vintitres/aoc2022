@@ -2,9 +2,12 @@ use itertools::Itertools;
 
 pub fn part1(input: &str) -> usize {
     let input = input.lines().collect_vec();
+    input.len()
+    /* 
     let (map, moves) = input.split_at(input.len() - 2);
     let moves = moves[0];
     moves.len()
+    */
 }
 
 pub fn part2(input: &str) -> usize {
