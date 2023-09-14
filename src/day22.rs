@@ -98,7 +98,6 @@ fn walk(
                             face = f;
                         }
                     }
-                    //map[pos.0][pos.1] = match face {Facing::Down => 'v', Facing::Up => '^', Facing::Left => '<', Facing::Right => '>'};
                 }
             }
             Move::Turn(wise) => {
@@ -106,14 +105,6 @@ fn walk(
             }
         }
     }
-    /*
-    for mm in map {
-        for m in mm {
-            eprint!("{}", m);
-        }
-        eprintln!();
-    }
-    */
     1000 * (pos.0 as u64 + 1)
         + 4 * (pos.1 as u64 + 1)
         + match face {
@@ -264,7 +255,7 @@ fn step_fn_cube(
     }
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
-        Some('.') | Some('<') | Some('>') | Some('^') | Some('v') => Some((new_pos, new_face)),
+        Some('.') => Some((new_pos, new_face)),
         _ => panic!("out of bounds: {:?}", new_pos),
     }
 }
