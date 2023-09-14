@@ -106,7 +106,7 @@ fn walk(
             }
         }
     }
-    /* 
+    /*
     for mm in map {
         for m in mm {
             eprint!("{}", m);
@@ -264,7 +264,7 @@ fn step_fn_cube(
     }
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
-        Some('.') | Some('<') | Some('>') | Some('^') | Some('v')  => Some((new_pos, new_face)),
+        Some('.') | Some('<') | Some('>') | Some('^') | Some('v') => Some((new_pos, new_face)),
         _ => panic!("out of bounds: {:?}", new_pos),
     }
 }
