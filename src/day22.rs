@@ -83,7 +83,7 @@ fn walk(
 ) -> usize {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
-    let map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
+    let mut map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
     let moves = parse_moves(moves[1]);
     let mut face = Facing::Right;
     let mut pos = (0, map[0].iter().position(|&c| c == '.').unwrap());
@@ -98,12 +98,19 @@ fn walk(
                             face = f;
                         }
                     }
+                    map[pos.0][pos.1] = match face {Facing::Down => 'v', Facing::Up => '^', Facing::Left => '<', Facing::Right => '>'};
                 }
             }
             Move::Turn(wise) => {
                 face = face.turn(wise);
             }
         }
+    }
+    for mm in map {
+        for m in mm {
+            eprint!("{}", m);
+        }
+        eprintln!();
     }
     1000 * (pos.0 + 1)
         + 4 * (pos.1 + 1)
@@ -252,7 +259,7 @@ fn step_fn_cube(
     let (new_pos, new_face) = wall.try_step(pos, face, walls);
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
-        Some('.') => Some((new_pos, new_face)),
+        Some('.') | Some('<') | Some('>') | Some('^') | Some('v')  => Some((new_pos, new_face)),
         _ => panic!("out of bounds: {:?}", pos),
     }
 }
