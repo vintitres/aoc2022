@@ -71,7 +71,11 @@ fn parse_moves(input: &str) -> Vec<Move> {
 
 fn walk(
     input: &str,
-    step_fn: for<'a> fn(&'a Vec<Vec<char>>, (usize, usize), Facing) -> Option<(usize, usize)>,
+    step_fn: for<'a> fn(
+        &'a Vec<Vec<char>>,
+        (usize, usize),
+        Facing,
+    ) -> Option<((usize, usize), Facing)>,
 ) -> usize {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
@@ -85,7 +89,10 @@ fn walk(
                 for _ in 0..steps {
                     match step_fn(&map, pos, face) {
                         None => break,
-                        Some(p) => pos = p,
+                        Some((p, f)) => {
+                            pos = p;
+                            face = f;
+                        }
                     }
                 }
             }
@@ -108,7 +115,11 @@ pub fn part1(input: &str) -> usize {
     walk(input, step_fn1)
 }
 
-fn step_fn1(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
+fn step_fn1(
+    map: &Vec<Vec<char>>,
+    pos: (usize, usize),
+    face: Facing,
+) -> Option<((usize, usize), Facing)> {
     let mut pos = pos;
     loop {
         let new_pos = match face {
@@ -133,16 +144,46 @@ fn step_fn1(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(
         };
         match map[new_pos.0].get(new_pos.1) {
             Some('#') => return None,
-            Some('.') => return Some(new_pos),
+            Some('.') => return Some((new_pos, face)),
             _ => pos = new_pos,
         }
     }
 }
 
-fn step_fn_cube(_map: &Vec<Vec<char>>, pos: (usize, usize), _face: Facing) -> Option<(usize, usize)> {
-    Some(pos)
+fn step_fn_cube(
+    map: &Vec<Vec<char>>,
+    pos: (usize, usize),
+    face: Facing,
+) -> Option<((usize, usize), Facing)> {
+    let mut pos = pos;
+    loop {
+        let new_pos = match face {
+            Facing::Down => (if pos.0 + 1 == map.len() { 0 } else { pos.0 + 1 }, pos.1),
+            Facing::Up => (if pos.0 == 0 { map.len() - 1 } else { pos.0 - 1 }, pos.1),
+            Facing::Left => (
+                pos.0,
+                if pos.1 == 0 {
+                    map[pos.0].len() - 1
+                } else {
+                    pos.1 - 1
+                },
+            ),
+            Facing::Right => (
+                pos.0,
+                if pos.1 + 1 == map[pos.0].len() {
+                    0
+                } else {
+                    pos.1 + 1
+                },
+            ),
+        };
+        match map[new_pos.0].get(new_pos.1) {
+            Some('#') => return None,
+            Some('.') => return Some((new_pos, face)),
+            _ => pos = new_pos,
+        }
+    }
 }
-
 pub fn part2(input: &str) -> usize {
     walk(input, step_fn_cube)
 }
