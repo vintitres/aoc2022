@@ -368,7 +368,7 @@ pub fn part2(input: &str) -> u64 {
             left_wall: WallConnectionInfo {
                 wall_index: 6,
                 new_facing: Facing::Up,
-                invert_shift: false,
+                invert_shift: true,
             },
             right_wall: WallConnectionInfo {
                 wall_index: 3,
@@ -479,7 +479,7 @@ pub fn part2(input: &str) -> u64 {
             down_wall: WallConnectionInfo {
                 wall_index: 2,
                 new_facing: Facing::Right,
-                invert_shift: false,
+                invert_shift: true,
             },
             wall_start: (2 * L, 3 * L),
         },
@@ -554,7 +554,7 @@ pub fn part2(input: &str) -> u64 {
             up_wall: WallConnectionInfo {
                 wall_index: 6,
                 new_facing: Facing::Up,
-                invert_shift: true,
+                invert_shift: false,
             },
             down_wall: WallConnectionInfo {
                 wall_index: 3,
@@ -655,7 +655,7 @@ pub fn part2(input: &str) -> u64 {
             down_wall: WallConnectionInfo {
                 wall_index: 2,
                 new_facing: Facing::Down,
-                invert_shift: true,
+                invert_shift: false,
             },
             wall_start: (3 * L, 0),
         },
