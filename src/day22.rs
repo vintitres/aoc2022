@@ -74,12 +74,12 @@ fn parse_moves(input: &str) -> Vec<Move> {
 fn walk(
     input: &str,
     step_fn: for<'a> fn(
-        &'a Vec<Vec<char>>,
+        &'a [Vec<char>],
         (usize, usize),
         Facing,
-        &Vec<Wall>,
+        &[Wall],
     ) -> Option<((usize, usize), Facing)>,
-    walls: &Vec<Wall>,
+    walls: &[Wall],
 ) -> u64 {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
@@ -120,10 +120,10 @@ pub fn part1(input: &str) -> u64 {
 }
 
 fn step_fn1(
-    map: &Vec<Vec<char>>,
+    map: &[Vec<char>],
     pos: (usize, usize),
     face: Facing,
-    _walls: &Vec<Wall>,
+    _walls: &[Wall],
 ) -> Option<((usize, usize), Facing)> {
     let mut pos = pos;
     loop {
@@ -163,7 +163,7 @@ struct WallConnectionInfo {
     invert_shift: bool,
 }
 impl WallConnectionInfo {
-    fn new_pos_when_entering(&self, shift: usize, walls: &Vec<Wall>) -> (GlobalPos, Facing) {
+    fn new_pos_when_entering(&self, shift: usize, walls: &[Wall]) -> (GlobalPos, Facing) {
         walls[self.wall_index].new_pos_when_entering(self.new_facing, shift, self.invert_shift)
     }
 }
@@ -200,7 +200,7 @@ impl Wall {
         )
     }
 
-    fn try_step(&self, pos: GlobalPos, face: Facing, walls: &Vec<Wall>) -> (GlobalPos, Facing) {
+    fn try_step(&self, pos: GlobalPos, face: Facing, walls: &[Wall]) -> (GlobalPos, Facing) {
         let local_pos = self.local_pos(pos);
         match face {
             Facing::Up => {
@@ -242,10 +242,10 @@ impl Wall {
 }
 
 fn step_fn_cube(
-    map: &Vec<Vec<char>>,
+    map: &[Vec<char>],
     pos: (usize, usize),
     face: Facing,
-    walls: &Vec<Wall>,
+    walls: &[Wall],
 ) -> Option<((usize, usize), Facing)> {
     // eprintln!("{:?} {:?}", pos, face);
     let wall = walls.iter().find(|w| w.has_global_pos(pos)).unwrap();
