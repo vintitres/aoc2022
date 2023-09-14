@@ -179,3 +179,13 @@ pub fn d19p1(input: &str) -> i32 {
 pub fn d19p2(input: &str) -> i32 {
     super::day19::part2(input)
 }
+
+#[aoc(day22, part1)]
+pub fn d22p1(input: &str) -> u64 {
+    super::day22::part1(input)
+}
+
+#[aoc(day22, part2)]
+pub fn d22p2(input: &str) -> u64 {
+    super::day22::part2(input)
+}

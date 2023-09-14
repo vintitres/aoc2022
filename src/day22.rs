@@ -1,4 +1,7 @@
 use itertools::Itertools;
+use std::thread::sleep;
+use std::time;
+
 
 const L: usize = 50;
 
@@ -80,7 +83,7 @@ fn walk(
         &Vec<Wall>,
     ) -> Option<((usize, usize), Facing)>,
     walls: &Vec<Wall>,
-) -> usize {
+) -> u64 {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
     let mut map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
@@ -99,6 +102,28 @@ fn walk(
                         }
                     }
                     map[pos.0][pos.1] = match face {Facing::Down => 'v', Facing::Up => '^', Facing::Left => '<', Facing::Right => '>'};
+
+                    // debug
+                    /* 
+                    let ib = std::cmp::max(0, pos.0 as isize - 10) as usize;
+                    let ie = std::cmp::min(pos.0 + 10, map.len());
+                    for i in ib..ie {
+                        let jb = std::cmp::max(0, pos.1 as isize - 10) as usize;
+                        let je = std::cmp::min(pos.1 + 10, map[i].len());
+                        // eprintln!("{:?} {:?}", jb, je);
+                        for j in jb..je {
+                            if (i, j) == pos {
+                                eprint!("*");
+                            } else {
+                                eprint!("{}", map[i][j]);
+                            }
+                        }
+                        eprintln!();
+                    }
+                    // eprintln!("{:?} {:?}", ib, ie);
+                    sleep(time::Duration::from_millis(500));
+                    */
+                    eprintln!("{:?} {:?}", pos, face);
                 }
             }
             Move::Turn(wise) => {
@@ -106,14 +131,16 @@ fn walk(
             }
         }
     }
+    /* 
     for mm in map {
         for m in mm {
             eprint!("{}", m);
         }
         eprintln!();
     }
-    1000 * (pos.0 + 1)
-        + 4 * (pos.1 + 1)
+    */
+    1000 * (pos.0 as u64 + 1)
+        + 4 * (pos.1 as u64 + 1)
         + match face {
             Facing::Right => 0,
             Facing::Down => 1,
@@ -122,7 +149,7 @@ fn walk(
         }
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> u64 {
     walk(input, step_fn1, &vec![])
 }
 
@@ -254,13 +281,16 @@ fn step_fn_cube(
     face: Facing,
     walls: &Vec<Wall>,
 ) -> Option<((usize, usize), Facing)> {
-    eprintln!("{:?} {:?}", pos, face);
+    // eprintln!("{:?} {:?}", pos, face);
     let wall = walls.iter().find(|w| w.has_global_pos(pos)).unwrap();
     let (new_pos, new_face) = wall.try_step(pos, face, walls);
+    if face != new_face {
+        eprintln!("{:?} {:?} -> {:?} {:?}", pos, face, new_pos, new_face);
+    }
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
         Some('.') | Some('<') | Some('>') | Some('^') | Some('v')  => Some((new_pos, new_face)),
-        _ => panic!("out of bounds: {:?}", pos),
+        _ => panic!("out of bounds: {:?}", new_pos),
     }
 }
 
@@ -283,7 +313,7 @@ fn step_fn_cube(
 
 
 */
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> u64 {
     let _example_walls = vec![
         Wall {
             // mock wall to number form 1
@@ -338,7 +368,7 @@ pub fn part2(input: &str) -> usize {
             left_wall: WallConnectionInfo {
                 wall_index: 6,
                 new_facing: Facing::Up,
-                invert_shift: true,
+                invert_shift: false,
             },
             right_wall: WallConnectionInfo {
                 wall_index: 3,
@@ -449,7 +479,7 @@ pub fn part2(input: &str) -> usize {
             down_wall: WallConnectionInfo {
                 wall_index: 2,
                 new_facing: Facing::Right,
-                invert_shift: true,
+                invert_shift: false,
             },
             wall_start: (2 * L, 3 * L),
         },
@@ -483,7 +513,7 @@ pub fn part2(input: &str) -> usize {
                 new_facing: Facing::Left,
                 invert_shift: false,
             },
-            wall_start: (1000, 1000),
+            wall_start: (L * 10, L * 10),
         },
         Wall {
             // 1
