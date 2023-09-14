@@ -99,8 +99,14 @@ pub fn part1(input: &str) -> usize {
             }
         }
     }
-    1000 * (pos.0 + 1) + 4 * (pos.1 + 1) + match face { Facing::Right => 0, Facing::Down => 1, Facing::Left => 2, Facing::Up => 3 }
-    
+    1000 * (pos.0 + 1)
+        + 4 * (pos.1 + 1)
+        + match face {
+            Facing::Right => 0,
+            Facing::Down => 1,
+            Facing::Left => 2,
+            Facing::Up => 3,
+        }
 }
 
 fn try_step(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
@@ -109,8 +115,22 @@ fn try_step(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(
         let new_pos = match face {
             Facing::Down => (if pos.0 + 1 == map.len() { 0 } else { pos.0 + 1 }, pos.1),
             Facing::Up => (if pos.0 == 0 { map.len() - 1 } else { pos.0 - 1 }, pos.1),
-            Facing::Left => (pos.0, if pos.1 == 0 { map[pos.0].len() - 1 } else { pos.1 - 1 }),
-            Facing::Right => (pos.0, if pos.1 + 1 == map[pos.0].len() { 0 } else { pos.1 + 1 }),
+            Facing::Left => (
+                pos.0,
+                if pos.1 == 0 {
+                    map[pos.0].len() - 1
+                } else {
+                    pos.1 - 1
+                },
+            ),
+            Facing::Right => (
+                pos.0,
+                if pos.1 + 1 == map[pos.0].len() {
+                    0
+                } else {
+                    pos.1 + 1
+                },
+            ),
         };
         match map[new_pos.0].get(new_pos.1) {
             Some('#') => return None,
