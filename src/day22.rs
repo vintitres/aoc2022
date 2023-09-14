@@ -69,7 +69,10 @@ fn parse_moves(input: &str) -> Vec<Move> {
     elements
 }
 
-pub fn part1(input: &str) -> usize {
+fn walk(
+    input: &str,
+    step_fn: for<'a> fn(&'a Vec<Vec<char>>, (usize, usize), Facing) -> Option<(usize, usize)>,
+) -> usize {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
     let map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
@@ -80,7 +83,7 @@ pub fn part1(input: &str) -> usize {
         match m {
             Move::Walk(steps) => {
                 for _ in 0..steps {
-                    match try_step(&map, pos, face) {
+                    match step_fn(&map, pos, face) {
                         None => break,
                         Some(p) => pos = p,
                     }
@@ -101,7 +104,11 @@ pub fn part1(input: &str) -> usize {
         }
 }
 
-fn try_step(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
+pub fn part1(input: &str) -> usize {
+    walk(input, step_fn1)
+}
+
+fn step_fn1(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
     let mut pos = pos;
     loop {
         let new_pos = match face {
@@ -132,8 +139,12 @@ fn try_step(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(
     }
 }
 
+fn step_fn_cube(map: &Vec<Vec<char>>, pos: (usize, usize), face: Facing) -> Option<(usize, usize)> {
+    Some(pos)
+}
+
 pub fn part2(input: &str) -> usize {
-    input.len()
+    walk(input, step_fn_cube)
 }
 
 #[cfg(test)]
