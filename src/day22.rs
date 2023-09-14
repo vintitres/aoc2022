@@ -116,7 +116,7 @@ fn walk(
 }
 
 pub fn part1(input: &str) -> u64 {
-    walk(input, step_fn1, &vec![])
+    walk(input, step_fn1, &[])
 }
 
 fn step_fn1(
