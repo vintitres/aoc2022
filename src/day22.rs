@@ -71,16 +71,14 @@ fn parse_moves(input: &str) -> Vec<Move> {
     elements
 }
 
-fn walk(
-    input: &str,
-    step_fn: for<'a> fn(
-        &'a [Vec<char>],
-        (usize, usize),
-        Facing,
-        &[Wall],
-    ) -> Option<((usize, usize), Facing)>,
-    walls: &[Wall],
-) -> u64 {
+type StepFn = for<'a> fn(
+    &'a [Vec<char>],
+    (usize, usize),
+    Facing,
+    &[Wall],
+) -> Option<((usize, usize), Facing)>;
+
+fn walk(input: &str, step_fn: StepFn, walls: &[Wall]) -> u64 {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
     let map = map.iter().map(|l| l.chars().collect_vec()).collect_vec();
