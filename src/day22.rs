@@ -77,7 +77,9 @@ fn walk(
         &'a Vec<Vec<char>>,
         (usize, usize),
         Facing,
+        &Vec<Wall>,
     ) -> Option<((usize, usize), Facing)>,
+    walls: &Vec<Wall>
 ) -> usize {
     let input = input.lines().collect_vec();
     let (map, moves) = input.split_at(input.len() - 2);
@@ -89,7 +91,7 @@ fn walk(
         match m {
             Move::Walk(steps) => {
                 for _ in 0..steps {
-                    match step_fn(&map, pos, face) {
+                    match step_fn(&map, pos, face, walls) {
                         None => break,
                         Some((p, f)) => {
                             pos = p;
@@ -114,13 +116,14 @@ fn walk(
 }
 
 pub fn part1(input: &str) -> usize {
-    walk(input, step_fn1)
+    walk(input, step_fn1, &vec![])
 }
 
 fn step_fn1(
     map: &Vec<Vec<char>>,
     pos: (usize, usize),
     face: Facing,
+    _walls: &Vec<Wall>
 ) -> Option<((usize, usize), Facing)> {
     let mut pos = pos;
     loop {
@@ -152,13 +155,83 @@ fn step_fn1(
     }
 }
 
+type LocalPos = (usize, usize);
+type GlobalPos = (usize, usize);
+struct WallConnectionInfo {
+    wall_index: usize,
+    new_facing: Facing,
+    invert_shift: bool,
+}
+impl WallConnectionInfo {
+    fn new_pos_when_entering(&self, shift: usize, walls: &Vec<Wall>) -> (GlobalPos, Facing) {
+        walls[self.wall_index].new_pos_when_entering(self.new_facing, shift, self.invert_shift)
+    }
+}
+
+struct Wall {
+    left_wall: WallConnectionInfo,
+    right_wall: WallConnectionInfo,
+    up_wall: WallConnectionInfo,
+    down_wall: WallConnectionInfo,
+    wall_start: GlobalPos,
+}
+
+impl Wall {
+    fn local_pos(&self, pos: GlobalPos) -> LocalPos {
+        (pos.0 - self.wall_start.0, pos.1 - self.wall_start.1)
+    }
+    fn global_pos(&self, pos: LocalPos) -> GlobalPos {
+        (self.wall_start.0 - pos.0, self.wall_start.1 - pos.1)
+    }
+    fn new_pos_when_entering(&self, facing: Facing, shift: usize, invert_shift: bool) -> (GlobalPos, Facing) {
+        (self.global_pos(match facing {
+            Facing::Down => (0, if invert_shift { L - 1 - shift } else { shift }),
+            Facing::Up => (L - 1, if invert_shift { L - 1 - shift } else { shift }),
+            Facing::Right => (if invert_shift { L - 1 - shift } else { shift }, 0),
+            Facing::Left => (if invert_shift { L - 1 - shift } else { shift }, L - 1),
+        }), facing)
+    }
+
+    fn try_step(&self, pos: GlobalPos, face: Facing, walls: &Vec<Wall>) -> (GlobalPos, Facing) {
+        let local_pos = self.local_pos(pos);
+        match face {
+            Facing::Up => if local_pos.0 == 0 {
+                self.up_wall.new_pos_when_entering(local_pos.1, walls)
+            } else {
+                ((pos.0 - 1, pos.1), face)
+            },
+            Facing::Down => if local_pos.0 == L - 1 {
+                self.down_wall.new_pos_when_entering(local_pos.1, walls)
+            } else {
+                ((pos.0 + 1, pos.1), face)
+            },
+            Facing::Left => if local_pos.1 == 0 {
+                self.left_wall.new_pos_when_entering(local_pos.0, walls)
+            } else {
+                ((pos.0, pos.1 - 1), face)
+            },
+            Facing::Right => if local_pos.1 == L - 1 {
+                self.right_wall.new_pos_when_entering(local_pos.0, walls)
+            } else {
+                ((pos.0, pos.1 + 1), face)
+            },
+        }
+    }
+    fn has_global_pos(&self, pos: GlobalPos) -> bool {
+        pos.0 >= self.wall_start.0 && pos.0 < self.wall_start.0 + L && pos.1 >= self.wall_start.1 && pos.1 < self.wall_start.1 + L
+    }
+}
+
 fn step_fn_cube(
     map: &Vec<Vec<char>>,
     pos: (usize, usize),
     face: Facing,
+    walls: &Vec<Wall>,
 ) -> Option<((usize, usize), Facing)> {
     eprintln!("{:?} {:?}", pos, face);
-    let (new_pos, new_face) = match face {
+    let wall = walls.iter().find(|w| w.has_global_pos(pos)).unwrap();
+    let (new_pos, new_face) = wall.try_step(pos, face, walls);
+
         /*
               12-----|
               |     1111
@@ -178,69 +251,6 @@ fn step_fn_cube(
 
 
         */
-        Facing::Down => {
-            if pos.0 == 2 * L - 1 && pos.1 < L {
-                // 25
-                ((3 * L - 1, 2 * L + L - 1 - pos.1), Facing::Up)
-            } else if pos.0 == 2 * L - 1 && pos.1 >= L && pos.1 < 2 * L {
-                // 35
-                ((2 * L + 2 * L - 1 - pos.1, 2 * L), Facing::Right)
-            } else if pos.0 == 3 * L - 1 && pos.1 >= 2 * L && pos.1 < 3 * L {
-                // 52
-                ((2 * L - 1, 3 * L - 1 - pos.1), Facing::Up)
-            } else if pos.0 == 3 * L - 1 && pos.1 >= 3 * L {
-                // 62
-                ((L + 4 * L - 1 - pos.1, 0), Facing::Right)
-            } else {
-                ((pos.0 + 1, pos.1), face)
-            }
-        }
-        Facing::Up => {
-            if pos.1 < L && pos.0 == L - 1 {
-                // 21
-                ((0, 2 * L + L - 1 - pos.1), Facing::Down)
-            } else if pos.1 >= L && pos.1 < 2 * L && pos.0 == L {
-                // 31
-                ((pos.1 - L, 2 * L), Facing::Right)
-            } else if pos.0 == 0 && pos.1 >= 2 * L && pos.1 < 3 * L {
-                // 12
-                ((L, 3 * L - 1 + pos.1), Facing::Down)
-            } else if pos.0 == 2 * L && pos.1 >= 3 * L {
-                // 64
-                ((L + 4 * L - 1 - pos.1, 3 * L - 1), Facing::Left)
-            } else {
-                ((pos.0 - 1, pos.1), face)
-            }
-        }
-        Facing::Left => {
-            if pos.0 < L && pos.1 == 2 * L {
-                // 13
-                ((L, L + pos.0), Facing::Down)
-            } else if pos.0 >= L && pos.0 < 2 * L && pos.1 == 0 {
-                // 26
-                ((3 * L - 1, 3 * L + 2 * L - 1 - pos.0), Facing::Up)
-            } else if pos.0 >= 2 * L && pos.1 == 2 * L {
-                // 53
-                ((3 * L - 1, L + 3 * L - 1 - pos.0), Facing::Up)
-            } else {
-                ((pos.0, pos.1 - 1), face)
-            }
-        }
-        Facing::Right => {
-            if pos.0 < L && pos.1 == 3 * L - 1 {
-                // 16
-                ((2 * L + L - 1 - pos.0, 4 * L - 1), Facing::Left)
-            } else if pos.0 >= L && pos.0 < 2 * L && pos.1 == 3 * L - 1 {
-                // 46
-                ((2 * L, 3 * L + 2 * L - 1 - pos.0), Facing::Down)
-            } else if pos.0 >= 2 * L && pos.1 == 4 * L - 1 {
-                // 61
-                ((3 * L - 1 - pos.0, 3 * L - 1), Facing::Left)
-            } else {
-                ((pos.0, pos.1 + 1), face)
-            }
-        }
-    };
     match map[new_pos.0].get(new_pos.1) {
         Some('#') => None,
         Some('.') => Some((new_pos, new_face)),
@@ -248,7 +258,7 @@ fn step_fn_cube(
     }
 }
 pub fn part2(input: &str) -> usize {
-    walk(input, step_fn_cube)
+    walk(input, step_fn_cube, &vec![])
 }
 
 #[cfg(test)]
