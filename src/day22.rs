@@ -23,21 +23,15 @@ impl Facing {
     fn turn(&self, direction: Wise) -> Self {
         let values = [Self::Left, Self::Up, Self::Right, Self::Down].iter();
         match direction {
-            Wise::Clockwise => values
+            Wise::Clockwise => *values
                 .cycle()
-                .skip_while(|&f| f != self)
-                .skip(1)
-                .next()
-                .unwrap()
-                .clone(),
-            Wise::Counterclockwise => values
+                .skip_while(|&f| f != self).nth(1)
+                .unwrap(),
+            Wise::Counterclockwise => *values
                 .rev()
                 .cycle()
-                .skip_while(|&f| f != self)
-                .skip(1)
-                .next()
-                .unwrap()
-                .clone(),
+                .skip_while(|&f| f != self).nth(1)
+                .unwrap(),
         }
     }
 }
@@ -47,7 +41,7 @@ fn parse_moves(input: &str) -> Vec<Move> {
     let mut current_number = String::new();
 
     for c in input.chars() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             current_number.push(c);
         } else {
             if !current_number.is_empty() {
@@ -154,10 +148,9 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), 4);
+        assert_eq!(part1(input()), 56372);
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 4);
