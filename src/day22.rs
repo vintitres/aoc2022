@@ -1,5 +1,10 @@
+use itertools::Itertools;
+
 pub fn part1(input: &str) -> usize {
-    input.len()
+    let input = input.lines().collect_vec();
+    let (map, moves) = input.split_at(input.len() - 2);
+    let moves = moves[0];
+    moves.len()
 }
 
 pub fn part2(input: &str) -> usize {
@@ -14,7 +19,6 @@ mod tests {
         include_str!("../input/2022/day22.txt")
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 4);
