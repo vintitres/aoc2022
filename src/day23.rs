@@ -73,7 +73,7 @@ fn sim(input: &str, step_limit: usize) -> (usize, Elfs) {
         // draw_field(&elves, &new_elves);
         elves = new_elves;
     }
-    return (step_limit, elves);
+    (step_limit, elves)
 }
 
 #[allow(dead_code)]
