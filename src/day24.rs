@@ -64,9 +64,27 @@ pub fn part1(input: &str) -> usize {
         } else if step != last_step {
             panic!("unexpected step");
         }
+        for new_pos in possible_moves_from(pos, max_x, max_y) {
+            // TODO switch to HashMap instead of trying all dirs / lazy / ugh!
+            if ![Direction::Up, Direction::Down, Direction::Left, Direction::Right].iter().any(|dir| blizzards.contains(&Blizzard { x: new_pos.0, y: new_pos.1, dir: *dir })) {
+                if new_pos == (0, 1) {
+                    return step + 1;
+                }
+                q.push_back((step + 1, new_pos));
+            }
+        }
         
-    }
-    1
+    } 
+    panic!("No route found")
+}
+
+fn possible_moves_from(pos: (usize, usize), max_x: usize, max_y: usize) -> Vec<(usize, usize)> {
+    [(pos.0, pos.1 + 1), (pos.0, pos.1 - 1), (pos.0 + 1, pos.1), (pos.0 - 1, pos.1)]
+        .iter()
+        .filter(|(x,y)| (*x == max_x + 1 && *y == max_y) || (*x >= 1 && *x <= max_x && *y >= 1 && *y <= max_y) )
+        .copied()
+        .collect_vec()
+
 }
 
 fn blow(blizzards: &HashSet<Blizzard>, max_x: usize, max_y: usize) -> HashSet<Blizzard> {
@@ -82,7 +100,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day24.txt")
+        include_str!("../input/2022/day24e.txt")
     }
 
     #[ignore = "not implemented"]
