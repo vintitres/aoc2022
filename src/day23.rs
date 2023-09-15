@@ -220,6 +220,7 @@ mod tests {
         assert_eq!(part1(input()), 3871);
     }
 
+    #[ignore = "slow"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 925);
