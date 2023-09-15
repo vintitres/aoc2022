@@ -21,7 +21,7 @@ impl SNAFU {
             digits: input
                 .chars()
                 .rev()
-                .map(|c| Self::parse_digit(c))
+                .map(Self::parse_digit)
                 .collect_vec(),
         }
     }
@@ -89,7 +89,7 @@ impl SNAFU {
         s -= p;
         let mut ss = Self::from_dec(n - s);
         ss.push(1);
-        return ss;
+        ss
 
         // 1bits: 2 * 5^0 =   2    2
         // 2bits: 2 * 5^1 =  10   12
