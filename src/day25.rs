@@ -18,11 +18,7 @@ impl SNAFU {
     }
     fn parse(input: &str) -> Self {
         Self {
-            digits: input
-                .chars()
-                .rev()
-                .map(Self::parse_digit)
-                .collect_vec(),
+            digits: input.chars().rev().map(Self::parse_digit).collect_vec(),
         }
     }
     fn to_dec(&self) -> i64 {
@@ -34,6 +30,8 @@ impl SNAFU {
         }
         val
     }
+
+    #[allow(dead_code)]
     fn inc(&mut self) {
         let mut added = false;
         for d in &mut self.digits {
@@ -57,38 +55,53 @@ impl SNAFU {
             *d *= -1;
         }
     }
-    fn push(&mut self, v: i8) {
+    fn shift_push(&mut self, v: i8, i: usize) {
+        if self.digits.len() > i {
+            panic!("shift push on too big number");
+        }
+        while self.digits.len() < i {
+            self.digits.push(0);
+        }
         match v {
             1 | 2 => self.digits.push(v),
             _ => panic!("bad push digit value: {}", v),
         }
     }
     fn from_dec(n: i64) -> Self {
-        if n == 0 {
-            return Self::zero();
-        }
+        eprintln!("from_dec({})", n);
         if n < 0 {
             let mut s = Self::from_dec(-n);
             s.neg();
             return s;
         }
+        if n <= 2 {
+            let mut s = Self::zero();
+            (0..n).for_each(|_| s.inc());
+            return s;
+        }
         // TODO analyze this
         let mut p: i64 = 1;
         let mut s = 0;
+        let mut i = 0;
         while s < n {
             s += 2 * p;
             p *= SNAFU_BASE as i64;
+            i += 1;
+            eprintln!("{s} {p}");
         }
         p /= SNAFU_BASE as i64;
+        i -= 1;
         s -= p;
         if s < n {
-            let mut ss = Self::from_dec(n - s);
-            ss.push(2);
+            eprintln!("2 ({}) {}", s, n - 2 * p);
+            let mut ss = Self::from_dec(n - 2 * p);
+            ss.shift_push(2, i);
             return ss;
         }
         s -= p;
-        let mut ss = Self::from_dec(n - s);
-        ss.push(1);
+        eprintln!("1 ({}) {}", s, n - p);
+        let mut ss = Self::from_dec(n - p);
+        ss.shift_push(1, i);
         ss
 
         // 1bits: 2 * 5^0 =   2    2
@@ -137,7 +150,6 @@ impl SNAFU {
 
 pub fn part1(input: &str) -> String {
     let fuelsum: i64 = input.lines().map(|l| SNAFU::parse(l).to_dec()).sum();
-    // fuelsum.to_string()
     SNAFU::from_dec(fuelsum).to_str()
 }
 
@@ -150,13 +162,12 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day25e.txt")
+        include_str!("../input/2022/day25.txt")
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part1() {
-        assert_eq!(part1(input()), "");
+        assert_eq!(part1(input()), "2=--=0000-1-0-=1=0=2");
     }
 
     #[ignore = "not implemented"]
