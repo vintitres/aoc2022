@@ -16,6 +16,17 @@ const DIRECTIONS: [Direction; 4] = [Direction::N, Direction::S, Direction::W, Di
 const ELF: char = '#';
 
 pub fn part1(input: &str) -> isize {
+    let (_, elves) = sim(input, 10);
+    let minmax_x = elves.iter().map(|e| e.x).minmax();
+    let minmax_y = elves.iter().map(|e| e.y).minmax();
+    if let (MinMax(min_x, max_x), MinMax(min_y, max_y)) = (minmax_x, minmax_y) {
+        (max_x - min_x + 1) * (max_y - min_y + 1) - (elves.len() as isize)
+    } else {
+        panic!("unexpected field size");
+    }
+}
+
+fn sim(input: &str, step_limit: usize) -> (usize, Elfs) {
     let mut elves: HashSet<Elf> = HashSet::from_iter(
         input
             .lines()
@@ -34,7 +45,7 @@ pub fn part1(input: &str) -> isize {
             })
             .flatten(),
     );
-    for step in 0..10 {
+    for step in 0..step_limit {
         let maybe_new_elfs = elves.iter().map(|e| e.maybe_move(step, &elves));
         let mut count_map = HashMap::new();
         maybe_new_elfs.for_each(|e| *count_map.entry(e).or_insert(0) += 1);
@@ -53,13 +64,7 @@ pub fn part1(input: &str) -> isize {
         draw_field(&elves, &new_elves);
         elves = new_elves;
     }
-    let minmax_x = elves.iter().map(|e| e.x).minmax();
-    let minmax_y = elves.iter().map(|e| e.y).minmax();
-    if let (MinMax(min_x, max_x), MinMax(min_y, max_y)) = (minmax_x, minmax_y) {
-        (max_x - min_x + 1) * (max_y - min_y + 1) - (elves.len() as isize)
-    } else {
-        panic!("unexpected field size");
-    }
+    return (step_limit, elves);
 }
 
 fn draw_field(elves: &Elfs, new_elves: &Elfs) {
