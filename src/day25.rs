@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-const Snafu_BASE: i8 = 5;
+const SNAFU_BASE: i8 = 5;
 struct Snafu {
     digits: Vec<i8>,
 }
@@ -18,11 +18,7 @@ impl Snafu {
     }
     fn parse(input: &str) -> Self {
         Self {
-            digits: input
-                .chars()
-                .rev()
-                .map(Self::parse_digit)
-                .collect_vec(),
+            digits: input.chars().rev().map(Self::parse_digit).collect_vec(),
         }
     }
     fn to_dec(&self) -> i64 {
@@ -30,11 +26,11 @@ impl Snafu {
         let mut val = 0;
         for d in self.digits.iter() {
             val += p * (*d as i64);
-            p *= Snafu_BASE as i64;
+            p *= SNAFU_BASE as i64;
         }
         val
     }
-    
+
     #[allow(dead_code)]
     fn inc(&mut self) {
         let mut added = false;
@@ -89,11 +85,11 @@ impl Snafu {
         let mut i = 0;
         while s < n {
             s += 2 * p;
-            p *= Snafu_BASE as i64;
+            p *= SNAFU_BASE as i64;
             i += 1;
             eprintln!("{s} {p}");
         }
-        p /= Snafu_BASE as i64;
+        p /= SNAFU_BASE as i64;
         i -= 1;
         s -= p;
         if s < n {
