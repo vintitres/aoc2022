@@ -61,12 +61,22 @@ fn sim(input: &str, step_limit: usize) -> (usize, Elfs) {
                 .iter()
                 .map(|e| e.move_if_allowed(step, &elves, &allowed_moves)),
         );
-        draw_field(&elves, &new_elves);
+        if elves
+            .iter()
+            .sorted()
+            .zip(new_elves.iter().sorted())
+            .all(|(e, ne)| e == ne)
+        {
+            return (step + 1, elves);
+        }
+        // eprintln!("{:?}", elves.iter().zip(new_elves.iter()).collect_vec());
+        // draw_field(&elves, &new_elves);
         elves = new_elves;
     }
     return (step_limit, elves);
 }
 
+#[allow(dead_code)]
 fn draw_field(elves: &Elfs, new_elves: &Elfs) {
     let minmax_x = elves.iter().map(|e| e.x).minmax();
     let minmax_y = elves.iter().map(|e| e.y).minmax();
@@ -94,7 +104,7 @@ fn draw_field(elves: &Elfs, new_elves: &Elfs) {
 
 type Elfs = HashSet<Elf>;
 
-#[derive(Debug, PartialEq, Hash, Eq, Copy, Clone)]
+#[derive(Debug, PartialEq, Hash, Eq, Copy, Clone, Ord, PartialOrd)]
 struct Elf {
     x: isize,
     y: isize,
@@ -158,9 +168,11 @@ impl Elf {
     }
 
     fn maybe_move(&self, step: usize, elves: &Elfs) -> Elf {
+        /*
         if self.x == 0 && self.y == 4 {
             eprintln!("{:?}", self.elves_around().collect_vec());
         }
+         */
         if !self.elves_around().any(|e| elves.contains(&e)) {
             return Elf {
                 x: self.x,
@@ -192,7 +204,7 @@ impl Elf {
 }
 
 pub fn part2(input: &str) -> usize {
-    input.len()
+    sim(input, usize::MAX).0
 }
 
 #[cfg(test)]
@@ -208,9 +220,8 @@ mod tests {
         assert_eq!(part1(input()), 3871);
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 4);
+        assert_eq!(part2(input()), 925);
     }
 }
