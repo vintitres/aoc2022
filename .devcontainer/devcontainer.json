@@ -3,7 +3,10 @@
 {
 	"name": "Rust",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/rust:1-1-bookworm"
+	"image": "mcr.microsoft.com/devcontainers/rust:1-1-bookworm",
+	"features": {
+		"ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {}
+	}
 
 	// Use 'mounts' to make the cargo cache persistent in a Docker Volume.
 	// "mounts": [
