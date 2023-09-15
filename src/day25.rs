@@ -68,7 +68,7 @@ impl Snafu {
         }
     }
     fn from_dec(n: i64) -> Self {
-        eprintln!("from_dec({})", n);
+        // eprintln!("from_dec({})", n);
         if n < 0 {
             let mut s = Self::from_dec(-n);
             s.neg();
@@ -79,7 +79,6 @@ impl Snafu {
             (0..n).for_each(|_| s.inc());
             return s;
         }
-        // TODO analyze this
         let mut p: i64 = 1;
         let mut s = 0;
         let mut i = 0;
@@ -87,21 +86,12 @@ impl Snafu {
             s += 2 * p;
             p *= SNAFU_BASE as i64;
             i += 1;
-            eprintln!("{s} {p}");
         }
         p /= SNAFU_BASE as i64;
         i -= 1;
-        s -= p;
-        if s < n {
-            eprintln!("2 ({}) {}", s, n - 2 * p);
-            let mut ss = Self::from_dec(n - 2 * p);
-            ss.shift_push(2, i);
-            return ss;
-        }
-        s -= p;
-        eprintln!("1 ({}) {}", s, n - p);
-        let mut ss = Self::from_dec(n - p);
-        ss.shift_push(1, i);
+        let d: i8 = if n > s - p { 2 } else { 1 };
+        let mut ss = Self::from_dec(n - (d as i64) * p);
+        ss.shift_push(d, i);
         ss
 
         // 1bits: 2 * 5^0 =   2    2
