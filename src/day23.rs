@@ -20,7 +20,7 @@ pub fn part1(input: &str) -> isize {
         input
             .lines()
             .enumerate()
-            .map(|(x, l)| {
+            .flat_map(|(x, l)| {
                 l.chars().enumerate().map(move |(y, c)| {
                     if c == ELF {
                         Some(Elf {
@@ -32,7 +32,6 @@ pub fn part1(input: &str) -> isize {
                     }
                 })
             })
-            .flatten()
             .flatten(),
     );
     for step in 0..10 {
@@ -141,7 +140,7 @@ impl Elf {
 
     fn elves_around(&self) -> impl Iterator<Item = Elf> + '_ {
         irange(self.x - 1, self.x + 1)
-            .map(move |x| {
+            .flat_map(move |x| {
                 irange(self.y - 1, self.y + 1).map(move |y| {
                     if x == self.x && y == self.y {
                         None
@@ -150,7 +149,6 @@ impl Elf {
                     }
                 })
             })
-            .flatten()
             .flatten()
     }
 
