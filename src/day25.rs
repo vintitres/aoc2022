@@ -1,11 +1,11 @@
 use itertools::Itertools;
 
-const SNAFU_BASE: i8 = 5;
-struct SNAFU {
+const Snafu_BASE: i8 = 5;
+struct Snafu {
     digits: Vec<i8>,
 }
 
-impl SNAFU {
+impl Snafu {
     fn parse_digit(c: char) -> i8 {
         match c {
             '2' => 2,
@@ -18,7 +18,11 @@ impl SNAFU {
     }
     fn parse(input: &str) -> Self {
         Self {
-            digits: input.chars().rev().map(Self::parse_digit).collect_vec(),
+            digits: input
+                .chars()
+                .rev()
+                .map(Self::parse_digit)
+                .collect_vec(),
         }
     }
     fn to_dec(&self) -> i64 {
@@ -26,11 +30,11 @@ impl SNAFU {
         let mut val = 0;
         for d in self.digits.iter() {
             val += p * (*d as i64);
-            p *= SNAFU_BASE as i64;
+            p *= Snafu_BASE as i64;
         }
         val
     }
-
+    
     #[allow(dead_code)]
     fn inc(&mut self) {
         let mut added = false;
@@ -85,11 +89,11 @@ impl SNAFU {
         let mut i = 0;
         while s < n {
             s += 2 * p;
-            p *= SNAFU_BASE as i64;
+            p *= Snafu_BASE as i64;
             i += 1;
             eprintln!("{s} {p}");
         }
-        p /= SNAFU_BASE as i64;
+        p /= Snafu_BASE as i64;
         i -= 1;
         s -= p;
         if s < n {
@@ -149,8 +153,8 @@ impl SNAFU {
 }
 
 pub fn part1(input: &str) -> String {
-    let fuelsum: i64 = input.lines().map(|l| SNAFU::parse(l).to_dec()).sum();
-    SNAFU::from_dec(fuelsum).to_str()
+    let fuelsum: i64 = input.lines().map(|l| Snafu::parse(l).to_dec()).sum();
+    Snafu::from_dec(fuelsum).to_str()
 }
 
 pub fn part2(input: &str) -> usize {
