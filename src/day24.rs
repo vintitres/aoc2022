@@ -74,6 +74,10 @@ impl Blizzard {
     }
 }
 pub fn part1(input: &str) -> usize {
+    travel(input, 2)
+}
+
+fn travel(input: &str, start_action: usize) -> usize {
     let mut blizzards: HashSet<Blizzard> = HashSet::from_iter(
         input
             .lines()
@@ -92,10 +96,13 @@ pub fn part1(input: &str) -> usize {
     let mut last_step = 0;
     let mut q = VecDeque::new();
     let mut seen = HashSet::new();
-    q.push_back((0, (0, 1)));
-    seen.insert((0, (0, 1)));
+    let start_pos = (0, 1);
+    let end_pos = (max_x + 1, max_y);
+    let start_step = (0, start_pos, start_action);
+    q.push_back(start_step);
+    seen.insert(start_step);
     while !q.is_empty() {
-        let (step, pos) = q.pop_front().unwrap();
+        let (step, pos, action) = q.pop_front().unwrap();
 
         // eprintln!("{:?} {:?}", step, pos);
         // if step > 20 {
@@ -109,7 +116,7 @@ pub fn part1(input: &str) -> usize {
             panic!("unexpected step");
         }
         for new_pos in possible_moves_from(pos, max_x, max_y) {
-            let next_step = (step + 1, new_pos);
+            let mut next_step = (step + 1, new_pos, action);
             if seen.contains(&next_step) {
                 continue;
             }
@@ -128,11 +135,17 @@ pub fn part1(input: &str) -> usize {
                     dir: *dir,
                 })
             }) {
-                if new_pos == (max_x + 1, max_y) {
-                    return step + 1;
+                if action != 1 && new_pos == end_pos {
+                    if action == 2 {
+                        return step + 1;
+                    } else if action == 0 {
+                        next_step = (next_step.0, next_step.1, 1);
+                    }
+                } else if action == 1 && new_pos == start_pos {
+                    next_step = (next_step.0, next_step.1, 2);
                 }
                 seen.insert(next_step);
-                q.push_back(next_step)
+                q.push_back(next_step);
             }
         }
     }
@@ -171,7 +184,7 @@ fn blow(blizzards: &HashSet<Blizzard>, max_x: usize, max_y: usize) -> HashSet<Bl
 }
 
 pub fn part2(input: &str) -> usize {
-    input.len()
+    travel(input, 0)
 }
 
 #[cfg(test)]
@@ -187,9 +200,8 @@ mod tests {
         assert_eq!(part1(input()), 225);
     }
 
-    #[ignore = "not implemented"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 4);
+        assert_eq!(part2(input()), 711);
     }
 }
