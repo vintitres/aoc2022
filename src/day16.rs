@@ -122,7 +122,7 @@ fn consolidate(valves: &BTreeMap<String, Valve>) -> BTreeMap<String, Valve> {
 pub fn part1(input: &str) -> i64 {
     let valves = consolidate(&BTreeMap::from_iter(input.lines().map(Valve::read)));
     let allflow = valves.values().map(|v| v.flow_rate).sum();
-    let mut bestflow = 1500;
+    let mut bestflow = 2000;  // know can get this much from previous long runs (helps cut off branches)
     dfs(
         &valves,
         &"AA".to_string(),
