@@ -122,8 +122,8 @@ fn dfs(
             + (time_limit as i32 - state.minute as i32) * openflow as i32)
             as u32;
         if doneflow > *bestflow {
-            dbg!(&bestflow);
             *bestflow = doneflow;
+            dbg!(&bestflow);
         }
         return;
     }
