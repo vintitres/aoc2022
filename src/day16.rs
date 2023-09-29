@@ -169,10 +169,8 @@ fn dfs(
                     time_limit,
                     seen,
                 );
-            }
-
-            // 1 opens, 2 goes into new tunnel
-            if v1.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos1) {
+            } else if v1.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos1) {
+                // 1 opens, 2 goes into new tunnel
                 for (vv2, dist) in &v2.tunnels {
                     if !state.open_valves.is_valve_open(*vv2) && *vv2 != state.pos1 {
                         dfs(
@@ -194,13 +192,11 @@ fn dfs(
                         );
                     }
                 }
-            }
-
-            // 1 goes into new tunnel, 2 opens
-            if state.pos1 != state.pos2
+            } else if state.pos1 != state.pos2
                 && v2.flow_rate > 0
                 && !state.open_valves.is_valve_open(state.pos2)
             {
+                // 1 goes into new tunnel, 2 opens
                 for (vv1, dist) in &v1.tunnels {
                     if !state.open_valves.is_valve_open(*vv1) && *vv1 != state.pos2 {
                         dfs(
@@ -222,33 +218,35 @@ fn dfs(
                         );
                     }
                 }
-            }
-
-            //  1 and 2 go into new tunnel
-            for (vv1, dist1) in &v1.tunnels {
-                for (vv2, dist2) in &v2.tunnels {
-                    if !state.open_valves.is_valve_open(*vv1)
-                        && !state.open_valves.is_valve_open(*vv2)
-                    {
-                        let step_dist = std::cmp::min(dist1, dist2);
-                        dfs(
-                            State {
-                                pos1dist: dist1 - step_dist,
-                                pos2dist: dist2 - step_dist,
-                                pos1: *vv1,
-                                pos2: *vv2,
-                                minute: state.minute + step_dist,
-                                done_flow: state.done_flow + openflow * *step_dist as u32,
-                                ..state
-                            }
-                            .normalized(),
-                            valves,
-                            openflow,
-                            bestflow,
-                            allflow,
-                            time_limit,
-                            seen,
-                        );
+            } else {
+                //  1 and 2 go into new tunnel
+                for (vv1, dist1) in &v1.tunnels {
+                    for (vv2, dist2) in &v2.tunnels {
+                        if !state.open_valves.is_valve_open(*vv1)
+                            && *vv1 != state.pos2
+                            && !state.open_valves.is_valve_open(*vv2)
+                            && *vv2 != state.pos1
+                        {
+                            let step_dist = std::cmp::min(dist1, dist2);
+                            dfs(
+                                State {
+                                    pos1dist: dist1 - step_dist,
+                                    pos2dist: dist2 - step_dist,
+                                    pos1: *vv1,
+                                    pos2: *vv2,
+                                    minute: state.minute + step_dist,
+                                    done_flow: state.done_flow + openflow * *step_dist as u32,
+                                    ..state
+                                }
+                                .normalized(),
+                                valves,
+                                openflow,
+                                bestflow,
+                                allflow,
+                                time_limit,
+                                seen,
+                            );
+                        }
                     }
                 }
             }
@@ -271,28 +269,29 @@ fn dfs(
                     time_limit,
                     seen,
                 );
-            }
-            // 1 goes into new tunnel, 2 moves
-            for (vv1, dist) in &v1.tunnels {
-                if !state.open_valves.is_valve_open(*vv1) {
-                    let step_dist = std::cmp::min(dist, &state.pos2dist);
-                    dfs(
-                        State {
-                            pos1dist: dist - step_dist,
-                            pos1: *vv1,
-                            pos2dist: state.pos2dist - step_dist,
-                            minute: state.minute + step_dist,
-                            done_flow: state.done_flow + openflow * *step_dist as u32,
-                            ..state
-                        }
-                        .normalized(),
-                        valves,
-                        openflow,
-                        bestflow,
-                        allflow,
-                        time_limit,
-                        seen,
-                    );
+            } else {
+                // 1 goes into new tunnel, 2 moves
+                for (vv1, dist) in &v1.tunnels {
+                    if !state.open_valves.is_valve_open(*vv1) && *vv1 != state.pos2 {
+                        let step_dist = std::cmp::min(dist, &state.pos2dist);
+                        dfs(
+                            State {
+                                pos1dist: dist - step_dist,
+                                pos1: *vv1,
+                                pos2dist: state.pos2dist - step_dist,
+                                minute: state.minute + step_dist,
+                                done_flow: state.done_flow + openflow * *step_dist as u32,
+                                ..state
+                            }
+                            .normalized(),
+                            valves,
+                            openflow,
+                            bestflow,
+                            allflow,
+                            time_limit,
+                            seen,
+                        );
+                    }
                 }
             }
         }
@@ -397,15 +396,14 @@ mod tests {
         include_str!("../input/2022/day16.txt")
     }
 
-    #[ignore = "slow"]
     #[test]
     fn test_part1() {
         assert_eq!(part1(input()), 2250);
     }
 
-    #[ignore = "not implemented"]
+    #[ignore = "slow"]
     #[test]
     fn test_part2() {
-        assert_eq!(part2(input()), 4);
+        assert_eq!(part2(input()), 3015);
     }
 }
