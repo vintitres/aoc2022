@@ -121,9 +121,8 @@ fn dfs(
         let doneflow = (state.done_flow as i32
             + (time_limit as i32 - state.minute as i32) * openflow as i32)
             as u32;
-        //eprintln!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
-            eprintln!("{:?}", bestflow);
+            dbg!(&bestflow);
             *bestflow = doneflow;
         }
         return;
@@ -292,7 +291,6 @@ fn indexify(valves: &BTreeMap<String, Valve_>) -> (usize, Vec<Valve>) {
     let names = valves.keys().enumerate().collect_vec();
     let name_to_index =
         BTreeMap::from_iter(names.iter().map(|(i, name)| (String::from(*name), *i)));
-    // eprintln!("{:?}", name_to_index);
     (
         *name_to_index.get("AA").unwrap(),
         names
