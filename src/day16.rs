@@ -2,40 +2,98 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use itertools::Itertools;
 
-struct Valve {
+struct Valve_ {
     flow_rate: i64,
     tunnels: BTreeMap<String, i64>,
 }
 
-impl Valve {
+impl Valve_ {
     fn read(line: &str) -> (String, Self) {
         let (_, name, _, _, flow_rate, _, _, _, _, tunnels) =
             line.splitn(10, ' ').collect_tuple().unwrap();
         (
             name.to_string(),
-            Valve {
+            Self {
                 flow_rate: flow_rate[5..flow_rate.len() - 1].parse().unwrap(),
                 tunnels: BTreeMap::from_iter(tunnels.split(", ").map(String::from).map(|t| (t, 1))),
             },
         )
     }
+    fn to_indexified(&self, name_to_index: &BTreeMap<String, usize>) -> Valve {
+        Valve {
+            flow_rate: self.flow_rate,
+            tunnels: BTreeMap::from_iter(
+                self.tunnels
+                    .iter()
+                    .map(|(name, dist)| (*name_to_index.get(name).unwrap(), *dist)),
+            ),
+        }
+    }
+}
+
+struct Valve {
+    flow_rate: i64,
+    tunnels: BTreeMap<usize, i64>,
+}
+
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+struct ValvesState {
+    open_valves_bitmask: u64,
+}
+
+impl std::ops::BitOr<ValvesState> for ValvesState {
+    type Output = Self;
+    fn bitor(self, other: Self) -> Self {
+        Self {
+            open_valves_bitmask: self.open_valves_bitmask | other.open_valves_bitmask,
+        }
+    }
+}
+impl std::ops::BitAnd<ValvesState> for ValvesState {
+    type Output = Self;
+    fn bitand(self, other: Self) -> Self {
+        Self {
+            open_valves_bitmask: self.open_valves_bitmask & other.open_valves_bitmask,
+        }
+    }
+}
+impl ValvesState {
+    fn new_with_open_valve(i: usize) -> Self {
+        Self {
+            open_valves_bitmask: 1 << i,
+        }
+    }
+    fn with_open_valve(&self, i: usize) -> Self {
+        *self | Self::new_with_open_valve(i)
+    }
+    fn is_valve_open(&self, i: usize) -> bool {
+        (*self & Self::new_with_open_valve(i)).any_valves_open()
+    }
+    fn any_valves_open(&self) -> bool {
+        self.open_valves_bitmask != 0
+    }
+    fn new_all_valves_closed() -> Self {
+        Self {
+            open_valves_bitmask: 0,
+        }
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
 fn dfs(
-    valves: &BTreeMap<String, Valve>,
-    at: &String,
+    valves: &Vec<Valve>,
+    at: usize,
     minute: i64,
     doneflow: i64,
     openflow: i64,
     bestflow: &mut i64,
     allflow: &i64,
-    openvalves: &BTreeSet<String>,
+    openvalves: ValvesState,
     time_limit: i64,
 ) {
     if minute >= time_limit || openflow == *allflow {
         let doneflow = doneflow + (time_limit - minute) * openflow;
-        println!("{:?} {:?}", doneflow, bestflow);
+        //println!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
             *bestflow = doneflow;
         }
@@ -47,11 +105,9 @@ fn dfs(
     if max_possible_flow < *bestflow {
         return;
     }
-    println!("{}", at);
+    //println!("{}", at);
     let v = valves.get(at).unwrap();
-    if v.flow_rate > 0 && !openvalves.contains(at) {
-        let mut openvalves = openvalves.clone();
-        openvalves.insert(at.clone());
+    if v.flow_rate > 0 && !openvalves.is_valve_open(at) {
         dfs(
             valves,
             at,
@@ -60,14 +116,14 @@ fn dfs(
             openflow + v.flow_rate,
             bestflow,
             allflow,
-            &openvalves,
+            openvalves.with_open_valve(at),
             time_limit,
         );
     }
     for (vv, dist) in &v.tunnels {
         dfs(
             valves,
-            vv,
+            *vv,
             minute + dist,
             doneflow + openflow * dist,
             openflow,
@@ -79,7 +135,20 @@ fn dfs(
     }
 }
 
-fn consolidate(valves: &BTreeMap<String, Valve>) -> BTreeMap<String, Valve> {
+fn indexify(valves: &BTreeMap<String, Valve_>) -> (usize, Vec<Valve>) {
+    let names = valves.keys().enumerate().collect_vec();
+    let name_to_index =
+        BTreeMap::from_iter(names.iter().map(|(i, name)| (String::from(*name), *i)));
+    (
+        *name_to_index.get("AA").unwrap(),
+        names
+            .iter()
+            .map(|(_, name)| valves.get(*name).unwrap().to_indexified(&name_to_index))
+            .collect_vec(),
+    )
+}
+
+fn consolidate(valves: &BTreeMap<String, Valve_>) -> BTreeMap<String, Valve_> {
     BTreeMap::from_iter(
         valves
             .iter()
@@ -110,7 +179,7 @@ fn consolidate(valves: &BTreeMap<String, Valve>) -> BTreeMap<String, Valve> {
                 }
                 (
                     name.to_string(),
-                    Valve {
+                    Valve_ {
                         flow_rate: valve.flow_rate,
                         tunnels: long_tunnels,
                     },
@@ -120,40 +189,27 @@ fn consolidate(valves: &BTreeMap<String, Valve>) -> BTreeMap<String, Valve> {
 }
 
 pub fn part1(input: &str) -> i64 {
-    let valves = consolidate(&BTreeMap::from_iter(input.lines().map(Valve::read)));
-    let allflow = valves.values().map(|v| v.flow_rate).sum();
-    let mut bestflow = 2000;  // know can get this much from previous long runs (helps cut off branches)
+    let (aa_valve, valves) = indexify(&consolidate(&BTreeMap::from_iter(
+        input.lines().map(Valve_::read),
+    )));
+    let allflow = valves.iter().map(|v| v.flow_rate).sum();
+    let mut bestflow = 0; // know can get this much from previous long runs (helps cut off branches)
     dfs(
         &valves,
-        &"AA".to_string(),
+        aa_valve,
         0,
         0,
         0,
         &mut bestflow,
         &allflow,
-        &BTreeSet::new(),
+        ValvesState::new_all_valves_closed(),
         30,
     );
     bestflow
 }
 
-pub fn part2(input: &str) -> i64 {
-    let valves = consolidate(&BTreeMap::from_iter(input.lines().map(Valve::read)));
-    let allflow = valves.values().map(|v| v.flow_rate).sum();
-    let mut bestflow = 0;
-    dfs(
-        &valves,
-        &"AA".to_string(),
-        // &"AA".to_string(),
-        0,
-        0,
-        0,
-        &mut bestflow,
-        &allflow,
-        &BTreeSet::new(),
-        24,
-    );
-    bestflow
+pub fn part2(_input: &str) -> i64 {
+    0
 }
 
 #[cfg(test)]
@@ -161,7 +217,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day16.txt")
+        include_str!("../input/2022/day16e.txt")
     }
 
     #[ignore = "slow"]
