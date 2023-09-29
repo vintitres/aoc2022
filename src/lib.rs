@@ -48,10 +48,3 @@ pub mod day23;
 pub mod day24;
 #[cfg(feature = "day25")]
 pub mod day25;
-
-#[cfg(feature = "my_aoc_runner")]
-mod my_aoc_runner;
-#[cfg(feature = "my_aoc_runner")]
-use aoc_runner_derive::aoc_lib;
-#[cfg(feature = "my_aoc_runner")]
-aoc_lib! { year = 2022 }

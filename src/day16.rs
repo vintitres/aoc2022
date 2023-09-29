@@ -146,9 +146,12 @@ fn dfs(
             let v2 = valves.get(state.pos2).unwrap();
 
             // 1 and 2 open
-            if state.pos1 != state.pos2 && v1.flow_rate > 0
-                    && !state.open_valves.is_valve_open(state.pos1)
-                    && v2.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos2) {
+            if state.pos1 != state.pos2
+                && v1.flow_rate > 0
+                && !state.open_valves.is_valve_open(state.pos1)
+                && v2.flow_rate > 0
+                && !state.open_valves.is_valve_open(state.pos2)
+            {
                 dfs(
                     State {
                         minute: state.minute + 1,
@@ -354,7 +357,7 @@ fn opennn(input: &str, with_elephant: bool, time: u64) -> u64 {
             pos1: aa_valve,
             pos1dist: 0,
             pos2: if with_elephant { aa_valve } else { usize::MAX },
-            pos2dist: if with_elephant { 0 } else {u64::MAX },
+            pos2dist: if with_elephant { 0 } else { u64::MAX },
             done_flow: 0,
             open_valves: ValvesState::new_all_valves_closed(),
             minute: 0,
@@ -378,7 +381,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day16e.txt")
+        include_str!("../input/2022/day16.txt")
     }
 
     #[ignore = "slow"]
