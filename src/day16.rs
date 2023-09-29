@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet, HashSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use itertools::Itertools;
 
@@ -109,7 +109,6 @@ impl State {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 fn dfs(
     state: State,
     valves: &Vec<Valve>,
@@ -117,12 +116,7 @@ fn dfs(
     bestflow: &mut u32,
     allflow: &u32,
     time_limit: u32,
-    seen: &mut HashSet<State>,
 ) {
-    if seen.contains(&state) {
-        return;
-    }
-    // seen.insert(state.clone());
     if state.minute as u32 >= time_limit || openflow == *allflow {
         let doneflow = (state.done_flow as i32
             + (time_limit as i32 - state.minute as i32) * openflow as i32)
@@ -167,7 +161,6 @@ fn dfs(
                     bestflow,
                     allflow,
                     time_limit,
-                    seen,
                 );
             } else if v1.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos1) {
                 // 1 opens, 2 goes into new tunnel
@@ -188,7 +181,6 @@ fn dfs(
                             bestflow,
                             allflow,
                             time_limit,
-                            seen,
                         );
                     }
                 }
@@ -214,7 +206,6 @@ fn dfs(
                             bestflow,
                             allflow,
                             time_limit,
-                            seen,
                         );
                     }
                 }
@@ -244,7 +235,6 @@ fn dfs(
                                 bestflow,
                                 allflow,
                                 time_limit,
-                                seen,
                             );
                         }
                     }
@@ -267,7 +257,6 @@ fn dfs(
                     bestflow,
                     allflow,
                     time_limit,
-                    seen,
                 );
             } else {
                 // 1 goes into new tunnel, 2 moves
@@ -289,7 +278,6 @@ fn dfs(
                             bestflow,
                             allflow,
                             time_limit,
-                            seen,
                         );
                     }
                 }
@@ -363,7 +351,6 @@ fn opennn(input: &str, with_elephant: bool, time: u32) -> u32 {
     )));
     let allflow = valves.iter().map(|v| v.flow_rate).sum();
     let mut bestflow = 1600; // know can get this much from previous long runs (helps cut off branches)
-    let mut seen = HashSet::new();
     dfs(
         State {
             pos1: aa_valve,
@@ -379,7 +366,6 @@ fn opennn(input: &str, with_elephant: bool, time: u32) -> u32 {
         &mut bestflow,
         &allflow,
         time,
-        &mut seen,
     );
     bestflow
 }
@@ -401,7 +387,6 @@ mod tests {
         assert_eq!(part1(input()), 2250);
     }
 
-    #[ignore = "slow"]
     #[test]
     fn test_part2() {
         assert_eq!(part2(input()), 3015);
