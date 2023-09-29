@@ -217,7 +217,7 @@ mod tests {
     use super::*;
 
     fn input() -> &'static str {
-        include_str!("../input/2022/day16e.txt")
+        include_str!("../input/2022/day16.txt")
     }
 
     #[ignore = "slow"]
