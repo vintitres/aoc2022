@@ -124,9 +124,11 @@ fn dfs(
     }
     seen.insert(state.clone());
     if state.minute >= time_limit || openflow == *allflow {
-        let doneflow = (state.done_flow as i64 + (time_limit as i64 - state.minute as i64) * openflow as i64) as u64;
+        let doneflow = (state.done_flow as i64
+            + (time_limit as i64 - state.minute as i64) * openflow as i64)
+            as u64;
         //println!("{:?} {:?}", doneflow, bestflow);
-        if doneflow > *bestflow 
+        if doneflow > *bestflow {
             *bestflow = doneflow;
         }
         return;
