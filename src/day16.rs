@@ -119,7 +119,7 @@ fn dfs(
     time_limit: u64,
     seen: &mut HashSet<State>,
 ) {
-    if (seen.contains(&state)) {
+    if seen.contains(&state) {
         return;
     }
     seen.insert(state.clone());
@@ -145,30 +145,26 @@ fn dfs(
             let v2 = valves.get(state.pos2).unwrap();
 
             // 1 and 2 open
-            if state.pos1 != state.pos2 {
-                if v1.flow_rate > 0
+            if state.pos1 != state.pos2 && v1.flow_rate > 0
                     && !state.open_valves.is_valve_open(state.pos1)
-                    && v2.flow_rate > 0
-                    && !state.open_valves.is_valve_open(state.pos2)
-                {
-                    dfs(
-                        State {
-                            minute: state.minute + 1,
-                            open_valves: state
-                                .open_valves
-                                .with_open_valve(state.pos1)
-                                .with_open_valve(state.pos2),
-                            done_flow: state.done_flow + openflow,
-                            ..state
-                        },
-                        valves,
-                        openflow + v1.flow_rate + v2.flow_rate,
-                        bestflow,
-                        allflow,
-                        time_limit,
-                        seen,
-                    );
-                }
+                    && v2.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos2) {
+                dfs(
+                    State {
+                        minute: state.minute + 1,
+                        open_valves: state
+                            .open_valves
+                            .with_open_valve(state.pos1)
+                            .with_open_valve(state.pos2),
+                        done_flow: state.done_flow + openflow,
+                        ..state
+                    },
+                    valves,
+                    openflow + v1.flow_rate + v2.flow_rate,
+                    bestflow,
+                    allflow,
+                    time_limit,
+                    seen,
+                );
             }
 
             // 1 opens, 2 goes into new tunnel
