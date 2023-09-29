@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet, HashSet, VecDeque};
 use itertools::Itertools;
 
 struct Valve_ {
-    flow_rate: u64,
-    tunnels: BTreeMap<String, u64>,
+    flow_rate: u32,
+    tunnels: BTreeMap<String, usize>,
 }
 
 impl Valve_ {
@@ -32,13 +32,13 @@ impl Valve_ {
 }
 
 struct Valve {
-    flow_rate: u64,
-    tunnels: BTreeMap<usize, u64>,
+    flow_rate: u32,
+    tunnels: BTreeMap<usize, usize>,
 }
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Hash)]
 struct ValvesState {
-    open_valves_bitmask: u64,
+    open_valves_bitmask: u16,
 }
 
 impl std::ops::BitOr<ValvesState> for ValvesState {
@@ -82,12 +82,12 @@ impl ValvesState {
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 struct State {
     pos1: usize,
-    pos1dist: u64,
+    pos1dist: usize,
     pos2: usize,
-    pos2dist: u64,
+    pos2dist: usize,
     open_valves: ValvesState,
-    done_flow: u64,
-    minute: u64,
+    done_flow: u32,
+    minute: usize,
 }
 
 impl State {
@@ -113,20 +113,20 @@ impl State {
 fn dfs(
     state: State,
     valves: &Vec<Valve>,
-    openflow: u64,
-    bestflow: &mut u64,
-    allflow: &u64,
-    time_limit: u64,
+    openflow: u32,
+    bestflow: &mut u32,
+    allflow: &u32,
+    time_limit: u32,
     seen: &mut HashSet<State>,
 ) {
     if seen.contains(&state) {
         return;
     }
-    //seen.insert(state.clone());
-    if state.minute >= time_limit || openflow == *allflow {
-        let doneflow = (state.done_flow as i64
-            + (time_limit as i64 - state.minute as i64) * openflow as i64)
-            as u64;
+    // seen.insert(state.clone());
+    if state.minute as u32 >= time_limit || openflow == *allflow {
+        let doneflow = (state.done_flow as i32
+            + (time_limit as i32 - state.minute as i32) * openflow as i32)
+            as u32;
         //eprintln!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
             eprintln!("{:?}", bestflow);
@@ -135,8 +135,8 @@ fn dfs(
         return;
     }
     let max_possible_flow = state.done_flow
-        + (time_limit - state.minute) * openflow
-        + (time_limit - 1 - state.minute) * (allflow - openflow);
+        + (time_limit - state.minute as u32) * openflow
+        + (time_limit - 1 - state.minute as u32) * (allflow - openflow);
     if max_possible_flow < *bestflow {
         return;
     }
@@ -174,23 +174,25 @@ fn dfs(
             // 1 opens, 2 goes into new tunnel
             if v1.flow_rate > 0 && !state.open_valves.is_valve_open(state.pos1) {
                 for (vv2, dist) in &v2.tunnels {
-                    dfs(
-                        State {
-                            pos2dist: dist - 1,
-                            pos2: *vv2,
-                            minute: state.minute + 1,
-                            open_valves: state.open_valves.with_open_valve(state.pos1),
-                            done_flow: state.done_flow + openflow,
-                            ..state
-                        }
-                        .normalized(),
-                        valves,
-                        openflow + v1.flow_rate,
-                        bestflow,
-                        allflow,
-                        time_limit,
-                        seen,
-                    );
+                    if !state.open_valves.is_valve_open(*vv2) && *vv2 != state.pos1 {
+                        dfs(
+                            State {
+                                pos2dist: dist - 1,
+                                pos2: *vv2,
+                                minute: state.minute + 1,
+                                open_valves: state.open_valves.with_open_valve(state.pos1),
+                                done_flow: state.done_flow + openflow,
+                                ..state
+                            }
+                            .normalized(),
+                            valves,
+                            openflow + v1.flow_rate,
+                            bestflow,
+                            allflow,
+                            time_limit,
+                            seen,
+                        );
+                    }
                 }
             }
 
@@ -200,48 +202,54 @@ fn dfs(
                 && !state.open_valves.is_valve_open(state.pos2)
             {
                 for (vv1, dist) in &v1.tunnels {
-                    dfs(
-                        State {
-                            pos1dist: dist - 1,
-                            pos1: *vv1,
-                            minute: state.minute + 1,
-                            open_valves: state.open_valves.with_open_valve(state.pos2),
-                            done_flow: state.done_flow + openflow,
-                            ..state
-                        }
-                        .normalized(),
-                        valves,
-                        openflow + v2.flow_rate,
-                        bestflow,
-                        allflow,
-                        time_limit,
-                        seen,
-                    );
+                    if !state.open_valves.is_valve_open(*vv1) && *vv1 != state.pos2 {
+                        dfs(
+                            State {
+                                pos1dist: dist - 1,
+                                pos1: *vv1,
+                                minute: state.minute + 1,
+                                open_valves: state.open_valves.with_open_valve(state.pos2),
+                                done_flow: state.done_flow + openflow,
+                                ..state
+                            }
+                            .normalized(),
+                            valves,
+                            openflow + v2.flow_rate,
+                            bestflow,
+                            allflow,
+                            time_limit,
+                            seen,
+                        );
+                    }
                 }
             }
 
             //  1 and 2 go into new tunnel
             for (vv1, dist1) in &v1.tunnels {
                 for (vv2, dist2) in &v2.tunnels {
-                    let step_dist = std::cmp::min(dist1, dist2);
-                    dfs(
-                        State {
-                            pos1dist: dist1 - step_dist,
-                            pos2dist: dist2 - step_dist,
-                            pos1: *vv1,
-                            pos2: *vv2,
-                            minute: state.minute + step_dist,
-                            done_flow: state.done_flow + openflow * step_dist,
-                            ..state
-                        }
-                        .normalized(),
-                        valves,
-                        openflow,
-                        bestflow,
-                        allflow,
-                        time_limit,
-                        seen,
-                    );
+                    if !state.open_valves.is_valve_open(*vv1)
+                        && !state.open_valves.is_valve_open(*vv2)
+                    {
+                        let step_dist = std::cmp::min(dist1, dist2);
+                        dfs(
+                            State {
+                                pos1dist: dist1 - step_dist,
+                                pos2dist: dist2 - step_dist,
+                                pos1: *vv1,
+                                pos2: *vv2,
+                                minute: state.minute + step_dist,
+                                done_flow: state.done_flow + openflow * *step_dist as u32,
+                                ..state
+                            }
+                            .normalized(),
+                            valves,
+                            openflow,
+                            bestflow,
+                            allflow,
+                            time_limit,
+                            seen,
+                        );
+                    }
                 }
             }
         } else {
@@ -266,26 +274,30 @@ fn dfs(
             }
             // 1 goes into new tunnel, 2 moves
             for (vv1, dist) in &v1.tunnels {
-                let step_dist = std::cmp::min(dist, &state.pos2dist);
-                dfs(
-                    State {
-                        pos1dist: dist - step_dist,
-                        pos1: *vv1,
-                        pos2dist: state.pos2dist - step_dist,
-                        minute: state.minute + step_dist,
-                        done_flow: state.done_flow + openflow * step_dist,
-                        ..state
-                    }
-                    .normalized(),
-                    valves,
-                    openflow,
-                    bestflow,
-                    allflow,
-                    time_limit,
-                    seen,
-                );
+                if !state.open_valves.is_valve_open(*vv1) {
+                    let step_dist = std::cmp::min(dist, &state.pos2dist);
+                    dfs(
+                        State {
+                            pos1dist: dist - step_dist,
+                            pos1: *vv1,
+                            pos2dist: state.pos2dist - step_dist,
+                            minute: state.minute + step_dist,
+                            done_flow: state.done_flow + openflow * *step_dist as u32,
+                            ..state
+                        }
+                        .normalized(),
+                        valves,
+                        openflow,
+                        bestflow,
+                        allflow,
+                        time_limit,
+                        seen,
+                    );
+                }
             }
         }
+    } else {
+        panic!("unexpected mid path state: {:?}", state);
     }
 }
 
@@ -293,6 +305,7 @@ fn indexify(valves: &BTreeMap<String, Valve_>) -> (usize, Vec<Valve>) {
     let names = valves.keys().enumerate().collect_vec();
     let name_to_index =
         BTreeMap::from_iter(names.iter().map(|(i, name)| (String::from(*name), *i)));
+    // eprintln!("{:?}", name_to_index);
     (
         *name_to_index.get("AA").unwrap(),
         names
@@ -307,16 +320,16 @@ fn consolidate(valves: &BTreeMap<String, Valve_>) -> BTreeMap<String, Valve_> {
         valves
             .iter()
             .filter(|(n, v)| *n == "AA" || v.flow_rate > 0)
-            .map(|(name, valve)| {
-                let mut long_tunnels: BTreeMap<String, u64> = BTreeMap::new();
-                let mut q: VecDeque<(String, u64)> =
+            .map(|(from_name, valve)| {
+                let mut long_tunnels: BTreeMap<String, usize> = BTreeMap::new();
+                let mut q: VecDeque<(String, usize)> =
                     VecDeque::from_iter(valve.tunnels.iter().map(|(k, v)| (k.clone(), *v)));
                 let mut visited: BTreeSet<String> = BTreeSet::new();
                 loop {
                     match q.pop_front() {
                         None => break,
                         Some((name, dist)) => {
-                            if visited.contains(&name) {
+                            if visited.contains(&name) || &name == from_name {
                                 continue;
                             }
                             visited.insert(name.clone());
@@ -332,7 +345,7 @@ fn consolidate(valves: &BTreeMap<String, Valve_>) -> BTreeMap<String, Valve_> {
                     }
                 }
                 (
-                    name.to_string(),
+                    from_name.to_string(),
                     Valve_ {
                         flow_rate: valve.flow_rate,
                         tunnels: long_tunnels,
@@ -342,10 +355,10 @@ fn consolidate(valves: &BTreeMap<String, Valve_>) -> BTreeMap<String, Valve_> {
     )
 }
 
-pub fn part1(input: &str) -> u64 {
+pub fn part1(input: &str) -> u32 {
     opennn(input, false, 30)
 }
-fn opennn(input: &str, with_elephant: bool, time: u64) -> u64 {
+fn opennn(input: &str, with_elephant: bool, time: u32) -> u32 {
     let (aa_valve, valves) = indexify(&consolidate(&BTreeMap::from_iter(
         input.lines().map(Valve_::read),
     )));
@@ -357,7 +370,7 @@ fn opennn(input: &str, with_elephant: bool, time: u64) -> u64 {
             pos1: aa_valve,
             pos1dist: 0,
             pos2: if with_elephant { aa_valve } else { usize::MAX },
-            pos2dist: if with_elephant { 0 } else { u64::MAX },
+            pos2dist: if with_elephant { 0 } else { usize::MAX },
             done_flow: 0,
             open_valves: ValvesState::new_all_valves_closed(),
             minute: 0,
@@ -372,7 +385,7 @@ fn opennn(input: &str, with_elephant: bool, time: u64) -> u64 {
     bestflow
 }
 
-pub fn part2(input: &str) -> u64 {
+pub fn part2(input: &str) -> u32 {
     opennn(input, true, 26)
 }
 
