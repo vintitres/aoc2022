@@ -151,12 +151,12 @@ pub fn d15p2(input: &str) -> i64 {
 }
 
 #[aoc(day16, part1)]
-pub fn d16p1(input: &str) -> i64 {
+pub fn d16p1(input: &str) -> u64 {
     super::day16::part1(input)
 }
 
 #[aoc(day16, part2)]
-pub fn d16p2(input: &str) -> i64 {
+pub fn d16p2(input: &str) -> u64 {
     super::day16::part2(input)
 }
 
