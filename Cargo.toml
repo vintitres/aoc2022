@@ -7,8 +7,6 @@ edition = "2021"
 
 [dependencies]
 itertools = "0.10.5"
-aoc-runner = {version = "0.3.0", optional = true}
-aoc-runner-derive = {version = "0.3.0", optional = true }
 
 [features]
 day01 = []
@@ -40,8 +38,7 @@ alldays = ["day01", "day02", "day03", "day04", "day05", "day06",
            "day07", "day08", "day09", "day10", "day11", "day12",
            "day13", "day14", "day15", "day16", "day17", "day18",
            "day19", "day20", "day21", "day22", "day23", "day24", "day25"]
-my_aoc_runner = ["dep:aoc-runner", "dep:aoc-runner-derive", "alldays"]
-default = ["day16"] # , "my_aoc_runner"]
+default = ["day16"]
 
 [lib]
 doctest = false
