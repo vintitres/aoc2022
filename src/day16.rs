@@ -122,13 +122,14 @@ fn dfs(
     if seen.contains(&state) {
         return;
     }
-    seen.insert(state.clone());
+    //seen.insert(state.clone());
     if state.minute >= time_limit || openflow == *allflow {
         let doneflow = (state.done_flow as i64
             + (time_limit as i64 - state.minute as i64) * openflow as i64)
             as u64;
-        //println!("{:?} {:?}", doneflow, bestflow);
+        //eprintln!("{:?} {:?}", doneflow, bestflow);
         if doneflow > *bestflow {
+            eprintln!("{:?}", bestflow);
             *bestflow = doneflow;
         }
         return;
@@ -346,14 +347,14 @@ fn opennn(input: &str, with_elephant: bool, time: u64) -> u64 {
         input.lines().map(Valve_::read),
     )));
     let allflow = valves.iter().map(|v| v.flow_rate).sum();
-    let mut bestflow = 0; // know can get this much from previous long runs (helps cut off branches)
+    let mut bestflow = 1600; // know can get this much from previous long runs (helps cut off branches)
     let mut seen = HashSet::new();
     dfs(
         State {
             pos1: aa_valve,
             pos1dist: 0,
             pos2: if with_elephant { aa_valve } else { usize::MAX },
-            pos2dist: 0,
+            pos2dist: if with_elephant { 0 } else {u64::MAX },
             done_flow: 0,
             open_valves: ValvesState::new_all_valves_closed(),
             minute: 0,
